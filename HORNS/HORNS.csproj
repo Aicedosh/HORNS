@@ -2,6 +2,13 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <LangVersion>7.2</LangVersion>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="Algorithm\" />
+    <Folder Include="Solvers\" />
+    <Folder Include="Results\" />
+  </ItemGroup>
 
 </Project>
