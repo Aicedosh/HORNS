@@ -7,8 +7,6 @@
 
   <ItemGroup>
     <Folder Include="Algorithm\" />
-    <Folder Include="Solvers\" />
-    <Folder Include="Results\" />
   </ItemGroup>
 
 </Project>
