@@ -11,7 +11,12 @@ namespace HORNS_Sandbox
     {
         class Solver1 : HORNS.VariableSolver<bool, Result1>
         {
-            public override IEnumerable<HORNS.Action> GetActions(Variable<bool> variable, bool goalValue)
+            protected override void Register(Result1 result)
+            {
+                throw new NotImplementedException();
+            }
+
+            protected override IEnumerable<HORNS.Action> GetActions(Variable<bool> variable, bool goalValue)
             {
                 throw new NotImplementedException();
             }
@@ -19,6 +24,11 @@ namespace HORNS_Sandbox
 
         class Result1 : HORNS.ActionResult<bool, Solver1>
         {
+            public Result1(Variable<bool> var) : base(var)
+            {
+                
+            }
+
             public override void Apply()
             {
                 throw new NotImplementedException();
@@ -34,7 +44,8 @@ namespace HORNS_Sandbox
         static void Main(string[] args)
         {
             HORNS.Action a = new HORNS.Action();
-            a.AddResult<bool, Result1, Solver1>(new Result1(), new Solver1());
+            Variable<bool> dummy = new Variable<bool>();
+            a.AddResult<bool, Result1, Solver1>(new Result1(dummy), new Solver1());
         }
     }
 }

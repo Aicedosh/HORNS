@@ -47,9 +47,9 @@ namespace HORNS
             observers.Remove(observer);
         }
 
-        public virtual double Evaluate(T value)
+        public virtual float Evaluate(T value)
         {
-            return 0;
+            return 0f;
         }
     }
 }

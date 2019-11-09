@@ -6,9 +6,6 @@ namespace HORNS
 {
     public abstract class VariableSolver<T, RT> : VariableSolver<T> where RT : ActionResult<T>
     {
-        public void Register(RT result)
-        {
-            throw new NotImplementedException();
-        }
+        protected internal abstract void Register(RT result);
     }
 }
