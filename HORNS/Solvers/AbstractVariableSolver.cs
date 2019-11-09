@@ -6,6 +6,6 @@ namespace HORNS
 {
     public abstract class VariableSolver<T>
     {
-        public abstract IEnumerable<Action> GetActions(Variable<T> variable, T goalValue);
+        protected internal abstract IEnumerable<Action> GetActions(Variable<T> variable, T goalValue);
     }
 }

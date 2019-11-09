@@ -4,17 +4,23 @@ using System.Text;
 
 namespace HORNS
 {
-    public abstract class Need<T> : Variable<T>
+    public abstract class Need<T> : Variable<T>, INeed
     {
-        private protected override T _Value { get => variable.Value; set => variable.Value = value; }
-        private Variable<T> variable;
+        private protected override T _Value { get => Variable.Value; set => Variable.Value = value; }
+        internal Variable<T> Variable { get; private set; }
         public T Desired { get; private set; }
 
-        public Need(T desired)
+        public Need(Variable<T> variable, T desired)
         {
+            Variable = variable;
             Desired = desired;
         }
 
-        public abstract override double Evaluate(T value);
+        public abstract override float Evaluate(T value);
+
+        public float GetPriority()
+        {
+            return Evaluate(Value);
+        }
     }
 }

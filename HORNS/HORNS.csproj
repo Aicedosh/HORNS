@@ -7,6 +7,7 @@
 
   <ItemGroup>
     <Folder Include="Algorithm\" />
+    <Folder Include="Preconditions\" />
   </ItemGroup>
 
 </Project>
