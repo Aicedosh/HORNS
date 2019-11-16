@@ -9,7 +9,7 @@ namespace HORNS_Sandbox
 {
     class Program
     {
-        class Solver1 : HORNS.VariableSolver<bool, Result1>
+        class Solver1 : HORNS.VariableSolver<bool, Result1, Precondition1>
         {
             private List<Result1> results = new List<Result1>();
 
@@ -18,9 +18,9 @@ namespace HORNS_Sandbox
                 throw new NotImplementedException();
             }
 
-            protected override IEnumerable<HORNS.Action> GetActions(Variable<bool> variable, bool goalValue)
+            protected override IEnumerable<HORNS.Action> GetActionsSatisfying(Precondition1 precondition)
             {
-                return results.Where(r => r.V == goalValue).Select(r => r.Action);
+                throw new NotImplementedException();
             }
         }
 
@@ -31,14 +31,16 @@ namespace HORNS_Sandbox
             public Result1(Variable<bool> var) : base(var)
             { }
 
-            public override void Apply()
-            {
-                Variable.Value = V;
-            }
-
             protected override bool GetResultValue(Variable<bool> variable)
             {
                 return V;
+            }
+        }
+
+        class Precondition1 : HORNS.Precondition<bool, Solver1>
+        {
+            public Precondition1(Variable<bool> variable, Solver1 solver) : base(variable, solver)
+            {
             }
         }
 
@@ -70,7 +72,7 @@ namespace HORNS_Sandbox
 
             HORNS.Action a = new MyAction();
             Variable<bool> dummy = new Variable<bool>();
-            a.AddResult<bool, Result1, Solver1>(new Result1(dummy), solver);
+            a.AddResult<bool, Result1, Solver1, Precondition1>(new Result1(dummy), solver);
 
             Need1 n = new Need1(dummy, false);
 
