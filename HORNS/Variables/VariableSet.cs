@@ -26,9 +26,12 @@ namespace HORNS
             variables.Add(variable.Id, variable);
         }
 
-        internal bool TryGet(Variable key, out Variable variable)
+        internal void TryGet(ref Variable variable)
         {
-            return variables.TryGetValue(key.Id, out variable);
+            if (variables.TryGetValue(variable.Id, out Variable var))
+            {
+                variable = var;
+            }
         }
     }
 }

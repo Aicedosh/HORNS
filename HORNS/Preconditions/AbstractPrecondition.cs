@@ -6,6 +6,6 @@ namespace HORNS
 {
     public abstract class Precondition
     {
-        internal abstract ActionRequirement GetRequirement();
+        internal abstract Requirement GetRequirement(VariableSet variablePatch);
     }
 }

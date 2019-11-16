@@ -18,13 +18,15 @@ namespace HORNS
 
         internal override float GetCost(VariableSet variables)
         {
-            Variable currentVariable;
-            if (!variables.TryGet(Variable, out currentVariable))
-            {
-                currentVariable = Variable;
-            }
+            Variable currentVariable = Variable;
+            variables.TryGet(ref currentVariable);
             Variable<T> curr = currentVariable as Variable<T>; //TODO: Can we remove this cast?
             return curr.Evaluate(GetResultValue(curr)) - curr.Evaluate(curr.Value);
+        }
+
+        internal override void Apply()
+        {
+            Variable.Value = GetResultValue(Variable);
         }
     }
 }
