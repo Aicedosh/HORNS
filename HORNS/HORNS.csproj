@@ -5,8 +5,4 @@
     <LangVersion>7.2</LangVersion>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Folder Include="Preconditions\" />
-  </ItemGroup>
-
 </Project>

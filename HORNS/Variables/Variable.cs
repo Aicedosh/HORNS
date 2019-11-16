@@ -6,6 +6,9 @@ namespace HORNS
 {
     public class Variable
     {
+        private static int MaxId = 0;
+        internal int Id { get; private set; }
+
         private ICollection<IVariableObserver> observers = new HashSet<IVariableObserver>();
 
         public void Observe(IVariableObserver observer)
@@ -28,7 +31,12 @@ namespace HORNS
 
         private protected Variable()
         {
+            Id = MaxId++;
+        }
 
+        private protected Variable(Variable other)
+        {
+            Id = other.Id;
         }
     }
 }
