@@ -7,8 +7,8 @@ namespace HORNS
 {
     public class Agent
     {
-        //TODO: Should this be a field in Agent, an interface (with possibility to change by the developer)
-        //      or should the Agent be simple object and planning actions should be responsibility of application's wrapper class
+        //TODO: Should this be a field in Agent, an interface (with possibility to change by the developer) or
+        //      should the Agent be simple object and planning actions should be responsibility of application's wrapper class
         private ActionPlanner planner = new ActionPlanner();
         private List<Action> plannedActions = new List<Action>();
         private int currentAction = 0;

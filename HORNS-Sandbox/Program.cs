@@ -36,9 +36,9 @@ namespace HORNS_Sandbox
                 Variable.Value = V;
             }
 
-            public override double GetCost() //TODO: Make abstract "GoalValue" that is computed during "simulation" and get cost based on that in parent class
+            protected override bool GetResultValue(Variable<bool> variable)
             {
-                return Variable.Evaluate(V) - Variable.Evaluate(Variable.Value);
+                return V;
             }
         }
 

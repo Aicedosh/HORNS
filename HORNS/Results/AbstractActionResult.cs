@@ -9,6 +9,6 @@ namespace HORNS
         public Action Action { get; private protected set; }
         internal abstract Variable AbstractVariable { get; }
         public abstract void Apply();
-        public abstract double GetCost();
+        internal abstract float GetCost(VariableSet variables);
     }
 }

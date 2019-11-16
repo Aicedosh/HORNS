@@ -11,6 +11,7 @@ namespace HORNS
         private ICollection<IActionCostEvaluator> costEvaluators = new List<IActionCostEvaluator>();
 
         //TODO: Implement builder pattern to ensure all results, costs and precondidtions are added before adding to agent's possible actions
+        //      This may also make it possible to ommit passing same solver in every call (first calling setup for solver and then adding results/preconditions)
         public void AddResult<T, RT, ST>(RT result, ST solver)
             where ST : VariableSolver<T, RT>
             where RT : ActionResult<T, ST>
@@ -27,6 +28,23 @@ namespace HORNS
         public void AddCost<T>(float cost)
         {
             costEvaluators.Add(new ConstantCostEvaluator(cost));
+        }
+
+        internal float GetCost(VariableSet variablesPatch)
+        {
+            float cost = 0f;
+
+            foreach(IActionCostEvaluator evaluator in costEvaluators)
+            {
+                cost += evaluator.GetCost();
+            }
+
+            foreach(ActionResult result in results)
+            {
+                cost += result.GetCost(variablesPatch);
+            }
+
+            return cost;
         }
 
         internal IEnumerable<Variable> GetVariables()
