@@ -10,6 +10,7 @@ namespace HORNS
         public float CachedCost { get; private set; }
 
         private ICollection<ActionResult> results = new List<ActionResult>();
+        private ICollection<Precondition> preconditions = new List<Precondition>();
         private ICollection<IActionCostEvaluator> costEvaluators = new List<IActionCostEvaluator>();
 
         //TODO: Implement builder pattern to ensure all results, costs and precondidtions are added before adding to agent's possible actions
@@ -21,6 +22,14 @@ namespace HORNS
         {
             solver.Register(result);
             results.Add(result);
+        }
+
+        public void AddPrecondition<T, RT, ST, PT>(PT precondition)
+            where ST : VariableSolver<T, RT, PT>
+            where RT : ActionResult<T, ST>
+            where PT : Precondition<T, ST>
+        {
+            preconditions.Add(precondition);
         }
 
         public void AddCost<T>(Variable<T> variable, Func<T, float> evaluationFunction)
@@ -83,6 +92,11 @@ namespace HORNS
         internal IEnumerable<Action> GetActionsSatisfying(Requirement requirement)
         {
             return requirement.GetActions();
+        }
+
+        internal IEnumerable<Precondition> GetPreconditions()
+        {
+            return preconditions;
         }
     }
 }
