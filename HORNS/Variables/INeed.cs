@@ -7,5 +7,7 @@ namespace HORNS
     public interface INeed
     {
         float GetPriority(); //Maybe...?
+
+        IEnumerable<Action> GetActionsTowards();
     }
 }
