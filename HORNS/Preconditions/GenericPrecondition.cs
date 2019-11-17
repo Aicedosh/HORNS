@@ -24,6 +24,12 @@ namespace HORNS
                 this.variable = variable;
             }
 
+            // TODO: does anything need to be cloned?
+            internal PreconditionRequirement(PreconditionRequirement requirement) :
+                this(requirement.precondition, requirement.variable)
+            {
+            }
+
             protected internal override IEnumerable<Action> GetActions()
             {
                 return precondition.GetActions(variable);
@@ -34,12 +40,18 @@ namespace HORNS
                 Variable var = variable;
                 variablePatch.TryGet(ref var);
                 Variable<T> v = var as Variable<T>;
-                return precondition.IsFulfilled(v.Value);
+                Fulfilled = precondition.IsFulfilled(v.Value);
+                return Fulfilled;
             }
 
             protected internal override bool IsEqual(Requirement other)
             {
                 throw new NotImplementedException(); //TODO: Something like this will be required to avoid going in loop
+            }
+
+            internal override Requirement Clone()
+            {
+                return new PreconditionRequirement(this);
             }
         }
 

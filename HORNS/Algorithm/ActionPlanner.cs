@@ -11,7 +11,7 @@ namespace HORNS
             public float Distance { get; set; }
             // TODO: is Actions actually needed? we're looking at actions per requirement anyway
             public List<Action> Actions { get; set; } = new List<Action>();
-            public List<Requirement> Requirements { get; set; } = new List<Requirement>();
+            public List<RequirementSet> Requirements { get; set; } = new List<RequirementSet>();
             public ActionPlannerNode Prev { get; set; }
             public Action PrevAction { get; set; }
             public VariableSet VariablePatch { get; set; }
@@ -20,13 +20,39 @@ namespace HORNS
             {
                 Distance = dist;
             }
+        }
 
-            public void SetPrevious(ActionPlannerNode prev, Action action)
+        private class RequirementSet
+        {
+            public Action Action { get; set; }
+            public List<Requirement> Requirements { get; set; } = new List<Requirement>();
+            public bool Closed { get; private set; } = false;
+
+            public RequirementSet(Action action, VariableSet variables)
             {
-                Distance = prev.Distance + action.CachedCost;
-                Prev = prev;
-                PrevAction = action;
-                // TODO: copy VariablePatch
+                Action = action;
+                foreach (var pre in action.GetPreconditions())
+                {
+                    Requirements.Add(pre.GetRequirement(variables));
+                }
+            }
+
+            public RequirementSet(RequirementSet set)
+            {
+                Action = set.Action;
+                foreach (var req in set.Requirements)
+                {
+                    Requirements.Add(req.Clone());
+                }
+            }
+
+            public bool IsClosed()
+            {
+                //Closed = false;
+                //foreach (var req in Requirements)
+                //{
+                    
+                //}
             }
         }
         
@@ -57,7 +83,7 @@ namespace HORNS
             foreach (var (need, priority) in needs)
             {
                 var open = new SimplePriorityQueue<ActionPlannerNode>();
-                // TODO: figure out what the hell close is supposed to be
+                // TODO: are we using close?
                 //var close = new HashSet<ActionPlannerNode>();
 
                 var goal = new ActionPlannerNode(0);
@@ -68,36 +94,55 @@ namespace HORNS
                 while(open.Count > 0)
                 {
                     var node = open.Dequeue();
+
                     // TODO: add to close?
-                    // TODO: stop condition (set last and break) - how to check we've reached current world state?
+                    bool reqLeft = false;
+                    if (node.Prev != null)
+                    {
+                        node.VariablePatch = node.Prev.VariablePatch.Clone();
+                        foreach (var reqSet in node.Prev.Requirements)
+                        {
+                            node.Requirements.Add(new RequirementSet(reqSet));
+                        }
+                        node.Requirements.Add(new RequirementSet(node.PrevAction, node.VariablePatch));
+
+                        foreach (var reqSet in node.Requirements)
+                        {
+
+                        }
+                    }
 
                     // TODO: also consider actions for need
-                    // it shouldn't be a precondition requirement since it doesn't have to be met fully
-                    // consider adding NeedRequirement for consistency
-                    foreach (var req in node.Requirements)
+                    foreach (var reqItem in node.Requirements)
                     {
-                        var actions = req.GetActions();
-                        foreach (var action in actions)
+                        for (int i = 0; i < reqItem.Requirements.Count; i++)
                         {
-                            // from Dumbledore:
-                            //if (w in OPEN)
-                            //{
-                            //    odległość[w] = nieskończoność
-                            //    wstaw w do OPEN
-                            //}
-                            //if (odległość[w] > odległość[u] + waga<u, w>)
-                            //{
-                            //    odległość[w] = odległość[u] + waga < u,w >
-                            //    aktualizacja priorytetu wierzchołka w(w OPEN)
-                            //    poprzedni[w] = u
-                            //}
+                            var req = reqItem.Requirements[i];
+                            var actions = req.GetActions();
+                            foreach (var action in actions)
+                            {
+                                // from Dumbledore:
+                                //if (w in OPEN)
+                                //{
+                                //    odległość[w] = nieskończoność
+                                //    wstaw w do OPEN
+                                //}
+                                //if (odległość[w] > odległość[u] + waga<u, w>)
+                                //{
+                                //    odległość[w] = odległość[u] + waga < u,w >
+                                //    aktualizacja priorytetu wierzchołka w(w OPEN)
+                                //    poprzedni[w] = u
+                                //}
 
-                            // TODO: check if already exists?
-                            var newNode = new ActionPlannerNode();
-                            newNode.SetPrevious(node, action);
-                            // TODO: get preconditions from action and set them as reqs
-                            open.Enqueue(newNode, newNode.Distance);
+                                // TODO: check if already exists?
+                                var newNode = new ActionPlannerNode(node.Distance + action.CachedCost);
+                                // copy as little as possible on this stage; copy the rest when we visit it
+                                newNode.Prev = node;
+                                newNode.PrevAction = action;
 
+                                open.Enqueue(newNode, newNode.Distance);
+
+                            }
                         }
                     }
                 }
