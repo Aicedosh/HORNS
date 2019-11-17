@@ -50,6 +50,10 @@ namespace HORNS
                 RecalculateActions();
             }
 
+            if (plannedActions.Count == 0)
+            {
+                return null;
+            }
             return plannedActions[currentAction++];
         }
 

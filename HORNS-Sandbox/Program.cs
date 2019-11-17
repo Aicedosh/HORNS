@@ -116,6 +116,16 @@ namespace HORNS_Sandbox
             agent.AddAction(chop);
             agent.AddAction(pick);
             agent.AddNeed(n);
+
+            var nextAction = agent.GetNextAction();
+            if (nextAction == null)
+            {
+                Console.WriteLine("No plan was found!");
+            }
+            else
+            {
+                nextAction.Perform();
+            }
         }
     }
 }
