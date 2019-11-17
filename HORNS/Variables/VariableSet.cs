@@ -35,5 +35,15 @@ namespace HORNS
             }
             return res;
         }
+
+        internal VariableSet Clone()
+        {
+            VariableSet set = new VariableSet();
+            foreach(Variable var in variables.Values)
+            {
+                set.variables.Add(var.Id, var.GetCopy());
+            }
+            return set;
+        }
     }
 }
