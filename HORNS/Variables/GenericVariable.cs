@@ -51,5 +51,12 @@ namespace HORNS
         {
             return 0f;
         }
+
+        internal override Variable GetCopy()
+        {
+            var newVar = base.GetCopy() as Variable<T>;
+            newVar._value = _value;
+            return newVar;
+        }
     }
 }

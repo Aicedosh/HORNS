@@ -7,6 +7,8 @@ namespace HORNS
 {
     public abstract class Action
     {
+        public float CachedCost { get; private set; }
+
         private ICollection<ActionResult> results = new List<ActionResult>();
         private ICollection<IActionCostEvaluator> costEvaluators = new List<IActionCostEvaluator>();
 
@@ -31,7 +33,7 @@ namespace HORNS
             costEvaluators.Add(new ConstantCostEvaluator(cost));
         }
 
-        internal float GetCost(VariableSet variablesPatch)
+        internal float GetCost(VariableSet variablesPatch = null)
         {
             float cost = 0f;
 
@@ -45,6 +47,7 @@ namespace HORNS
                 cost += result.GetCost(variablesPatch);
             }
 
+            CachedCost = cost;
             return cost;
         }
 
