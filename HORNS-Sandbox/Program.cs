@@ -22,6 +22,11 @@ namespace HORNS_Sandbox
             {
                 throw new NotImplementedException();
             }
+
+            protected override IEnumerable<HORNS.Action> GetActionsTowards(Variable<bool> variable, bool desiredValue)
+            {
+                throw new NotImplementedException();
+            }
         }
 
         class Result1 : HORNS.ActionResult<bool, Solver1>
@@ -46,7 +51,7 @@ namespace HORNS_Sandbox
 
         class Need1 : Need<bool>
         {
-            public Need1(Variable<bool> variable, bool desired) : base(variable, desired)
+            public Need1(Variable<bool> variable, bool desired, Solver1 solver) : base(variable, desired, solver)
             {
             }
 
@@ -74,7 +79,7 @@ namespace HORNS_Sandbox
             Variable<bool> dummy = new Variable<bool>();
             a.AddResult<bool, Result1, Solver1, Precondition1>(new Result1(dummy), solver);
 
-            Need1 n = new Need1(dummy, false);
+            Need1 n = new Need1(dummy, false, solver);
 
             agent.AddAction(a);
             agent.AddNeed(n);
