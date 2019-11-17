@@ -47,6 +47,11 @@ namespace HORNS_Sandbox
             public Precondition1(Variable<bool> variable, Solver1 solver) : base(variable, solver)
             {
             }
+
+            protected override bool IsFulfilled(bool value)
+            {
+                throw new NotImplementedException();
+            }
         }
 
         class Need1 : Need<bool>

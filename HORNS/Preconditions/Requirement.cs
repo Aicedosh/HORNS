@@ -8,5 +8,6 @@ namespace HORNS
     {
         protected internal abstract bool IsEqual(Requirement other);
         protected internal abstract IEnumerable<Action> GetActions();
+        internal abstract bool IsFulfilled(VariableSet variablePatch);
     }
 }
