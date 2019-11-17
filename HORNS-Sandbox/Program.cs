@@ -66,11 +66,31 @@ namespace HORNS_Sandbox
             }
         }
 
-        class MyAction : HORNS.Action
+        class ChopAction : HORNS.Action
         {
             protected override void ActionResult()
             {
-                Console.WriteLine("Hello");
+                Console.WriteLine("Chop");
+            }
+        }
+
+        class PickAction : HORNS.Action
+        {
+            protected override void ActionResult()
+            {
+                Console.WriteLine("Axe pickup");
+            }
+        }
+
+        class Woodesire : Need<bool>
+        {
+            public Woodesire(Variable<bool> variable, bool desired, VariableSolver<bool> solver) : base(variable, desired, solver)
+            {
+            }
+
+            public override float Evaluate(bool value)
+            {
+                return value ? 100 : 0;
             }
         }
 
@@ -78,15 +98,23 @@ namespace HORNS_Sandbox
         static void Main(string[] args)
         {
             Agent agent = new Agent();
-            Solver1 solver = new Solver1();
+            BooleanSolver solver = new BooleanSolver();
 
-            HORNS.Action a = new MyAction();
-            Variable<bool> dummy = new Variable<bool>();
-            a.AddResult<bool, Result1, Solver1, Precondition1>(new Result1(dummy), solver);
+            Variable<bool> hasTree = new Variable<bool>() { Value = false };
+            Variable<bool> hasAxe = new Variable<bool>() { Value = false };
 
-            Need1 n = new Need1(dummy, false, solver);
+            HORNS.Action chop = new ChopAction();
+            chop.AddPrecondition<bool, BooleanResult, BooleanSolver, BooleanPrecondition>(new BooleanPrecondition(hasAxe, true, solver));
+            chop.AddResult<bool, BooleanResult, BooleanSolver, BooleanPrecondition>(new BooleanResult(hasTree, true), solver);
 
-            agent.AddAction(a);
+            HORNS.Action pick = new PickAction();
+            chop.AddPrecondition<bool, BooleanResult, BooleanSolver, BooleanPrecondition>(new BooleanPrecondition(hasAxe, false, solver));
+            chop.AddResult<bool, BooleanResult, BooleanSolver, BooleanPrecondition>(new BooleanResult(hasAxe, false), solver);
+
+            Woodesire n = new Woodesire(hasTree, true, solver);
+
+            agent.AddAction(chop);
+            agent.AddAction(pick);
             agent.AddNeed(n);
         }
     }
