@@ -38,5 +38,10 @@ namespace HORNS
         {
             Id = other.Id;
         }
+
+        internal virtual Variable GetCopy()
+        {
+            return new Variable(this);
+        }
     }
 }
