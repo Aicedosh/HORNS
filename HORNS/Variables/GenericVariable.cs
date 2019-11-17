@@ -9,6 +9,17 @@ namespace HORNS
         private ICollection<IVariableObserver<T>> observers = new HashSet<IVariableObserver<T>>();
 
         private T _value;
+
+        public Variable()
+        {
+
+        }
+
+        private Variable(Variable<T> variable) : base(variable)
+        {
+            _value = variable._value;
+        }
+
         private protected virtual T _Value
         {
             get
@@ -54,9 +65,7 @@ namespace HORNS
 
         internal override Variable GetCopy()
         {
-            var newVar = base.GetCopy() as Variable<T>;
-            newVar._value = _value;
-            return newVar;
+            return new Variable<T>(this);
         }
     }
 }
