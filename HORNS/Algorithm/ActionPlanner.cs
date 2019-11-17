@@ -9,17 +9,24 @@ namespace HORNS
         private class ActionPlannerNode
         {
             public float Distance { get; set; }
-            // TODO: is Actions this actually needed? we're looking at actions per requirement anyway
+            // TODO: is Actions actually needed? we're looking at actions per requirement anyway
             public List<Action> Actions { get; set; } = new List<Action>();
             public List<Requirement> Requirements { get; set; } = new List<Requirement>();
             public ActionPlannerNode Prev { get; set; }
             public Action PrevAction { get; set; }
-
-            private VariableSet variablePatch = new VariableSet();
+            public VariableSet VariablePatch { get; set; }
 
             public ActionPlannerNode(float dist = float.MaxValue)
             {
                 Distance = dist;
+            }
+
+            public void SetPrevious(ActionPlannerNode prev, Action action)
+            {
+                Distance = prev.Distance + action.CachedCost;
+                Prev = prev;
+                PrevAction = action;
+                // TODO: copy VariablePatch
             }
         }
         
@@ -54,6 +61,7 @@ namespace HORNS
                 //var close = new HashSet<ActionPlannerNode>();
 
                 var goal = new ActionPlannerNode(0);
+                goal.VariablePatch = new VariableSet();
                 open.Enqueue(goal, goal.Distance);      // TODO: something smarter than adding the same value twice
 
                 ActionPlannerNode last = null;
@@ -64,7 +72,7 @@ namespace HORNS
                     // TODO: stop condition (set last and break) - how to check we've reached current world state?
 
                     // TODO: also consider actions for need
-                    // the shouldn't be precondition requirements since they don't have to be met fully
+                    // it shouldn't be a precondition requirement since it doesn't have to be met fully
                     // consider adding NeedRequirement for consistency
                     foreach (var req in node.Requirements)
                     {
@@ -85,6 +93,10 @@ namespace HORNS
                             //}
 
                             // TODO: check if already exists?
+                            var newNode = new ActionPlannerNode();
+                            newNode.SetPrevious(node, action);
+                            // TODO: get preconditions from action and set them as reqs
+                            open.Enqueue(newNode, newNode.Distance);
 
                         }
                     }
@@ -99,7 +111,19 @@ namespace HORNS
                         last = last.Prev;
                     }
 
-                    // TODO: simulate list and update bestPlan if needed
+                    float cost = 0f;
+                    VariableSet variables = new VariableSet();
+                    foreach (var action in plan)
+                    {
+                        cost += action.GetCost(variables);
+                        action.ApplyResults(variables);
+                    }
+                    cost *= priority;
+                    if (cost < bestCost)
+                    {
+                        bestPlan = plan;
+                        bestCost = cost;
+                    }
                 }
             }    
             

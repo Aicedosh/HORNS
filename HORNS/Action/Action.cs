@@ -72,6 +72,14 @@ namespace HORNS
             }
         }
 
+        internal void ApplyResults(VariableSet variables)
+        {
+            foreach (ActionResult result in results)
+            {
+                result.Apply(variables);
+            }
+        }
+
         internal IEnumerable<Action> GetActionsSatisfying(Requirement requirement)
         {
             return requirement.GetActions();
