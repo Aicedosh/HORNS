@@ -12,5 +12,10 @@ namespace HORNS
         }
 
         public bool Value { get; }
+
+        protected internal override bool IsFulfilled(bool value)
+        {
+            return value == Value;
+        }
     }
 }
