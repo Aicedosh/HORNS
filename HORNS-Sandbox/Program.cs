@@ -23,7 +23,7 @@ namespace HORNS_Sandbox
             {
                 Console.WriteLine("Chop");
                 Random random = new Random();
-                if(random.Next(5) == 0 || true)
+                if(random.Next(5) == 0 && false)
                 {
                     energy.Value = false;
                     Console.WriteLine(" Tired");
@@ -101,7 +101,7 @@ namespace HORNS_Sandbox
             agent.AddAction(sleep);
 
             agent.AddNeed(n);
-            //agent.AddNeed(sleepNeed);
+            agent.AddNeed(sleepNeed);
 
             for(; ; )
             {
@@ -113,8 +113,8 @@ namespace HORNS_Sandbox
                 else
                 {
                     nextAction.Perform();
-                    Thread.Sleep(1000);
                 }
+                Thread.Sleep(1000);
             }
         }
     }

@@ -22,15 +22,32 @@ namespace HORNS
             }
         }
 
-        internal void Add(T v)
+        internal bool Add(T v)
         {
-            if (elements.ContainsKey(v.Id)) return;
+            if (elements.ContainsKey(v.Id)) return false;
             elements.Add(v.Id, v);
+            return true;
         }
 
         internal void Replace(T v)
         {
             elements[v.Id] = v;
+        }
+
+        internal void RemoveWhere(Func<T, bool> condition)
+        {
+            var toRemove = new List<int>();
+            foreach (var element in elements)
+            {
+                if (condition(element.Value))
+                {
+                    toRemove.Add(element.Key);
+                }
+            }
+            foreach (var key in toRemove)
+            {
+                elements.Remove(key);
+            }
         }
 
         internal bool TryGet(ref T v)

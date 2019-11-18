@@ -69,17 +69,42 @@ namespace HORNS
 
                     if (node.Prev != null)  // TODO: unnecessary check if we're moving goal's iteration outside
                     {
-                        bool reqLeft = false;
                         foreach (var req in node.Prev.Requirements)
                         {
                             node.Requirements.Add(req.Clone());
                         }
-                        foreach (var pre in node.PrevAction.GetPreconditions())
-                        {
-                            node.Requirements.Add(pre.GetRequirement());
-                        }
 
                         node.PrevAction.SubtractResults(node.Requirements);
+                        // TODO: change this once we implement fulfilled req set
+                        node.Requirements.RemoveWhere(x => x.Fulfilled);
+                        bool badReq = false;
+                        foreach (var pre in node.PrevAction.GetPreconditions())
+                        {
+                            // TODO: this.
+                            // BELOW IS PRETTY. BRING IT BACK AT SOME POINT.
+                            //if (!node.Requirements.Add(pre.GetRequirement()))
+                            //{
+                            //    badReq = true;
+                            //    break;
+                            //}
+
+                            // BELOW IS NOT PRETTY
+                            var newReq = pre.GetRequirement();
+                            if (!node.Requirements.Add(newReq))
+                            {
+                                if (!newReq.IsEqual(node.Requirements[newReq.Id]))
+                                {
+                                    badReq = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if (badReq)
+                        {
+                            continue;
+                        }
+
+                        bool reqLeft = false;
                         foreach (var req in node.Requirements)
                         {
                             // TODO: move fulfilled to another set? after we figure out what to do abt partial fulfillment
