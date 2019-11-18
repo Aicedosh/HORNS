@@ -64,7 +64,14 @@ namespace HORNS
 
             protected internal override bool IsEqual(Requirement other)
             {
-                throw new NotImplementedException(); //TODO: Something like this will be required to avoid going in loop
+                //throw new NotImplementedException(); //TODO: Something like this will be required to avoid going in loop
+                // TODO: this is temporary, change this!!!!!!!!!!!!!!!!!!!!!!!!!
+                var preOther = other as PreconditionRequirement;
+                if (preOther == null)
+                {
+                    return false;
+                }
+                return precondition.IsEqual(preOther.precondition);
             }
 
             internal override Requirement Clone()
@@ -77,6 +84,8 @@ namespace HORNS
                 return precondition.Subtract(this, actionResult as ActionResult<T>);
             }
         }
+
+        protected abstract bool IsEqual(Precondition<T> pre);
 
         protected abstract PreconditionRequirement Subtract(PreconditionRequirement req, ActionResult<T> result);
 
