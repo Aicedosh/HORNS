@@ -4,10 +4,12 @@ using System.Text;
 
 namespace HORNS
 {
-    public class Variable
+    public class Variable : IIdentifiable
     {
         private static int MaxId = 0;
         internal int Id { get; private set; }
+
+        int IIdentifiable.Id => Id;
 
         private ICollection<IVariableObserver> observers = new HashSet<IVariableObserver>();
 
@@ -42,6 +44,11 @@ namespace HORNS
         internal virtual Variable GetCopy()
         {
             return new Variable(this);
+        }
+
+        IIdentifiable IIdentifiable.GetCopy()
+        {
+            return GetCopy();
         }
     }
 }

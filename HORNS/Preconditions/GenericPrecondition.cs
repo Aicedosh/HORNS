@@ -22,6 +22,7 @@ namespace HORNS
             {
                 this.precondition = precondition;
                 this.variable = variable;
+                Id = variable.Id;
             }
             
             internal PreconditionRequirement(PreconditionRequirement requirement) :
@@ -51,7 +52,7 @@ namespace HORNS
             // this is supposed to be a method to check whether given VariableSet fulfills it
             // not as a patch, but as a whole set - basically we'll be passing agent's VariableSet
             // didn't cache the result - in my mind Fulfilled means that stored value already fulfills it
-            internal override bool IsFulfilled(VariableSet variables)
+            internal override bool IsFulfilled(IdSet<Variable> variables)
             {
                 Variable var = variable;
                 if (variables.TryGet(ref var))
@@ -70,7 +71,14 @@ namespace HORNS
             {
                 return new PreconditionRequirement(this);
             }
+
+            internal override Requirement Subtract(ActionResult actionResult)
+            {
+                return precondition.Subtract(this, actionResult as ActionResult<T>);
+            }
         }
+
+        protected abstract PreconditionRequirement Subtract(PreconditionRequirement req, ActionResult<T> result);
 
         protected abstract IEnumerable<Action> GetActions(Variable<T> variable);
         protected internal abstract bool IsFulfilled(T value);

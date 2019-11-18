@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using HORNS;
 
@@ -9,68 +10,24 @@ namespace HORNS_Sandbox
 {
     class Program
     {
-        class Solver1 : HORNS.VariableSolver<bool, Result1, Precondition1>
-        {
-            private List<Result1> results = new List<Result1>();
-
-            protected override void Register(Result1 result)
-            {
-                throw new NotImplementedException();
-            }
-
-            protected override IEnumerable<HORNS.Action> GetActionsSatisfying(Precondition1 precondition)
-            {
-                throw new NotImplementedException();
-            }
-
-            protected override IEnumerable<HORNS.Action> GetActionsTowards(Variable<bool> variable, bool desiredValue)
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-        class Result1 : HORNS.ActionResult<bool, Solver1>
-        {
-            public bool V = true;
-
-            public Result1(Variable<bool> var) : base(var)
-            { }
-
-            protected override bool GetResultValue(Variable<bool> variable)
-            {
-                return V;
-            }
-        }
-
-        class Precondition1 : HORNS.Precondition<bool, Solver1>
-        {
-            public Precondition1(Variable<bool> variable, Solver1 solver) : base(variable, solver)
-            {
-            }
-
-            protected override bool IsFulfilled(bool value)
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-        class Need1 : Need<bool>
-        {
-            public Need1(Variable<bool> variable, bool desired, Solver1 solver) : base(variable, desired, solver)
-            {
-            }
-
-            public override float Evaluate(bool value)
-            {
-                return value ? 100 : 0;
-            }
-        }
-
         class ChopAction : HORNS.Action
         {
+            private readonly Variable<bool> energy;
+
+            public ChopAction(Variable<bool> energy)
+            {
+                this.energy = energy;
+            }
+
             protected override void ActionResult()
             {
                 Console.WriteLine("Chop");
+                Random random = new Random();
+                if(random.Next(5) == 0 || true)
+                {
+                    energy.Value = false;
+                    Console.WriteLine(" Tired");
+                }
             }
         }
 
@@ -94,38 +51,87 @@ namespace HORNS_Sandbox
             }
         }
 
+        class SleepNeed : Need<bool>
+        {
+            public SleepNeed(Variable<bool> variable, bool desired, VariableSolver<bool> solver) : base(variable, desired, solver)
+            {
+            }
+
+            public override float Evaluate(bool value)
+            {
+                return value ? 100 : 0;
+            }
+        }
+
 
         static void Main(string[] args)
         {
             Agent agent = new Agent();
-            BooleanSolver solver = new BooleanSolver();
+            BooleanSolver treeSolver = new BooleanSolver();
+            BooleanSolver axeSolver = new BooleanSolver();
+            BooleanSolver energySolver = new BooleanSolver();
 
             Variable<bool> hasTree = new Variable<bool>() { Value = false };
             Variable<bool> hasAxe = new Variable<bool>() { Value = false };
+            Variable<bool> hasEnergy = new Variable<bool>() { Value = true };
 
-            HORNS.Action chop = new ChopAction();
-            chop.AddPrecondition<bool, BooleanResult, BooleanSolver, BooleanPrecondition>(new BooleanPrecondition(hasAxe, true, solver));
-            chop.AddResult<bool, BooleanResult, BooleanSolver, BooleanPrecondition>(new BooleanResult(hasTree, true), solver);
+            HORNS.Action chop = new ChopAction(hasEnergy);
+            chop.AddPrecondition<bool, BooleanResult, BooleanSolver, BooleanPrecondition>(new BooleanPrecondition(hasAxe, true, axeSolver));
+            chop.AddPrecondition<bool, BooleanResult, BooleanSolver, BooleanPrecondition>(new BooleanPrecondition(hasEnergy, true, energySolver));
+            chop.AddResult<bool, BooleanResult, BooleanSolver, BooleanPrecondition>(new BooleanResult(hasTree, true), treeSolver);
 
             HORNS.Action pick = new PickAction();
-            chop.AddPrecondition<bool, BooleanResult, BooleanSolver, BooleanPrecondition>(new BooleanPrecondition(hasAxe, false, solver));
-            chop.AddResult<bool, BooleanResult, BooleanSolver, BooleanPrecondition>(new BooleanResult(hasAxe, false), solver);
+            pick.AddPrecondition<bool, BooleanResult, BooleanSolver, BooleanPrecondition>(new BooleanPrecondition(hasAxe, false, axeSolver));
+            pick.AddResult<bool, BooleanResult, BooleanSolver, BooleanPrecondition>(new BooleanResult(hasAxe, true), axeSolver);
 
-            Woodesire n = new Woodesire(hasTree, true, solver);
+            HORNS.Action put = new PutAction();
+            put.AddPrecondition<bool, BooleanResult, BooleanSolver, BooleanPrecondition>(new BooleanPrecondition(hasAxe, true, axeSolver));
+            put.AddResult<bool, BooleanResult, BooleanSolver, BooleanPrecondition>(new BooleanResult(hasAxe, false), axeSolver);
+
+            HORNS.Action sleep = new SleepAction();
+            sleep.AddPrecondition<bool, BooleanResult, BooleanSolver, BooleanPrecondition>(new BooleanPrecondition(hasAxe, false, axeSolver));
+            sleep.AddResult<bool, BooleanResult, BooleanSolver, BooleanPrecondition>(new BooleanResult(hasEnergy, true), energySolver);
+
+            Woodesire n = new Woodesire(hasTree, true, treeSolver);
+            SleepNeed sleepNeed = new SleepNeed(hasEnergy, true, energySolver);
 
             agent.AddAction(chop);
             agent.AddAction(pick);
-            agent.AddNeed(n);
+            agent.AddAction(put);
+            agent.AddAction(sleep);
 
-            var nextAction = agent.GetNextAction();
-            if (nextAction == null)
+            agent.AddNeed(n);
+            //agent.AddNeed(sleepNeed);
+
+            for(; ; )
             {
-                Console.WriteLine("No plan was found!");
+                var nextAction = agent.GetNextAction();
+                if (nextAction == null)
+                {
+                    Console.WriteLine("No plan was found!");
+                }
+                else
+                {
+                    nextAction.Perform();
+                    Thread.Sleep(1000);
+                }
             }
-            else
-            {
-                nextAction.Perform();
-            }
+        }
+    }
+
+    internal class SleepAction : HORNS.Action
+    {
+        protected override void ActionResult()
+        {
+            Console.WriteLine("Sleep");
+        }
+    }
+
+    internal class PutAction : HORNS.Action
+    {
+        protected override void ActionResult()
+        {
+            Console.WriteLine("Put axe");
         }
     }
 }

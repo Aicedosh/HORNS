@@ -16,7 +16,7 @@ namespace HORNS
 
         protected internal abstract T GetResultValue(Variable<T> variable);
 
-        internal override float GetCost(VariableSet variables)
+        internal override float GetCost(IdSet<Variable> variables)
         {
             Variable currentVariable = Variable;
             if (variables != null)
@@ -30,6 +30,14 @@ namespace HORNS
         internal override void Apply()
         {
             Variable.Value = GetResultValue(Variable);
+        }
+
+        internal override void SubtractFrom(IdSet<Requirement> requirements)
+        {
+            if (!requirements.Contains(Variable.Id)) return;
+            Requirement req = requirements[Variable.Id];
+            Requirement newReq = req.Subtract(this);
+            requirements.Replace(newReq);
         }
 
         //internal override void Apply(VariableSet variables)
