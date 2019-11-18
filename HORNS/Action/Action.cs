@@ -98,5 +98,11 @@ namespace HORNS
         {
             return preconditions;
         }
+
+        //internal void SubtractResults(RequirementSet requirements)
+        internal void SubtractResults(HashSet<Requirement> requirements)
+        {
+            // TODO: [A] create me!
+        }
     }
 }

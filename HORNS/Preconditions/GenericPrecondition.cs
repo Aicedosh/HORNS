@@ -23,10 +23,9 @@ namespace HORNS
                 this.precondition = precondition;
                 this.variable = variable;
             }
-
-            // TODO: does anything need to be cloned?
+            
             internal PreconditionRequirement(PreconditionRequirement requirement) :
-                this(requirement.precondition, requirement.variable)
+                this(requirement.precondition, requirement.variable.GetCopy() as Variable<T>)
             {
             }
 
@@ -35,13 +34,31 @@ namespace HORNS
                 return precondition.GetActions(variable);
             }
 
-            internal override bool IsFulfilled(VariableSet variablePatch)
+            // TODO: [A] requirement does this after it has Result applied
+            // also: maybe it doesn't need to be cached, we should just move it to another set with fulfilled reqs?
+            // although it prolly needs to be cached, we can't change unfulfilled ReqSet while iterating over it...
+            internal override bool IsFulfilled(/*VariableSet variablePatch*/)
+            {
+                //Variable var = variable;
+                //variablePatch.TryGet(ref var);
+                //Variable<T> v = var as Variable<T>;
+                //Fulfilled = precondition.IsFulfilled(v.Value);
+                Fulfilled = precondition.IsFulfilled(variable.Value);
+                return Fulfilled;
+            }
+
+            // TODO: [A] look at this please, [M] can probably do it but tell her if she's rambling or not
+            // this is supposed to be a method to check whether given VariableSet fulfills it
+            // not as a patch, but as a whole set - basically we'll be passing agent's VariableSet
+            // didn't cache the result - in my mind Fulfilled means that stored value already fulfills it
+            internal override bool IsFulfilled(VariableSet variables)
             {
                 Variable var = variable;
-                variablePatch.TryGet(ref var);
-                Variable<T> v = var as Variable<T>;
-                Fulfilled = precondition.IsFulfilled(v.Value);
-                return Fulfilled;
+                if (variables.TryGet(ref var))
+                {
+                    return precondition.IsFulfilled((var as Variable<T>).Value);
+                }
+                return false;
             }
 
             protected internal override bool IsEqual(Requirement other)
@@ -58,11 +75,12 @@ namespace HORNS
         protected abstract IEnumerable<Action> GetActions(Variable<T> variable);
         protected internal abstract bool IsFulfilled(T value);
 
-        internal override Requirement GetRequirement(VariableSet variablePatch)
+        internal override Requirement GetRequirement()
         {
-            Variable var = Variable;
-            variablePatch.TryGet(ref var);
-            return new PreconditionRequirement(this, var as Variable<T>); //TODO: cast?
+            // TODO: [A] please check if this makes sense
+            //Variable var = Variable;
+            //variablePatch.TryGet(ref var);
+            return new PreconditionRequirement(this, Variable.GetCopy() as Variable<T>); //TODO: cast?
         }
     }
 }

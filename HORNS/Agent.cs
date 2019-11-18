@@ -17,6 +17,8 @@ namespace HORNS
         //  - easy collection copy
         //  - finding using Variable.Id (not implemented yet)
         //Maybe use decorator with HashSet<Variable> and custom comparer? or override Variable.GetHashCode and Variable.Equal?
+
+        //TODO: [A] is it okay to just make it a VariableSet?
         private ICollection<Variable> variables = new HashSet<Variable>();
         internal IEnumerable<Variable> Variables => variables;
 

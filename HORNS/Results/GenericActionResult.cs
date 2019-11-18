@@ -32,16 +32,16 @@ namespace HORNS
             Variable.Value = GetResultValue(Variable);
         }
 
-        internal override void Apply(VariableSet variables)
-        {
-            Variable currentVariable = Variable;
-            if (!variables.TryGet(ref currentVariable))
-            {
-                currentVariable = Variable.GetCopy();
-                variables.Add(currentVariable);
-            }
-            Variable<T> curr = currentVariable as Variable<T>;
-            curr.Value = GetResultValue(curr);
-        }
+        //internal override void Apply(VariableSet variables)
+        //{
+        //    Variable currentVariable = Variable;
+        //    if (!variables.TryGet(ref currentVariable))
+        //    {
+        //        currentVariable = Variable.GetCopy();
+        //        variables.Add(currentVariable);
+        //    }
+        //    Variable<T> curr = currentVariable as Variable<T>;
+        //    curr.Value = GetResultValue(curr);
+        //}
     }
 }
