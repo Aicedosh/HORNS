@@ -6,10 +6,11 @@ namespace HORNS
 {
     public abstract class ActionResult
     {
-        public Action Action { get; private protected set; }
+        public Action Action { get; internal set; }
         internal abstract Variable AbstractVariable { get; }
         internal abstract void Apply();
-        internal abstract void Apply(VariableSet variables);
-        internal abstract float GetCost(VariableSet variables);
+        internal abstract void Apply(IdSet<Variable> variables);
+        internal abstract float GetCost(IdSet<Variable> variables);
+        internal abstract void SubtractFrom(IdSet<Requirement> requirement);
     }
 }

@@ -12,15 +12,7 @@ namespace HORNS
         private ActionPlanner planner = new ActionPlanner();
         private List<Action> plannedActions = new List<Action>();
         private int currentAction = 0;
-
-        //TODO: implement custom collection to allow for
-        //  - easy collection copy
-        //  - finding using Variable.Id (not implemented yet)
-        //Maybe use decorator with HashSet<Variable> and custom comparer? or override Variable.GetHashCode and Variable.Equal?
-
-        //TODO: [A] is it okay to just make it a VariableSet?
-        private ICollection<Variable> variables = new HashSet<Variable>();
-        internal IEnumerable<Variable> Variables => variables;
+        internal IdSet<Variable> Variables { get; } = new IdSet<Variable>();
 
         private ICollection<INeed> needs = new List<INeed>();
         public IEnumerable<INeed> Needs => needs;
@@ -28,8 +20,8 @@ namespace HORNS
         public void AddNeed<T>(Need<T> need) //Necessary to ensure only this implementation of the interface can be added to the list
         {
             needs.Add(need);
-            variables.Add(need);
-            variables.Add(need.Variable);
+            Variables.Add(need);
+            Variables.Add(need.Variable);
         }
 
         private ICollection<Action> possibleActions = new HashSet<Action>();
@@ -40,7 +32,7 @@ namespace HORNS
             possibleActions.Add(action);
             foreach(Variable var in action.GetVariables())
             {
-                variables.Add(var);
+                Variables.Add(var);
             }
         }
 

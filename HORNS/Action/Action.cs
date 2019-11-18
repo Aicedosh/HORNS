@@ -21,6 +21,7 @@ namespace HORNS
             where PT : Precondition<T, ST>
         {
             solver.Register(result);
+            result.Action = this;
             results.Add(result);
         }
 
@@ -42,7 +43,7 @@ namespace HORNS
             costEvaluators.Add(new ConstantCostEvaluator(cost));
         }
 
-        internal float GetCost(VariableSet variablesPatch = null)
+        internal float GetCost(IdSet<Variable> variablesPatch = null)
         {
             float cost = 0f;
 
@@ -81,7 +82,7 @@ namespace HORNS
             }
         }
 
-        internal void ApplyResults(VariableSet variables)
+        internal void ApplyResults(IdSet<Variable> variables)
         {
             foreach (ActionResult result in results)
             {
@@ -100,9 +101,13 @@ namespace HORNS
         }
 
         //internal void SubtractResults(RequirementSet requirements)
-        internal void SubtractResults(HashSet<Requirement> requirements)
+        internal void SubtractResults(IdSet<Requirement> requirements)
         {
-            // TODO: [A] create me!
+            foreach (var result in results)
+            {
+                result.SubtractFrom(requirements);
+            }
+
         }
     }
 }

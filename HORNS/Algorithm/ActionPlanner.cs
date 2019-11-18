@@ -11,8 +11,7 @@ namespace HORNS
             public float Distance { get; set; }
             // TODO: is Actions actually needed? we're looking at actions per requirement anyway
             // public List<Action> Actions { get; set; } = new List<Action>();
-            // TODO: [A] structure to store requirements - something like VariableSet?
-            public HashSet<Requirement> Requirements { get; set; } = new HashSet<Requirement>();
+            public IdSet<Requirement> Requirements { get; set; } = new IdSet<Requirement>();
             public ActionPlannerNode Prev { get; set; }
             public Action PrevAction { get; set; }
             // public VariableSet VariablePatch { get; set; }
@@ -80,7 +79,6 @@ namespace HORNS
                             node.Requirements.Add(pre.GetRequirement());
                         }
 
-                        // TODO: [A] please make sure this can be done!
                         node.PrevAction.SubtractResults(node.Requirements);
                         foreach (var req in node.Requirements)
                         {
@@ -131,14 +129,14 @@ namespace HORNS
                 if (last != null)
                 {
                     var plan = new List<Action>();
-                    while (last != null)
+                    while (last.PrevAction != null)
                     {
                         plan.Add(last.PrevAction);
                         last = last.Prev;
                     }
 
                     float cost = 0f;
-                    VariableSet variables = new VariableSet();
+                    IdSet<Variable> variables = new IdSet<Variable>();
                     foreach (var action in plan)
                     {
                         cost += action.GetCost(variables);
