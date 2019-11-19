@@ -13,15 +13,19 @@ namespace HORNS_Sandbox
         class ChopAction : HORNS.Action
         {
             private readonly Variable<bool> energy;
+            private readonly Variable<int> rzodkiews;
             private readonly int chanceDenominator;
 
             // chance will be 1/chanceDenominator
-            public ChopAction(Variable<bool> energy, int chanceDenominator)
+            public ChopAction(Variable<bool> energy, Variable<int> rzodkiews, int chanceDenominator)
             {
                 this.energy = energy;
+                this.rzodkiews = rzodkiews;
                 this.chanceDenominator = chanceDenominator;
             }
 
+            // just a reminder that we really shouldn't be modifying variables in ActionResult()...
+            // it'll break pathfinding since we can't apply this result to requirements
             protected override void ActionResult()
             {
                 Console.WriteLine("Chop");
@@ -30,6 +34,11 @@ namespace HORNS_Sandbox
                 {
                     energy.Value = false;
                     Console.WriteLine(" Tired");
+                }
+                if (random.Next(chanceDenominator) == 0)
+                {
+                    rzodkiews.Value -= 1;
+                    Console.WriteLine(" Ate a rzodkiew");
                 }
             }
         }
@@ -58,6 +67,14 @@ namespace HORNS_Sandbox
             }
         }
 
+        internal class BoredAction : HORNS.Action
+        {
+            protected override void ActionResult()
+            {
+                Console.WriteLine("Be bored");
+            }
+        }
+
         class Woodesire : Need<bool>
         {
             public Woodesire(Variable<bool> variable, bool desired, VariableSolver<bool> solver) : base(variable, desired, solver)
@@ -78,7 +95,27 @@ namespace HORNS_Sandbox
 
             public override float Evaluate(bool value)
             {
-                return value ? 100 : 0;
+                return value ? 200 : 1;
+            }
+        }
+
+        internal class GetRzodkiewAction : HORNS.Action
+        {
+            protected override void ActionResult()
+            {
+                Console.WriteLine("Spawn rzodkiew");
+            }
+        }
+
+        class RzodkiewNeed : Need<int>
+        {
+            public RzodkiewNeed(Variable<int> variable, int desired, VariableSolver<int> solver) : base(variable, desired, solver)
+            {
+            }
+
+            public override float Evaluate(int value)
+            {
+                return value - 1;
             }
         }
 
@@ -89,12 +126,14 @@ namespace HORNS_Sandbox
             BooleanSolver treeSolver = new BooleanSolver();
             BooleanSolver axeSolver = new BooleanSolver();
             BooleanSolver energySolver = new BooleanSolver();
+            IntegerSolver rzodkiewSolver = new IntegerSolver();
 
             Variable<bool> hasTree = new Variable<bool>() { Value = false };
             Variable<bool> hasAxe = new Variable<bool>() { Value = false };
             Variable<bool> hasEnergy = new Variable<bool>() { Value = true };
+            Variable<int> rzodkiews = new Variable<int>() { Value = 0 };
 
-            HORNS.Action chop = new ChopAction(hasEnergy, 3);
+            HORNS.Action chop = new ChopAction(hasEnergy, rzodkiews, 3);
             chop.AddPrecondition<bool, BooleanResult, BooleanSolver, BooleanPrecondition>(new BooleanPrecondition(hasAxe, true, axeSolver));
             chop.AddPrecondition<bool, BooleanResult, BooleanSolver, BooleanPrecondition>(new BooleanPrecondition(hasEnergy, true, energySolver));
             chop.AddResult<bool, BooleanResult, BooleanSolver, BooleanPrecondition>(new BooleanResult(hasTree, true), treeSolver);
@@ -121,6 +160,14 @@ namespace HORNS_Sandbox
 
             agent.AddNeed(n);
             agent.AddNeed(sleepNeed);
+
+            HORNS.Action getRzodkiew = new GetRzodkiewAction();
+            getRzodkiew.AddResult<int, IntegerAddResult, IntegerSolver, IntegerPrecondition>(
+                new IntegerAddResult(rzodkiews, 1), rzodkiewSolver);
+            RzodkiewNeed rzodkiewNeed = new RzodkiewNeed(rzodkiews, 2, rzodkiewSolver);
+
+            agent.AddAction(getRzodkiew);
+            agent.AddNeed(rzodkiewNeed);
 
             for(; ; )
             {
