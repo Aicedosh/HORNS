@@ -34,8 +34,7 @@ namespace HORNS
             {
                 return precondition.GetActions(variable);
             }
-
-            // TODO: [A] requirement does this after it has Result applied
+            
             // also: maybe it doesn't need to be cached, we should just move it to another set with fulfilled reqs?
             // although it prolly needs to be cached, we can't change unfulfilled ReqSet while iterating over it...
             internal override bool IsFulfilled(/*VariableSet variablePatch*/)
@@ -44,7 +43,7 @@ namespace HORNS
                 //variablePatch.TryGet(ref var);
                 //Variable<T> v = var as Variable<T>;
                 //Fulfilled = precondition.IsFulfilled(v.Value);
-                Fulfilled = precondition.IsReqZeroed(variable.Value);
+                Fulfilled = precondition.IsReqZeroed(precondition.Variable.Value);
                 return Fulfilled;
             }
 
@@ -62,16 +61,15 @@ namespace HORNS
                 return false;
             }
 
-            protected internal override bool IsEqual(Requirement other)
+            protected internal override bool IsEqualOrWorse(Requirement other)
             {
-                //throw new NotImplementedException(); //TODO: Something like this will be required to avoid going in loop
                 // TODO: this is temporary, change this!!!!!!!!!!!!!!!!!!!!!!!!!
                 var preOther = other as PreconditionRequirement;
                 if (preOther == null)
                 {
                     return false;
                 }
-                return precondition.IsEqual(preOther.precondition);
+                return precondition.IsEqualOrWorse(preOther.precondition);
             }
 
             internal override Requirement Clone()
@@ -81,7 +79,9 @@ namespace HORNS
 
             internal override Requirement Subtract(ActionResult actionResult)
             {
-                return precondition.Subtract(this, actionResult as ActionResult<T>);
+                var res = precondition.Subtract(this, actionResult as ActionResult<T>);
+                res.IsFulfilled();
+                return res;
             }
 
             internal override Requirement Combine(Requirement requirement)
@@ -95,7 +95,7 @@ namespace HORNS
             }
         }
 
-        protected abstract bool IsEqual(Precondition<T> pre);
+        protected abstract bool IsEqualOrWorse(Precondition<T> pre);
 
         protected abstract PreconditionRequirement Subtract(PreconditionRequirement req, ActionResult<T> result);
 

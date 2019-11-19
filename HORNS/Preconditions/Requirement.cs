@@ -7,7 +7,7 @@ namespace HORNS
     public abstract class Requirement : IIdentifiable
     {
         internal int Id { get; private protected set; }
-        protected internal abstract bool IsEqual(Requirement other);
+        protected internal abstract bool IsEqualOrWorse(Requirement other);
         protected internal abstract IEnumerable<Action> GetActions();
         internal bool Fulfilled { get; private protected set; } = false;    // TODO: property + methods = dis ugly
 

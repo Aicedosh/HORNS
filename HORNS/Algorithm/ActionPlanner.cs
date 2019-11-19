@@ -34,7 +34,10 @@ namespace HORNS
             List<(INeed Need, float Priority)> needs = new List<(INeed, float)>();
             foreach (var need in agent.Needs)
             {
-                needs.Add((need, need.GetPriority()));
+                //if (!need.IsSatisfied())
+                {
+                    needs.Add((need, need.GetPriority()));
+                }
             }
             // lower "priority" => more important need
             needs.Sort((x, y) => x.Priority.CompareTo(y.Priority));     // TODO: optimize
@@ -49,8 +52,8 @@ namespace HORNS
             foreach (var (need, priority) in needs)
             {
                 var open = new SimplePriorityQueue<ActionPlannerNode>();
-                // TODO: what to do about close? compare fulfilled/unfulfilled requirements?
-                //var close = new HashSet<ActionPlannerNode>();
+                // TODO: optimize close
+                var close = new List<RequirementSet>();
 
                 var goal = new ActionPlannerNode(0);
                 foreach (var action in need.GetActionsTowards())
@@ -62,53 +65,74 @@ namespace HORNS
                 }
 
                 ActionPlannerNode last = null;
-                while(open.Count > 0)
+                while (open.Count > 0)
                 {
                     var node = open.Dequeue();
-                    // TODO: add to close?
 
-                    if (node.Prev != null)  // TODO: unnecessary check if we're moving goal's iteration outside
+                    var res = true;
+                    foreach (var req in node.Prev.Requirements)
                     {
-                        var res = true;
-                        foreach (var req in node.Prev.Requirements)
-                        {
-                            res = node.Requirements.Add(req.Clone());
-                        }
+                        res = node.Requirements.Add(req.Clone());
+                    }
 
-                        node.PrevAction.SubtractResults(node.Requirements);
-                        // TODO: change this once we implement fulfilled req set
-                        node.Requirements.RemoveWhere(x => x.Fulfilled);
-                        bool badReq = false;
-                        foreach (var pre in node.PrevAction.GetPreconditions())
+                    node.PrevAction.SubtractResults(node.Requirements);
+                    node.Requirements.RemoveWhere(x => x.Fulfilled);
+                    bool badReq = false;
+                    foreach (var pre in node.PrevAction.GetPreconditions())
+                    {
+                        if (!node.Requirements.Add(pre.GetRequirement()))
                         {
-                            if (!node.Requirements.Add(pre.GetRequirement()))
-                            {
-                                badReq = true;
-                                break;
-                            }
-                        }
-                        if (badReq)
-                        {
-                            continue;
-                        }
-
-                        bool reqLeft = false;
-                        foreach (var req in node.Requirements)
-                        {
-                            // TODO: move fulfilled to another set? after we figure out what to do abt partial fulfillment
-                            if (!req.Fulfilled && !req.IsFulfilled(agent.Variables))
-                            {
-                                reqLeft = true;
-                                break;
-                            }
-                        }
-
-                        if (!reqLeft)
-                        {
-                            last = node;
+                            badReq = true;
                             break;
                         }
                     }
+                    if (badReq)
+                    {
+                        continue;
+                    }
+
+                    bool reqLeft = false;
+                    foreach (var req in node.Requirements)
+                    {
+                        // TODO: move fulfilled to another set? after we figure out what to do abt partial fulfillment
+                        if (!req.Fulfilled && !req.IsFulfilled(agent.Variables))
+                        {
+                            reqLeft = true;
+                            break;
+                        }
+                    }
+                    if (!reqLeft)
+                    {
+                        last = node;
+                        break;
+                    }
+
+                    bool cut = false;
+                    foreach (var reqSet in close)
+                    {
+                        cut = true;
+                        // if reqSet has a req that we don't have then we're not equal/worse
+                        // if we have a req that's better than the same req in reqSet then we're not equal/worse
+                        foreach (var req in reqSet)
+                        {
+                            Requirement refReq = req;
+                            if (!node.Requirements.TryGet(ref refReq) || !refReq.IsEqualOrWorse(req))
+                            {
+                                cut = false;
+                                break;
+                            }
+                        }
+                        if (cut)
+                        {
+                            break;
+                        }
+                    }
+                    if (cut)
+                    {
+                        continue;
+                    }
+
+                    close.Add(node.Requirements);
                     
                     foreach (var req in node.Requirements)
                     {
@@ -127,8 +151,7 @@ namespace HORNS
                             //    aktualizacja priorytetu wierzchołka w(w OPEN)
                             //    poprzedni[w] = u
                             //}
-
-                            // TODO: check if already exists?
+                            
                             var newNode = new ActionPlannerNode(node.Distance + action.CachedCost);
                             // copy as little as possible at this stage; copy the rest when we visit it
                             newNode.Prev = node;

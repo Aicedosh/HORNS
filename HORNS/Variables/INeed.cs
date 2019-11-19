@@ -9,5 +9,6 @@ namespace HORNS
         float GetPriority(); //Maybe...?
 
         IEnumerable<Action> GetActionsTowards();
+        bool IsSatisfied();
     }
 }
