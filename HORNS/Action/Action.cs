@@ -38,7 +38,7 @@ namespace HORNS
             costEvaluators.Add(new VariableCostEvaluator<T>(variable, evaluationFunction));
         }
 
-        public void AddCost<T>(float cost)
+        public void AddCost(float cost)
         {
             costEvaluators.Add(new ConstantCostEvaluator(cost));
         }
