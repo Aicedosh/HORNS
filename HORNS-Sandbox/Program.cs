@@ -13,17 +13,20 @@ namespace HORNS_Sandbox
         class ChopAction : HORNS.Action
         {
             private readonly Variable<bool> energy;
+            private readonly int chanceDenominator;
 
-            public ChopAction(Variable<bool> energy)
+            // chance will be 1/chanceDenominator
+            public ChopAction(Variable<bool> energy, int chanceDenominator)
             {
                 this.energy = energy;
+                this.chanceDenominator = chanceDenominator;
             }
 
             protected override void ActionResult()
             {
                 Console.WriteLine("Chop");
                 Random random = new Random();
-                if(random.Next(5) == 0 && false)
+                if(random.Next(chanceDenominator) == 0)
                 {
                     energy.Value = false;
                     Console.WriteLine(" Tired");
@@ -35,7 +38,23 @@ namespace HORNS_Sandbox
         {
             protected override void ActionResult()
             {
-                Console.WriteLine("Axe pickup");
+                Console.WriteLine("Pick axe");
+            }
+        }
+
+        internal class SleepAction : HORNS.Action
+        {
+            protected override void ActionResult()
+            {
+                Console.WriteLine("Sleep");
+            }
+        }
+
+        internal class PutAction : HORNS.Action
+        {
+            protected override void ActionResult()
+            {
+                Console.WriteLine("Put axe");
             }
         }
 
@@ -75,7 +94,7 @@ namespace HORNS_Sandbox
             Variable<bool> hasAxe = new Variable<bool>() { Value = false };
             Variable<bool> hasEnergy = new Variable<bool>() { Value = true };
 
-            HORNS.Action chop = new ChopAction(hasEnergy);
+            HORNS.Action chop = new ChopAction(hasEnergy, 3);
             chop.AddPrecondition<bool, BooleanResult, BooleanSolver, BooleanPrecondition>(new BooleanPrecondition(hasAxe, true, axeSolver));
             chop.AddPrecondition<bool, BooleanResult, BooleanSolver, BooleanPrecondition>(new BooleanPrecondition(hasEnergy, true, energySolver));
             chop.AddResult<bool, BooleanResult, BooleanSolver, BooleanPrecondition>(new BooleanResult(hasTree, true), treeSolver);
@@ -116,22 +135,6 @@ namespace HORNS_Sandbox
                 }
                 Thread.Sleep(1000);
             }
-        }
-    }
-
-    internal class SleepAction : HORNS.Action
-    {
-        protected override void ActionResult()
-        {
-            Console.WriteLine("Sleep");
-        }
-    }
-
-    internal class PutAction : HORNS.Action
-    {
-        protected override void ActionResult()
-        {
-            Console.WriteLine("Put axe");
         }
     }
 }

@@ -22,7 +22,7 @@ namespace HORNS
         {
             if(!variables.Contains(Variable.Id))
             {
-                variables.Add(Variable);
+                variables.Add(Variable.GetCopy());
             }
             (variables[Variable.Id] as Variable<bool>).Value = EndValue;
         }
