@@ -7,7 +7,7 @@ namespace HORNS
 {
     internal class IdSet<T> : IEnumerable<T> where T : IIdentifiable
     {
-        Dictionary<int, T> elements = new Dictionary<int, T>();
+        private protected Dictionary<int, T> elements = new Dictionary<int, T>();
 
         private class TComparer : IEqualityComparer<T>
         {
@@ -22,7 +22,7 @@ namespace HORNS
             }
         }
 
-        internal bool Add(T v)
+        internal virtual bool Add(T v)
         {
             if (elements.ContainsKey(v.Id)) return false;
             elements.Add(v.Id, v);

@@ -44,7 +44,7 @@ namespace HORNS
                 //variablePatch.TryGet(ref var);
                 //Variable<T> v = var as Variable<T>;
                 //Fulfilled = precondition.IsFulfilled(v.Value);
-                Fulfilled = precondition.IsFulfilled(variable.Value);
+                Fulfilled = precondition.IsReqZeroed(variable.Value);
                 return Fulfilled;
             }
 
@@ -83,6 +83,16 @@ namespace HORNS
             {
                 return precondition.Subtract(this, actionResult as ActionResult<T>);
             }
+
+            internal override Requirement Combine(Requirement requirement)
+            {
+                if (!(requirement is PreconditionRequirement preReq))
+                {
+                    return null;
+                }
+                var pre = precondition.Combine(preReq.precondition);
+                return pre?.GetRequirement();
+            }
         }
 
         protected abstract bool IsEqual(Precondition<T> pre);
@@ -91,6 +101,8 @@ namespace HORNS
 
         protected abstract IEnumerable<Action> GetActions(Variable<T> variable);
         protected internal abstract bool IsFulfilled(T value);
+        // TODO: this is probably temporary
+        protected internal abstract bool IsReqZeroed(T value);
 
         internal override Requirement GetRequirement()
         {
@@ -99,5 +111,7 @@ namespace HORNS
             //variablePatch.TryGet(ref var);
             return new PreconditionRequirement(this, Variable.GetCopy() as Variable<T>); //TODO: cast?
         }
+
+        protected abstract Precondition<T> Combine(Precondition<T> pre);
     }
 }

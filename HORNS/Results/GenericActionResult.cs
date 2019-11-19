@@ -32,7 +32,7 @@ namespace HORNS
             Variable.Value = GetResultValue(Variable);
         }
 
-        internal override void SubtractFrom(IdSet<Requirement> requirements)
+        internal override void SubtractFrom(RequirementSet requirements)
         {
             if (!requirements.Contains(Variable.Id)) return;
             Requirement req = requirements[Variable.Id];

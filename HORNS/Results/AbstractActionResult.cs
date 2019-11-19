@@ -11,6 +11,6 @@ namespace HORNS
         internal abstract void Apply();
         internal abstract void Apply(IdSet<Variable> variables);
         internal abstract float GetCost(IdSet<Variable> variables);
-        internal abstract void SubtractFrom(IdSet<Requirement> requirement);
+        internal abstract void SubtractFrom(RequirementSet requirement);
     }
 }
