@@ -81,24 +81,11 @@ namespace HORNS
                         bool badReq = false;
                         foreach (var pre in node.PrevAction.GetPreconditions())
                         {
-                            // TODO: this.
-                            // BELOW IS PRETTY. BRING IT BACK AT SOME POINT.
                             if (!node.Requirements.Add(pre.GetRequirement()))
                             {
                                 badReq = true;
                                 break;
                             }
-
-                            // BELOW IS NOT PRETTY
-                            //var newReq = pre.GetRequirement();
-                            //if (!(node.Requirements as IdSet<Requirement>).Add(newReq))
-                            //{
-                            //    if (!newReq.IsEqual(node.Requirements[newReq.Id]))
-                            //    {
-                            //        badReq = true;
-                            //        break;
-                            //    }
-                            //}
                         }
                         if (badReq)
                         {
