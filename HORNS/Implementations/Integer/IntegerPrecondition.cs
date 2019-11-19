@@ -25,17 +25,20 @@ namespace HORNS
 
         protected override Precondition<int> Combine(Precondition<int> pre)
         {
-            var intPre = pre as IntegerPrecondition;
-            if (pre == null || Direction != intPre.Direction)
+            if (!(pre is IntegerPrecondition intPre) || Direction != intPre.Direction)
             {
                 return null;
             }
             return new IntegerPrecondition(Variable, Value + intPre.Value, Direction, solver);
         }
 
-        protected override bool IsEqual(Precondition<int> pre)
+        protected override bool IsEqualOrWorse(Precondition<int> pre)
         {
-            throw new NotImplementedException();
+            if (!(pre is IntegerPrecondition intPre) || Direction != intPre.Direction || Value != intPre.Value)
+            {
+                return false;
+            }
+            return Variable.Value >= intPre.Variable.Value;
         }
 
         protected override PreconditionRequirement Subtract(PreconditionRequirement req, ActionResult<int> result)

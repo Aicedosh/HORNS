@@ -18,23 +18,21 @@ namespace HORNS
 
         protected override Precondition<bool> Combine(Precondition<bool> pre)
         {
-            var boolPre = pre as BooleanPrecondition;
-            if (pre == null || !(Value == boolPre.Value))
+            if (!(pre is BooleanPrecondition boolPre) || Value != boolPre.Value)
             {
                 return null;
             }
-            // TODO: make sure Variable doesn't need to be cloned
             return new BooleanPrecondition(Variable, Value, solver);
         }
 
-        protected override bool IsEqual(Precondition<bool> pre)
+        protected override bool IsEqualOrWorse(Precondition<bool> pre)
         {
-            var boolPre = pre as BooleanPrecondition;
-            if (pre == null)
+            if (!(pre is BooleanPrecondition boolPre) || Value != boolPre.Value)
             {
                 return false;
             }
-            return Value == boolPre.Value;
+            // pre will always be unfulfilled, which means that we're either equal or better
+            return Variable.Value == boolPre.Variable.Value;
         }
 
         protected override PreconditionRequirement Subtract(PreconditionRequirement req, ActionResult<bool> result)

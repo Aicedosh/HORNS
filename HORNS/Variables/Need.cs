@@ -29,5 +29,10 @@ namespace HORNS
         {
             return solver.GetActionsTowards(Variable, Desired);
         }
+
+        public bool IsSatisfied()
+        {
+            return _Value.Equals(Desired);
+        }
     }
 }

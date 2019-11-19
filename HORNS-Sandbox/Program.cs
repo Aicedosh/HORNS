@@ -15,20 +15,22 @@ namespace HORNS_Sandbox
             private readonly Variable<bool> energy;
             private readonly Variable<int> rzodkiews;
             private readonly int chanceDenominator;
+            private readonly string message;
 
             // chance will be 1/chanceDenominator
-            public ChopAction(Variable<bool> energy, Variable<int> rzodkiews, int chanceDenominator)
+            public ChopAction(Variable<bool> energy, Variable<int> rzodkiews, int chanceDenominator, string message = "")
             {
                 this.energy = energy;
                 this.rzodkiews = rzodkiews;
                 this.chanceDenominator = chanceDenominator;
+                this.message = message;
             }
 
             // just a reminder that we really shouldn't be modifying variables in ActionResult()...
             // it'll break pathfinding since we can't apply this result to requirements
             protected override void ActionResult()
             {
-                Console.WriteLine("Chop");
+                Console.WriteLine($"Chop {message}");
                 Random random = new Random();
                 if(random.Next(chanceDenominator) == 0)
                 {
@@ -95,7 +97,7 @@ namespace HORNS_Sandbox
 
             public override float Evaluate(bool value)
             {
-                return value ? 200 : 1;
+                return value ? 10000 : 1;
             }
         }
 
@@ -131,22 +133,34 @@ namespace HORNS_Sandbox
             Variable<bool> hasTree = new Variable<bool>() { Value = false };
             Variable<bool> hasAxe = new Variable<bool>() { Value = false };
             Variable<bool> hasEnergy = new Variable<bool>() { Value = true };
-            Variable<int> rzodkiews = new Variable<int>() { Value = 0 };
+            Variable<int> rzodkiews = new Variable<int>() { Value = 4 };
 
             HORNS.Action chop = new ChopAction(hasEnergy, rzodkiews, 3);
+            chop.AddCost(5);
             chop.AddPrecondition<bool, BooleanResult, BooleanSolver, BooleanPrecondition>(new BooleanPrecondition(hasAxe, true, axeSolver));
             chop.AddPrecondition<bool, BooleanResult, BooleanSolver, BooleanPrecondition>(new BooleanPrecondition(hasEnergy, true, energySolver));
+            chop.AddPrecondition<int, IntegerAddResult, IntegerSolver, IntegerPrecondition>(new IntegerPrecondition(rzodkiews, 1, IntegerPrecondition.Condition.AtLeast, rzodkiewSolver));
             chop.AddResult<bool, BooleanResult, BooleanSolver, BooleanPrecondition>(new BooleanResult(hasTree, true), treeSolver);
 
+            HORNS.Action chop2 = new ChopAction(hasEnergy, rzodkiews, 3, "without axe");
+            chop2.AddCost(20);
+            chop2.AddCost(rzodkiews, rz => rz);
+            chop2.AddPrecondition<bool, BooleanResult, BooleanSolver, BooleanPrecondition>(new BooleanPrecondition(hasEnergy, true, energySolver));
+            chop2.AddPrecondition<int, IntegerAddResult, IntegerSolver, IntegerPrecondition>(new IntegerPrecondition(rzodkiews, 1, IntegerPrecondition.Condition.AtLeast, rzodkiewSolver));
+            chop2.AddResult<bool, BooleanResult, BooleanSolver, BooleanPrecondition>(new BooleanResult(hasTree, true), treeSolver);
+
             HORNS.Action pick = new PickAction();
+            pick.AddCost(3);
             pick.AddPrecondition<bool, BooleanResult, BooleanSolver, BooleanPrecondition>(new BooleanPrecondition(hasAxe, false, axeSolver));
             pick.AddResult<bool, BooleanResult, BooleanSolver, BooleanPrecondition>(new BooleanResult(hasAxe, true), axeSolver);
 
             HORNS.Action put = new PutAction();
+            put.AddCost(3);
             put.AddPrecondition<bool, BooleanResult, BooleanSolver, BooleanPrecondition>(new BooleanPrecondition(hasAxe, true, axeSolver));
             put.AddResult<bool, BooleanResult, BooleanSolver, BooleanPrecondition>(new BooleanResult(hasAxe, false), axeSolver);
 
             HORNS.Action sleep = new SleepAction();
+            sleep.AddCost(100);
             sleep.AddPrecondition<bool, BooleanResult, BooleanSolver, BooleanPrecondition>(new BooleanPrecondition(hasAxe, false, axeSolver));
             sleep.AddResult<bool, BooleanResult, BooleanSolver, BooleanPrecondition>(new BooleanResult(hasEnergy, true), energySolver);
 
@@ -154,6 +168,7 @@ namespace HORNS_Sandbox
             SleepNeed sleepNeed = new SleepNeed(hasEnergy, true, energySolver);
 
             agent.AddAction(chop);
+            agent.AddAction(chop2);
             agent.AddAction(pick);
             agent.AddAction(put);
             agent.AddAction(sleep);
@@ -162,12 +177,13 @@ namespace HORNS_Sandbox
             agent.AddNeed(sleepNeed);
 
             HORNS.Action getRzodkiew = new GetRzodkiewAction();
+            getRzodkiew.AddCost(3);
             getRzodkiew.AddResult<int, IntegerAddResult, IntegerSolver, IntegerPrecondition>(
                 new IntegerAddResult(rzodkiews, 1), rzodkiewSolver);
-            RzodkiewNeed rzodkiewNeed = new RzodkiewNeed(rzodkiews, 2, rzodkiewSolver);
+            RzodkiewNeed rzodkiewNeed = new RzodkiewNeed(rzodkiews, 1, rzodkiewSolver);
 
             agent.AddAction(getRzodkiew);
-            agent.AddNeed(rzodkiewNeed);
+            //agent.AddNeed(rzodkiewNeed);
 
             for(; ; )
             {
