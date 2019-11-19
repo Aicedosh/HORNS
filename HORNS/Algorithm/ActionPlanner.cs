@@ -11,7 +11,7 @@ namespace HORNS
             public float Distance { get; set; }
             // TODO: is Actions actually needed? we're looking at actions per requirement anyway
             // public List<Action> Actions { get; set; } = new List<Action>();
-            public IdSet<Requirement> Requirements { get; set; } = new IdSet<Requirement>();
+            public RequirementSet Requirements { get; set; } = new RequirementSet();
             public ActionPlannerNode Prev { get; set; }
             public Action PrevAction { get; set; }
             // public VariableSet VariablePatch { get; set; }
@@ -69,9 +69,10 @@ namespace HORNS
 
                     if (node.Prev != null)  // TODO: unnecessary check if we're moving goal's iteration outside
                     {
+                        var res = true;
                         foreach (var req in node.Prev.Requirements)
                         {
-                            node.Requirements.Add(req.Clone());
+                            res = node.Requirements.Add(req.Clone());
                         }
 
                         node.PrevAction.SubtractResults(node.Requirements);
@@ -82,22 +83,22 @@ namespace HORNS
                         {
                             // TODO: this.
                             // BELOW IS PRETTY. BRING IT BACK AT SOME POINT.
-                            //if (!node.Requirements.Add(pre.GetRequirement()))
-                            //{
-                            //    badReq = true;
-                            //    break;
-                            //}
+                            if (!node.Requirements.Add(pre.GetRequirement()))
+                            {
+                                badReq = true;
+                                break;
+                            }
 
                             // BELOW IS NOT PRETTY
-                            var newReq = pre.GetRequirement();
-                            if (!node.Requirements.Add(newReq))
-                            {
-                                if (!newReq.IsEqual(node.Requirements[newReq.Id]))
-                                {
-                                    badReq = true;
-                                    break;
-                                }
-                            }
+                            //var newReq = pre.GetRequirement();
+                            //if (!(node.Requirements as IdSet<Requirement>).Add(newReq))
+                            //{
+                            //    if (!newReq.IsEqual(node.Requirements[newReq.Id]))
+                            //    {
+                            //        badReq = true;
+                            //        break;
+                            //    }
+                            //}
                         }
                         if (badReq)
                         {

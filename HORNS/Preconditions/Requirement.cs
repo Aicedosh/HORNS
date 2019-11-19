@@ -23,5 +23,6 @@ namespace HORNS
         }
 
         internal abstract Requirement Subtract(ActionResult actionResult);
+        internal abstract Requirement Combine(Requirement requirement);
     }
 }

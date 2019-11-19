@@ -16,6 +16,17 @@ namespace HORNS
 
         public bool Value { get; }
 
+        protected override Precondition<bool> Combine(Precondition<bool> pre)
+        {
+            var boolPre = pre as BooleanPrecondition;
+            if (pre == null || !(Value == boolPre.Value))
+            {
+                return null;
+            }
+            // TODO: make sure Variable doesn't need to be cloned
+            return new BooleanPrecondition(Variable, Value, solver);
+        }
+
         protected override bool IsEqual(Precondition<bool> pre)
         {
             var boolPre = pre as BooleanPrecondition;
@@ -34,6 +45,12 @@ namespace HORNS
         protected internal override bool IsFulfilled(bool value)
         {
             return value == Value;
+        }
+
+        // TODO: this is temporary
+        protected internal override bool IsReqZeroed(bool value)
+        {
+            return value != Value;
         }
     }
 }

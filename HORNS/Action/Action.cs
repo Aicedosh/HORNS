@@ -101,7 +101,7 @@ namespace HORNS
         }
 
         //internal void SubtractResults(RequirementSet requirements)
-        internal void SubtractResults(IdSet<Requirement> requirements)
+        internal void SubtractResults(RequirementSet requirements)
         {
             foreach (var result in results)
             {
