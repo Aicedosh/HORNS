@@ -169,7 +169,102 @@ namespace HORNS_UnitTests
             }
         }
 
+        private class LinearNeed : Need<int>
+        {
+            public LinearNeed(Variable<int> variable, int desired, VariableSolver<int> solver) : base(variable, desired, solver)
+            {
+            }
 
+            public override float Evaluate(int value)
+            {
+                return 25 * value;
+            }
+        }
+
+        private class BoolNeed : Need<bool>
+        {
+            public BoolNeed(Variable<bool> variable, bool desired, VariableSolver<bool> solver) : base(variable, desired, solver)
+            {
+            }
+
+            public override float Evaluate(bool value)
+            {
+                return value ? 100 : 40;
+            }
+        }
+
+        [Fact]
+        public void Plan_ChoosingDifferentPathAfterConditionsChanged()
+        {
+            var agent = new Agent();
+            var a1 = new BasicAction("1");
+            var a2 = new BasicAction("2");
+            var a3 = new BasicAction("3");
+            var a4 = new BasicAction("4");
+            var a5 = new BasicAction("5");
+
+            var v1 = new Variable<int>(1);
+            var v2 = new Variable<bool>(false);
+            var v3 = new Variable<bool>(false);
+            var v4 = new Variable<bool>(false);
+
+            var s1 = new IntegerSolver();
+            var s2 = new BooleanSolver();
+            var s3 = new BooleanSolver();
+            var s4 = new BooleanSolver();
+
+            var n1 = new LinearNeed(v1, 10, s1);
+            var n2 = new BoolNeed(v2, true, s2);
+
+            a1.AddCost(2);
+            a1.AddResult<bool, BooleanResult, BooleanSolver, BooleanPrecondition>(new BooleanResult(v2, true), s2);
+
+            a2.AddCost(3);
+            a2.AddResult<bool, BooleanResult, BooleanSolver, BooleanPrecondition>(new BooleanResult(v3, true), s3);
+
+            a3.AddCost(1);
+            a3.AddCost(v2, v => v ? 100 : 0);
+            a3.AddResult<bool, BooleanResult, BooleanSolver, BooleanPrecondition>(new BooleanResult(v4, true), s4);
+
+            a4.AddCost(1);
+            a4.AddPrecondition<bool, BooleanResult, BooleanSolver, BooleanPrecondition>(new BooleanPrecondition(v3, true, s3));
+            a4.AddResult<bool, BooleanResult, BooleanSolver, BooleanPrecondition>(new BooleanResult(v3, false), s3);
+            a4.AddResult<int, IntegerAddResult, IntegerSolver, IntegerPrecondition>(new IntegerAddResult(v1, 1), s1);
+
+            a5.AddCost(1);
+            a5.AddPrecondition<bool, BooleanResult, BooleanSolver, BooleanPrecondition>(new BooleanPrecondition(v4, true, s4));
+            a5.AddResult<bool, BooleanResult, BooleanSolver, BooleanPrecondition>(new BooleanResult(v4, false), s4);
+            a5.AddResult<int, IntegerAddResult, IntegerSolver, IntegerPrecondition>(new IntegerAddResult(v1, 1), s1);
+
+            agent.AddActions(a1, a2, a3, a4, a5);
+            agent.AddNeed(n1);
+            agent.AddNeed(n2);
+
+            List<Action> actions = Plan(agent);
+
+            Assert.Equal(2, actions.Count);
+            Assert.Equal("3", (actions[0] as BasicAction).Tag);
+            Assert.Equal("5", (actions[1] as BasicAction).Tag);
+
+            foreach(Action a in actions)
+            {
+                a.Perform();
+            }
+
+            actions = Plan(agent);
+            Assert.Single(actions);
+            Assert.Equal("1", (actions[0] as BasicAction).Tag);
+
+            foreach (Action a in actions)
+            {
+                a.Perform();
+            }
+
+            actions = Plan(agent);
+            Assert.Equal(2, actions.Count);
+            Assert.Equal("2", (actions[0] as BasicAction).Tag);
+            Assert.Equal("4", (actions[1] as BasicAction).Tag);
+        }
 
         // helper functions
         List<Action> Plan(Agent agent, IEnumerable<Action> idleActions = null)
