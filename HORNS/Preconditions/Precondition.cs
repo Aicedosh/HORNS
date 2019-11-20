@@ -8,7 +8,7 @@ namespace HORNS
     {
         private readonly ST solver;
 
-        public Precondition(Variable<T> variable, ST solver) : base(variable)
+        public Precondition(Variable<T> variable, T value, ST solver) : base(variable, value)
         {
             this.solver = solver;
         }
