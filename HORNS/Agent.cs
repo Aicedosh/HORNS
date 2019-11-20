@@ -1,4 +1,8 @@
-﻿using System;
+﻿#if DEBUG
+#define MEASURE_TIME
+#endif
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -80,8 +84,17 @@ namespace HORNS
 
         public void RecalculateActions()
         {
+            // TODO: remove?
+#if MEASURE_TIME
+            var sw = new System.Diagnostics.Stopwatch();
+            sw.Start();
+#endif
             plannedActions = new List<Action>(planner.Plan(this, idleActions));
             currentAction = 0;
+#if MEASURE_TIME
+            sw.Stop();
+            Console.WriteLine($"[DEBUG] Planning took {sw.Elapsed}");
+#endif
         }
     }
 }
