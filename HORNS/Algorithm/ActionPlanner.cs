@@ -23,7 +23,6 @@ namespace HORNS
         }
         
         // TODO: possibleGoals as param or field in agent?
-        // TODO: check for at least one idle action - here or somewhere else?
         internal List<Action> Plan(Agent agent, IEnumerable<Action> idleActions, int possibleGoals = 5)
         {
             foreach (var action in agent.PossibleActions)
@@ -34,7 +33,7 @@ namespace HORNS
             List<(INeed Need, float Priority)> needs = new List<(INeed, float)>();
             foreach (var need in agent.Needs)
             {
-                //if (!need.IsSatisfied())
+                if (!need.IsSatisfied())
                 {
                     needs.Add((need, need.GetPriority()));
                 }
@@ -138,20 +137,7 @@ namespace HORNS
                     {
                         var actions = req.GetActions();
                         foreach (var action in actions)
-                        {
-                            // from Dumbledore:
-                            //if (w in OPEN)
-                            //{
-                            //    odległość[w] = nieskończoność
-                            //    wstaw w do OPEN
-                            //}
-                            //if (odległość[w] > odległość[u] + waga<u, w>)
-                            //{
-                            //    odległość[w] = odległość[u] + waga < u,w >
-                            //    aktualizacja priorytetu wierzchołka w(w OPEN)
-                            //    poprzedni[w] = u
-                            //}
-                            
+                        {                           
                             var newNode = new ActionPlannerNode(node.Distance + action.CachedCost);
                             // copy as little as possible at this stage; copy the rest when we visit it
                             newNode.Prev = node;
