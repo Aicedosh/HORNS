@@ -11,6 +11,7 @@ namespace HORNS
         //      should the Agent be simple object and planning actions should be responsibility of application's wrapper class
         private ActionPlanner planner = new ActionPlanner();
         private List<Action> plannedActions = new List<Action>();
+        private List<Action> idleActions = new List<Action>();
         private int currentAction = 0;
         internal IdSet<Variable> Variables { get; } = new IdSet<Variable>();
 
@@ -44,6 +45,24 @@ namespace HORNS
             }
         }
 
+        public void AddIdleAction(Action action)
+        {
+            idleActions.Add(action);
+            // TODO: should idles have requirements?
+            foreach (Variable var in action.GetVariables())
+            {
+                Variables.Add(var);
+            }
+        }
+
+        public void AddIdleActions(params Action[] actions)
+        {
+            foreach (var action in actions)
+            {
+                AddIdleAction(action);
+            }
+        }
+
         public Action GetNextAction()
         {
             if(plannedActions.Count == currentAction)
@@ -61,7 +80,7 @@ namespace HORNS
 
         public void RecalculateActions()
         {
-            plannedActions = new List<Action>(planner.Plan(this, Enumerable.Empty<Action>())); //TODO: Add idle actions
+            plannedActions = new List<Action>(planner.Plan(this, idleActions));
             currentAction = 0;
         }
     }
