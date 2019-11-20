@@ -10,7 +10,7 @@ namespace HORNS_UnitTests
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
-        public void GetActionsTowards_ShouldBeReturned_ByGetTowards(bool value)
+        public void GetActionsTowards_ShouldReturnRegisteredActionResult(bool value)
         {
             BasicAction a = new BasicAction(1);
             Variable<bool> v = new Variable<bool>();
@@ -28,7 +28,7 @@ namespace HORNS_UnitTests
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
-        public void GetActionsTowards_TrueAndFalseResults_ShouldReturnOnlyOneValue_True(bool value)
+        public void GetActionsTowards_TrueAndFalseResults_ShouldReturnOnlyOneValue(bool value)
         {
             BasicAction a = new BasicAction(1);
             BasicAction b = new BasicAction(2);
