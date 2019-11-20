@@ -13,12 +13,10 @@ namespace HORNS
             AtLeast, AtMost
         }
         public Condition Direction { get; }
-        public int Value { get; }
 
         public IntegerPrecondition(Variable<int> variable, int value, Condition direction, IntegerSolver solver)
-            : base(variable, solver)
+            : base(variable, value, solver)
         {
-            Value = value;
             Direction = direction;
             this.solver = solver;
         }

@@ -7,10 +7,12 @@ namespace HORNS
     public abstract class Precondition<T> : Precondition
     {
         protected Variable<T> Variable { get; private set; }
+        public T Value { get; }
 
-        public Precondition(Variable<T> variable)
+        public Precondition(Variable<T> variable, T value)
         {
             Variable = variable;
+            Value = value;
         }
 
         protected class PreconditionRequirement : Requirement
@@ -43,7 +45,7 @@ namespace HORNS
                 //variablePatch.TryGet(ref var);
                 //Variable<T> v = var as Variable<T>;
                 //Fulfilled = precondition.IsFulfilled(v.Value);
-                Fulfilled = precondition.IsReqZeroed(precondition.Variable.Value);
+                Fulfilled = precondition.IsReqZeroed(precondition.Value);
                 return Fulfilled;
             }
 

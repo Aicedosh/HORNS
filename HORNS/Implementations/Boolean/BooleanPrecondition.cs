@@ -8,13 +8,10 @@ namespace HORNS
     {
         private readonly BooleanSolver solver;
 
-        public BooleanPrecondition(Variable<bool> variable, bool value, BooleanSolver solver) : base(variable, solver)
+        public BooleanPrecondition(Variable<bool> variable, bool value, BooleanSolver solver) : base(variable, value, solver)
         {
-            Value = value;
             this.solver = solver;
         }
-
-        public bool Value { get; }
 
         protected override Precondition<bool> Combine(Precondition<bool> pre)
         {
