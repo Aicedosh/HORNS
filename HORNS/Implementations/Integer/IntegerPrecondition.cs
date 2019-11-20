@@ -39,7 +39,7 @@ namespace HORNS
             return Variable.Value >= intPre.Variable.Value;
         }
 
-        protected override PreconditionRequirement Subtract(PreconditionRequirement req, ActionResult<int> result)
+        internal override PreconditionRequirement Subtract(PreconditionRequirement req, ActionResult<int> result)
         {
             var addRes = result as IntegerAddResult;
             bool plus = true;

@@ -15,9 +15,9 @@ namespace HORNS
             Value = value;
         }
 
-        protected class PreconditionRequirement : Requirement
+        internal class PreconditionRequirement : Requirement
         {
-            private readonly Precondition<T> precondition;
+            internal readonly Precondition<T> precondition;
             private readonly Variable<T> variable;
 
             public PreconditionRequirement(Precondition<T> precondition, Variable<T> variable)
@@ -99,7 +99,7 @@ namespace HORNS
 
         protected abstract bool IsEqualOrWorse(Precondition<T> pre);
 
-        protected abstract PreconditionRequirement Subtract(PreconditionRequirement req, ActionResult<T> result);
+        internal abstract PreconditionRequirement Subtract(PreconditionRequirement req, ActionResult<T> result);
 
         protected abstract IEnumerable<Action> GetActions(Variable<T> variable);
         protected internal abstract bool IsFulfilled(T value);

@@ -32,7 +32,7 @@ namespace HORNS
             return Variable.Value == boolPre.Variable.Value;
         }
 
-        protected override PreconditionRequirement Subtract(PreconditionRequirement req, ActionResult<bool> result)
+        internal override PreconditionRequirement Subtract(PreconditionRequirement req, ActionResult<bool> result)
         {
             return new BooleanPrecondition(Variable, !(result as BooleanResult).EndValue, solver).GetRequirement() as PreconditionRequirement; //TODO: refactor
         }
