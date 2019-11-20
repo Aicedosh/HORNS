@@ -7,5 +7,6 @@ namespace HORNS
     public abstract class Precondition
     {
         internal abstract Requirement GetRequirement();
+        internal abstract Variable GetVariable();
     }
 }
