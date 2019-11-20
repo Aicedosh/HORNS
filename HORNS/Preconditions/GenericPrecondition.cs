@@ -15,6 +15,11 @@ namespace HORNS
             Value = value;
         }
 
+        internal override Variable GetVariable()
+        {
+            return Variable;
+        }
+
         internal class PreconditionRequirement : Requirement
         {
             internal readonly Precondition<T> precondition;

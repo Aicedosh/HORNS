@@ -55,7 +55,7 @@ namespace HORNS
                 var close = new List<RequirementSet>();
 
                 var goal = new ActionPlannerNode(0);
-                foreach (var action in need.GetActionsTowards())
+                foreach (var action in need.GetActionsTowards().Where(a=>agent.PossibleActions.Contains(a)))
                 {
                     var nodeFromGoal = new ActionPlannerNode(action.CachedCost);
                     nodeFromGoal.Prev = goal;
@@ -136,7 +136,7 @@ namespace HORNS
                     foreach (var req in node.Requirements)
                     {
                         var actions = req.GetActions();
-                        foreach (var action in actions)
+                        foreach (var action in actions.Where(a => agent.PossibleActions.Contains(a)))
                         {                           
                             var newNode = new ActionPlannerNode(node.Distance + action.CachedCost);
                             // copy as little as possible at this stage; copy the rest when we visit it
