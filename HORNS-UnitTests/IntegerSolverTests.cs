@@ -8,14 +8,14 @@ namespace HORNS_UnitTests
     public class IntegerSolverTests
     {
         [Theory]
-        [InlineData(5, 7, 1)]
-        [InlineData(7, 2, 2)]
-        [InlineData(10, 9, 2)]
-        [InlineData(-3, -2, 1)]
-        public void GetActionsTowards_ShouldReturnMatchingAction(int value, int goalValue, int pickedActionId)
+        [InlineData(5, 7, "increase")]
+        [InlineData(7, 2, "decrease")]
+        [InlineData(10, 9, "decrease")]
+        [InlineData(-3, -2, "increase")]
+        public void GetActionsTowards_ShouldReturnMatchingAction(int value, int goalValue, string pickedActionTag)
         {
-            BasicAction a1 = new BasicAction(1);
-            BasicAction a2 = new BasicAction(2);
+            BasicAction a1 = new BasicAction("increase");
+            BasicAction a2 = new BasicAction("decrease");
 
             Variable<int> v = new Variable<int>(value);
             IntegerSolver s = new IntegerSolver();
@@ -30,7 +30,7 @@ namespace HORNS_UnitTests
 
             List<Action> actions = new List<Action>(s.GetActionsTowards(v, goalValue));
             Assert.Single(actions);
-            Assert.Equal(pickedActionId, (actions[0] as BasicAction).N);
+            Assert.Equal(pickedActionTag, (actions[0] as BasicAction).Tag);
         }
 
     }
