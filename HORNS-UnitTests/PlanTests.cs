@@ -1,6 +1,7 @@
 using Xunit;
 using HORNS;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace HORNS_UnitTests
 {
@@ -10,23 +11,24 @@ namespace HORNS_UnitTests
         public void Plan_OneAction_NoPreconditions()
         {
             var agent = new Agent();
-
             var solver = new BooleanSolver();
-            var variable = new Variable<bool>() { Value = false };
+            var variable = new Variable<bool>();
 
             var action = new BasicAction();
             action.AddResult<bool, BooleanResult, BooleanSolver, BooleanPrecondition>(
                 new BooleanResult(variable, true), solver);
             action.AddCost(1);
-            agent.AddAction(action);
 
             var need = new BooleanNeed(variable, true, solver);
+
+            agent.AddAction(action);
             agent.AddNeed(need);
 
-            var nextAction = agent.GetNextAction();
-            Assert.IsType<BasicAction>(nextAction);
+            var actions = Plan(agent);
 
-            nextAction.Perform();
+            Assert.Single(actions);
+
+            actions[0].Perform();
             Assert.True(variable.Value);
             Assert.True(need.IsSatisfied());
         }
@@ -36,38 +38,35 @@ namespace HORNS_UnitTests
         {
             var agent = new Agent();
 
-            var solver1 = new BooleanSolver();
-            var solver2 = new BooleanSolver();
-            var solver3 = new BooleanSolver();
-            var v1 = new Variable<bool>() { Value = false };
-            var v2 = new Variable<bool>() { Value = false };
-            var v3 = new Variable<bool>() { Value = false };
+            var s1 = new BooleanSolver();
+            var s2 = new BooleanSolver();
+            var s3 = new BooleanSolver();
+            var v1 = new Variable<bool>();
+            var v2 = new Variable<bool>();
+            var v3 = new Variable<bool>();
 
-            var need = new BooleanNeed(v3, true, solver3);
+            var need = new BooleanNeed(v3, true, s3);
 
-            var a1 = new BasicAction(1);
-            a1.AddResult<bool, BooleanResult, BooleanSolver, BooleanPrecondition>(new BooleanResult(v1, true), solver1);
+            var a1 = new BasicAction("1");
+            a1.AddResult<bool, BooleanResult, BooleanSolver, BooleanPrecondition>(new BooleanResult(v1, true), s1);
 
-            var a2 = new BasicAction(2);
-            a2.AddPrecondition<bool, BooleanResult, BooleanSolver, BooleanPrecondition>(new BooleanPrecondition(v1, true, solver1));
-            a2.AddResult<bool, BooleanResult, BooleanSolver, BooleanPrecondition>(new BooleanResult(v2, true), solver2);
+            var a2 = new BasicAction("2");
+            a2.AddPrecondition<bool, BooleanResult, BooleanSolver, BooleanPrecondition>(new BooleanPrecondition(v1, true, s1));
+            a2.AddResult<bool, BooleanResult, BooleanSolver, BooleanPrecondition>(new BooleanResult(v2, true), s2);
 
-            var a3 = new BasicAction(3);
-            a3.AddPrecondition<bool, BooleanResult, BooleanSolver, BooleanPrecondition>(new BooleanPrecondition(v2, true, solver2));
-            a3.AddResult<bool, BooleanResult, BooleanSolver, BooleanPrecondition>(new BooleanResult(v3, true), solver3);
+            var a3 = new BasicAction("3");
+            a3.AddPrecondition<bool, BooleanResult, BooleanSolver, BooleanPrecondition>(new BooleanPrecondition(v2, true, s2));
+            a3.AddResult<bool, BooleanResult, BooleanSolver, BooleanPrecondition>(new BooleanResult(v3, true), s3);
 
             agent.AddNeed(need);
-            agent.AddAction(a1);
-            agent.AddAction(a2);
-            agent.AddAction(a3);
+            agent.AddActions(a1, a2, a3);
 
-            ActionPlanner planner = new ActionPlanner();
-            var actions = planner.Plan(agent, Enumerable.Empty<HORNS.Action>());
+            var actions = Plan(agent);
 
             Assert.Equal(3, actions.Count);
-            Assert.Equal(1, (actions[0] as BasicAction).N);
-            Assert.Equal(2, (actions[1] as BasicAction).N);
-            Assert.Equal(3, (actions[2] as BasicAction).N);
+            Assert.Equal("1", (actions[0] as BasicAction).Tag);
+            Assert.Equal("2", (actions[1] as BasicAction).Tag);
+            Assert.Equal("3", (actions[2] as BasicAction).Tag);
         }
 
         [Fact]
@@ -79,31 +78,108 @@ namespace HORNS_UnitTests
             var s1 = new IntegerSolver();
             var s2 = new BooleanSolver();
 
-            var v1 = new Variable<int>() { Value = 0 };
-            var v2 = new Variable<bool>() { Value = false };
+            var v1 = new Variable<int>();
+            var v2 = new Variable<bool>();
 
             var need = new BooleanNeed(v2, true, s2);
 
-            var a1 = new BasicAction(1);
+            var a1 = new BasicAction("Last");
             a1.AddPrecondition<int, IntegerAddResult, IntegerSolver, IntegerPrecondition>(new IntegerPrecondition(v1, REQUIRED_NUMBER, IntegerPrecondition.Condition.AtLeast, s1));
             a1.AddResult<bool, BooleanResult, BooleanSolver, BooleanPrecondition>(new BooleanResult(v2, true), s2);
 
-            var a2 = new BasicAction(2);
+            var a2 = new BasicAction("Add one");
             a2.AddResult<int, IntegerAddResult, IntegerSolver, IntegerPrecondition>(new IntegerAddResult(v1, 1), s1);
 
-            agent.AddAction(a1);
-            agent.AddAction(a2);
+            agent.AddActions(a1, a2);
             agent.AddNeed(need);
 
-            ActionPlanner planner = new ActionPlanner();
-            var actions = planner.Plan(agent, Enumerable.Empty<HORNS.Action>());
+            var actions = Plan(agent);
 
             Assert.Equal(REQUIRED_NUMBER + 1, actions.Count);
-            Assert.Equal(1, (actions[REQUIRED_NUMBER] as BasicAction).N);
+            Assert.Equal("Last", (actions[REQUIRED_NUMBER] as BasicAction).Tag);
             for (int i = 0; i < REQUIRED_NUMBER - 1; i++)
             {
-                Assert.Equal(2, (actions[i] as BasicAction).N);
+                Assert.Equal("Add one", (actions[i] as BasicAction).Tag);
             }
+        }
+
+        [Fact]
+        public void Plan_TwoActionsBooleanResult_PicksBetterAction()
+        {
+            var agent = new Agent();
+            var solver = new BooleanSolver();
+            var variable = new Variable<bool>();
+
+            var a1 = new BasicAction("Worse");
+            a1.AddResult<bool, BooleanResult, BooleanSolver, BooleanPrecondition>(new BooleanResult(variable, true), solver);
+            a1.AddCost(10);
+
+            var a2 = new BasicAction("Better");
+            a2.AddResult<bool, BooleanResult, BooleanSolver, BooleanPrecondition>(new BooleanResult(variable, true), solver);
+            a2.AddCost(5);
+
+            var need = new BooleanNeed(variable, true, solver);
+
+            agent.AddNeed(need);
+            agent.AddActions(a1, a2);
+
+            var actions = Plan(agent);
+
+            Assert.Single(actions);
+            Assert.Equal("Better", (actions[0] as BasicAction).Tag);
+        }
+
+        [Theory]
+        [InlineData(1, 5, 4, "Cheap")]
+        [InlineData(2, 5, 1, "Expensive")]
+        public void Plan_TwoActionsIntegerResult_PickCheaperPath(int cost1, int cost2, int actionCount, string betterTag)
+        {
+            const int REQUIRED = 4;
+
+            var agent = new Agent();
+            var solver = new IntegerSolver();
+            var v1 = new Variable<int>();
+            var v2 = new Variable<int>(1);
+
+            var a1 = new BasicAction("Cheap");
+            a1.AddResult<int, IntegerAddResult, IntegerSolver, IntegerPrecondition>(new IntegerAddResult(v1, 1), solver);
+            a1.AddCost(cost1);
+
+            var a2 = new BasicAction("Expensive");
+            a2.AddResult<int, IntegerAddResult, IntegerSolver, IntegerPrecondition>(new IntegerAddResult(v1, REQUIRED), solver);
+            a2.AddCost(cost2);
+
+            var a3 = new BasicAction("Last");
+            a3.AddResult<int, IntegerAddResult, IntegerSolver, IntegerPrecondition>(new IntegerAddResult(v2, -1), solver);
+            a3.AddPrecondition<int, IntegerAddResult, IntegerSolver, IntegerPrecondition>(
+                new IntegerPrecondition(v1, REQUIRED, IntegerPrecondition.Condition.AtLeast, solver));
+
+            var need = new LinearIntegerNeed(v2, 0, solver);
+
+            agent.AddNeed(need);
+            agent.AddActions(a1, a2, a3);
+
+            var actions = Plan(agent);
+
+            Assert.Equal(actionCount + 1, actions.Count);
+            Assert.Equal("Last", (actions[actionCount] as BasicAction).Tag);
+            for (int i = 0; i < actionCount - 1; i++)
+            {
+                Assert.Equal(betterTag, (actions[i] as BasicAction).Tag);
+            }
+        }
+
+
+
+        // helper functions
+        List<Action> Plan(Agent agent, IEnumerable<Action> idleActions = null)
+        {
+            if (idleActions == null)
+            {
+                idleActions = Enumerable.Empty<Action>();
+            }
+            var planner = new ActionPlanner();
+            return planner.Plan(agent, idleActions);
         }
     }
 }
