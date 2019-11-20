@@ -7,12 +7,12 @@ namespace HORNS_UnitTests
     // BasicAction
     class BasicAction : Action
     {
-        public BasicAction(int n = 0)
+        public BasicAction(string tag = "")
         {
-            N = n;
+            Tag = tag;
         }
 
-        public int N { get; }
+        public string Tag { get; }
 
         protected override void ActionResult()
         {
