@@ -7,6 +7,13 @@ namespace HORNS_UnitTests
     // BasicAction
     class BasicAction : Action
     {
+        public BasicAction(int n = 0)
+        {
+            N = n;
+        }
+
+        public int N { get; }
+
         protected override void ActionResult()
         {
         }
@@ -40,6 +47,19 @@ namespace HORNS_UnitTests
         public override float Evaluate(bool value)
         {
             return value ? 100 : 1;
+        }
+    }
+
+    class LinearIntegerNeed : Need<int>
+    {
+        public LinearIntegerNeed(Variable<int> variable, int desired, VariableSolver<int> solver)
+            : base(variable, desired, solver)
+        {
+        }
+
+        public override float Evaluate(int value)
+        {
+            return value;
         }
     }
 }
