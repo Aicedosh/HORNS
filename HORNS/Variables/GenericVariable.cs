@@ -10,9 +10,9 @@ namespace HORNS
 
         private T _value;
 
-        public Variable()
+        public Variable(T value = default)
         {
-
+            _value = value;
         }
 
         private Variable(Variable<T> variable) : base(variable)

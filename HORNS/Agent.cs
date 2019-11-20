@@ -36,6 +36,14 @@ namespace HORNS
             }
         }
 
+        public void AddActions(params Action[] actions)
+        {
+            foreach (var action in actions)
+            {
+                AddAction(action);
+            }
+        }
+
         public Action GetNextAction()
         {
             if(plannedActions.Count == currentAction)
