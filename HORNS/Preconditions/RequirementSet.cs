@@ -10,8 +10,8 @@ namespace HORNS
         {
             if (elements.TryGetValue(r.Id, out Requirement existing))
             {
-                Requirement combined = r.Combine(existing);
-                if (combined == null)
+                r = r.Combine(existing);
+                if (r == null)
                 {
                     return false;
                 }
