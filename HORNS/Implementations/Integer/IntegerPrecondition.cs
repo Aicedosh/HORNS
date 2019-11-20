@@ -42,17 +42,7 @@ namespace HORNS
         internal override PreconditionRequirement Subtract(PreconditionRequirement req, ActionResult<int> result)
         {
             var addRes = result as IntegerAddResult;
-            bool plus = true;
-            if (addRes.Term < 0)
-            {
-                plus = Direction == Condition.AtLeast;
-            }
-            else
-            {
-                plus = Direction == Condition.AtMost;
-            }
-
-            int newVal = Value + addRes.Term * (plus ? 1 : -1);
+            int newVal = Value + addRes.Term * (Direction == Condition.AtMost ? 1 : -1);
 
             return new IntegerPrecondition(Variable, newVal, Direction, solver).GetRequirement() as PreconditionRequirement;
         }
