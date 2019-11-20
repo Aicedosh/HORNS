@@ -12,7 +12,7 @@ namespace HORNS_UnitTests
         [InlineData(false)]
         public void GetActionsTowards_ShouldReturnRegisteredActionResult(bool value)
         {
-            BasicAction a = new BasicAction(1);
+            BasicAction a = new BasicAction("1");
             Variable<bool> v = new Variable<bool>();
             BooleanSolver s = new BooleanSolver();
             BooleanResult result = new BooleanResult(v, value);
@@ -22,7 +22,7 @@ namespace HORNS_UnitTests
 
             List<Action> actions = new List<Action>(s.GetActionsTowards(v, value));
             Assert.Single(actions);
-            Assert.Equal(a.N, (actions[0] as BasicAction).N);
+            Assert.Equal(a.Tag, (actions[0] as BasicAction).Tag);
         }
 
         [Theory]
@@ -30,8 +30,8 @@ namespace HORNS_UnitTests
         [InlineData(false)]
         public void GetActionsTowards_TrueAndFalseResults_ShouldReturnOnlyOneValue(bool value)
         {
-            BasicAction a = new BasicAction(1);
-            BasicAction b = new BasicAction(2);
+            BasicAction a = new BasicAction("1");
+            BasicAction b = new BasicAction("2");
 
             Variable<bool> v = new Variable<bool>();
             BooleanSolver s = new BooleanSolver();
@@ -46,7 +46,7 @@ namespace HORNS_UnitTests
             List<Action> actions = new List<Action>(s.GetActionsTowards(v, value));
 
             Assert.Single(actions);
-            Assert.Equal(a.N, (actions[0] as BasicAction).N);
+            Assert.Equal(a.Tag, (actions[0] as BasicAction).Tag);
         }
 
         [Theory]
@@ -61,7 +61,7 @@ namespace HORNS_UnitTests
 
             for (int i = 0; i < num; i++)
             {
-                BasicAction action = new BasicAction(i);
+                BasicAction action = new BasicAction(i.ToString());
                 BooleanResult br = new BooleanResult(v, value);
 
                 actions.Add(action);
@@ -72,7 +72,7 @@ namespace HORNS_UnitTests
             List<Action> got = new List<Action>(s.GetActionsTowards(v, value));
 
             Assert.Equal(num, got.Count);
-            Assert.Equal(actions.Select(a => a.N).OrderBy(n => n), got.Select(a => (a as BasicAction).N).OrderBy(n => n));
+            Assert.Equal(actions.Select(a => a.Tag).OrderBy(n => n), got.Select(a => (a as BasicAction).Tag).OrderBy(n => n));
         }
 
         [Theory]
@@ -83,7 +83,7 @@ namespace HORNS_UnitTests
             Variable<bool> v = new Variable<bool>();
             BooleanSolver s = new BooleanSolver();
 
-            BasicAction a = new BasicAction(1);
+            BasicAction a = new BasicAction("1");
             BooleanResult result = new BooleanResult(v, value);
             result.Action = a;
 
@@ -91,7 +91,7 @@ namespace HORNS_UnitTests
 
             List<Action> got = new List<Action>(s.GetActionsSatisfying(new BooleanPrecondition(v, value, s)));
             Assert.Single(got);
-            Assert.Equal(a.N, (got[0] as BasicAction).N);
+            Assert.Equal(a.Tag, (got[0] as BasicAction).Tag);
         }
 
         [Theory]
@@ -102,7 +102,7 @@ namespace HORNS_UnitTests
             Variable<bool> v = new Variable<bool>();
             BooleanSolver s = new BooleanSolver();
 
-            BasicAction a = new BasicAction(1);
+            BasicAction a = new BasicAction("1");
             BooleanResult result = new BooleanResult(v, !value);
             result.Action = a;
 
