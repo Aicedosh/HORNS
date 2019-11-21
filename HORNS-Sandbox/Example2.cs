@@ -167,7 +167,7 @@ namespace HORNS_Sandbox
             var agent = new Agent();
             agent.AddNeed(hungerNeed);
             agent.AddNeed(energyNeed);
-            agent.AddActions(pickAxe, chopTree, sellWood, buyRzodkiew, eatRzodkiew);
+            agent.AddActions(pickAxe, chopTree, sellWood, buyRzodkiew, eatRzodkiew, makeChair, sellChair, makeSoup, eatSoup);
             agent.AddIdleAction(idle);
 
             // main loop
