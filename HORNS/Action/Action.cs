@@ -67,7 +67,7 @@ namespace HORNS
             variables.AddRange(results.Select(r => r.AbstractVariable));
             //TODO: making this not null check seems unnecessary, maybe separate cost evaluators (the interface is probably unnecessary as well)
             variables.AddRange(costEvaluators.Select(e => e.GetVariable()).Where(v => v != null));
-            //TODO: Add from preconditions
+            variables.AddRange(preconditions.Select(p => p.GetVariable()));
             return variables;
         }
 
