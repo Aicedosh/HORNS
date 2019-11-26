@@ -23,23 +23,21 @@ namespace HORNS
         internal class PreconditionRequirement : Requirement
         {
             internal readonly Precondition<T> precondition;
-            private readonly Variable<T> variable;
 
-            public PreconditionRequirement(Precondition<T> precondition, Variable<T> variable)
+            public PreconditionRequirement(Precondition<T> precondition)
             {
                 this.precondition = precondition;
-                this.variable = variable;
-                Id = variable.Id;
+                Id = precondition.Variable.Id;
             }
             
             internal PreconditionRequirement(PreconditionRequirement requirement) :
-                this(requirement.precondition, requirement.variable.GetCopy() as Variable<T>)
+                this(requirement.precondition)
             {
             }
 
             protected internal override IEnumerable<Action> GetActions()
             {
-                return precondition.GetActions(variable);
+                return precondition.GetActions();
             }
             
             // also: maybe it doesn't need to be cached, we should just move it to another set with fulfilled reqs?
@@ -60,7 +58,7 @@ namespace HORNS
             // didn't cache the result - in my mind Fulfilled means that stored value already fulfills it
             internal override bool IsFulfilled(IdSet<Variable> variables)
             {
-                Variable var = variable;
+                Variable var = precondition.Variable;
                 if (variables.TryGet(ref var))
                 {
                     return precondition.IsFulfilled((var as Variable<T>).Value);
@@ -106,7 +104,7 @@ namespace HORNS
 
         internal abstract PreconditionRequirement Subtract(PreconditionRequirement req, ActionResult<T> result);
 
-        protected abstract IEnumerable<Action> GetActions(Variable<T> variable);
+        protected abstract IEnumerable<Action> GetActions();
         protected internal abstract bool IsFulfilled(T value);
         // TODO: this is probably temporary
         protected internal abstract bool IsReqZeroed(T value);
@@ -116,7 +114,7 @@ namespace HORNS
             // TODO: [A] please check if this makes sense
             //Variable var = Variable;
             //variablePatch.TryGet(ref var);
-            return new PreconditionRequirement(this, Variable.GetCopy() as Variable<T>); //TODO: cast?
+            return new PreconditionRequirement(this); //TODO: cast?
         }
 
         protected abstract Precondition<T> Combine(Precondition<T> pre);
