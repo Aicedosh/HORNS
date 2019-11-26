@@ -13,7 +13,7 @@ namespace HORNS
             this.solver = solver;
         }
 
-        protected override IEnumerable<Action> GetActions(Variable<T> variable)
+        protected override IEnumerable<Action> GetActions()
         {
             return solver.GetActionsSatisfying(this);
         }
