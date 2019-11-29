@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace HORNS
 {
     public abstract class ActionResult
     {
-        public Action Action { get; internal set; }
+        internal Action Action { get; set; }
+
         internal abstract Variable AbstractVariable { get; }
         internal abstract void Apply();
         internal abstract void Apply(IdSet<Variable> variables);

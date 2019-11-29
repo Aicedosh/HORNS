@@ -11,15 +11,13 @@ namespace HORNS_UnitTests
         public void Plan_OneAction_NoPreconditions()
         {
             var agent = new Agent();
-            var solver = new BooleanSolver();
-            var variable = new Variable<bool>();
+            var variable = new BoolVariable();
 
             var action = new BasicAction();
-            action.AddResult<bool, BooleanResult, BooleanSolver, BooleanPrecondition>(
-                new BooleanResult(variable, true), solver);
+            action.AddResult(variable, new BooleanResult(true));
             action.AddCost(1);
 
-            var need = new BooleanNeed(variable, true, solver);
+            var need = new BooleanNeed(variable, true);
 
             agent.AddAction(action);
             agent.AddNeed(need);
@@ -37,26 +35,23 @@ namespace HORNS_UnitTests
         public void Plan_ThreeStepResult_BooleanVariables()
         {
             var agent = new Agent();
+            
+            var v1 = new BoolVariable();
+            var v2 = new BoolVariable();
+            var v3 = new BoolVariable();
 
-            var s1 = new BooleanSolver();
-            var s2 = new BooleanSolver();
-            var s3 = new BooleanSolver();
-            var v1 = new Variable<bool>();
-            var v2 = new Variable<bool>();
-            var v3 = new Variable<bool>();
-
-            var need = new BooleanNeed(v3, true, s3);
+            var need = new BooleanNeed(v3, true);
 
             var a1 = new BasicAction("1");
-            a1.AddResult<bool, BooleanResult, BooleanSolver, BooleanPrecondition>(new BooleanResult(v1, true), s1);
+            a1.AddResult(v1, new BooleanResult(true));
 
             var a2 = new BasicAction("2");
-            a2.AddPrecondition<bool, BooleanResult, BooleanSolver, BooleanPrecondition>(new BooleanPrecondition(v1, true, s1));
-            a2.AddResult<bool, BooleanResult, BooleanSolver, BooleanPrecondition>(new BooleanResult(v2, true), s2);
+            a2.AddPrecondition(v1, new BooleanPrecondition(true));
+            a2.AddResult(v2, new BooleanResult(true));
 
             var a3 = new BasicAction("3");
-            a3.AddPrecondition<bool, BooleanResult, BooleanSolver, BooleanPrecondition>(new BooleanPrecondition(v2, true, s2));
-            a3.AddResult<bool, BooleanResult, BooleanSolver, BooleanPrecondition>(new BooleanResult(v3, true), s3);
+            a3.AddPrecondition(v2, new BooleanPrecondition(true));
+            a3.AddResult(v3, new BooleanResult(true));
 
             agent.AddNeed(need);
             agent.AddActions(a1, a2, a3);
@@ -75,20 +70,17 @@ namespace HORNS_UnitTests
             const int REQUIRED_NUMBER = 5;
             var agent = new Agent();
 
-            var s1 = new IntegerSolver();
-            var s2 = new BooleanSolver();
+            var v1 = new IntVariable();
+            var v2 = new BoolVariable();
 
-            var v1 = new Variable<int>();
-            var v2 = new Variable<bool>();
-
-            var need = new BooleanNeed(v2, true, s2);
+            var need = new BooleanNeed(v2, true);
 
             var a1 = new BasicAction("Last");
-            a1.AddPrecondition<int, IntegerAddResult, IntegerSolver, IntegerPrecondition>(new IntegerPrecondition(v1, REQUIRED_NUMBER, IntegerPrecondition.Condition.AtLeast, s1));
-            a1.AddResult<bool, BooleanResult, BooleanSolver, BooleanPrecondition>(new BooleanResult(v2, true), s2);
+            a1.AddPrecondition(v1, new IntegerPrecondition(REQUIRED_NUMBER, IntegerPrecondition.Condition.AtLeast));
+            a1.AddResult(v2, new BooleanResult(true));
 
             var a2 = new BasicAction("Add one");
-            a2.AddResult<int, IntegerAddResult, IntegerSolver, IntegerPrecondition>(new IntegerAddResult(v1, 1), s1);
+            a2.AddResult(v1, new IntegerAddResult(1));
 
             agent.AddActions(a1, a2);
             agent.AddNeed(need);
@@ -107,18 +99,17 @@ namespace HORNS_UnitTests
         public void Plan_TwoActionsBooleanResult_PicksBetterAction()
         {
             var agent = new Agent();
-            var solver = new BooleanSolver();
-            var variable = new Variable<bool>();
+            var variable = new BoolVariable();
 
             var a1 = new BasicAction("Worse");
-            a1.AddResult<bool, BooleanResult, BooleanSolver, BooleanPrecondition>(new BooleanResult(variable, true), solver);
+            a1.AddResult(variable, new BooleanResult(true));
             a1.AddCost(10);
 
             var a2 = new BasicAction("Better");
-            a2.AddResult<bool, BooleanResult, BooleanSolver, BooleanPrecondition>(new BooleanResult(variable, true), solver);
+            a2.AddResult(variable, new BooleanResult(true));
             a2.AddCost(5);
 
-            var need = new BooleanNeed(variable, true, solver);
+            var need = new BooleanNeed(variable, true);
 
             agent.AddNeed(need);
             agent.AddActions(a1, a2);
@@ -138,23 +129,22 @@ namespace HORNS_UnitTests
 
             var agent = new Agent();
             var solver = new IntegerSolver();
-            var v1 = new Variable<int>();
-            var v2 = new Variable<int>(1);
+            var v1 = new IntVariable();
+            var v2 = new IntVariable(1);
 
             var a1 = new BasicAction("Cheap");
-            a1.AddResult<int, IntegerAddResult, IntegerSolver, IntegerPrecondition>(new IntegerAddResult(v1, 1), solver);
+            a1.AddResult(v1, new IntegerAddResult(1));
             a1.AddCost(cost1);
 
             var a2 = new BasicAction("Expensive");
-            a2.AddResult<int, IntegerAddResult, IntegerSolver, IntegerPrecondition>(new IntegerAddResult(v1, REQUIRED), solver);
+            a2.AddResult(v1, new IntegerAddResult(REQUIRED));
             a2.AddCost(cost2);
 
             var a3 = new BasicAction("Last");
-            a3.AddResult<int, IntegerAddResult, IntegerSolver, IntegerPrecondition>(new IntegerAddResult(v2, -1), solver);
-            a3.AddPrecondition<int, IntegerAddResult, IntegerSolver, IntegerPrecondition>(
-                new IntegerPrecondition(v1, REQUIRED, IntegerPrecondition.Condition.AtLeast, solver));
+            a3.AddResult(v2, new IntegerAddResult(-1));
+            a3.AddPrecondition(v1, new IntegerPrecondition(REQUIRED, IntegerPrecondition.Condition.AtLeast));
 
-            var need = new LinearIntegerNeed(v2, 0, solver);
+            var need = new LinearIntegerNeed(v2, 0);
 
             agent.AddNeed(need);
             agent.AddActions(a1, a2, a3);
@@ -171,7 +161,7 @@ namespace HORNS_UnitTests
 
         private class LinearNeed : Need<int>
         {
-            public LinearNeed(Variable<int> variable, int desired, VariableSolver<int> solver) : base(variable, desired, solver)
+            public LinearNeed(Variable<int> variable, int desired) : base(variable, desired)
             {
             }
 
@@ -183,7 +173,7 @@ namespace HORNS_UnitTests
 
         private class BoolNeed : Need<bool>
         {
-            public BoolNeed(Variable<bool> variable, bool desired, VariableSolver<bool> solver) : base(variable, desired, solver)
+            public BoolNeed(Variable<bool> variable, bool desired) : base(variable, desired)
             {
             }
 
@@ -203,38 +193,33 @@ namespace HORNS_UnitTests
             var a4 = new BasicAction("4");
             var a5 = new BasicAction("5");
 
-            var v1 = new Variable<int>(1);
-            var v2 = new Variable<bool>(false);
-            var v3 = new Variable<bool>(false);
-            var v4 = new Variable<bool>(false);
+            var v1 = new IntVariable(1);
+            var v2 = new BoolVariable(false);
+            var v3 = new BoolVariable(false);
+            var v4 = new BoolVariable(false);
 
-            var s1 = new IntegerSolver();
-            var s2 = new BooleanSolver();
-            var s3 = new BooleanSolver();
-            var s4 = new BooleanSolver();
-
-            var n1 = new LinearNeed(v1, 10, s1);
-            var n2 = new BoolNeed(v2, true, s2);
+            var n1 = new LinearNeed(v1, 10);
+            var n2 = new BoolNeed(v2, true);
 
             a1.AddCost(2);
-            a1.AddResult<bool, BooleanResult, BooleanSolver, BooleanPrecondition>(new BooleanResult(v2, true), s2);
+            a1.AddResult(v2, new BooleanResult(true));
 
             a2.AddCost(3);
-            a2.AddResult<bool, BooleanResult, BooleanSolver, BooleanPrecondition>(new BooleanResult(v3, true), s3);
+            a2.AddResult(v3, new BooleanResult(true));
 
             a3.AddCost(1);
             a3.AddCost(v2, v => v ? 100 : 0);
-            a3.AddResult<bool, BooleanResult, BooleanSolver, BooleanPrecondition>(new BooleanResult(v4, true), s4);
+            a3.AddResult(v4, new BooleanResult(true));
 
             a4.AddCost(1);
-            a4.AddPrecondition<bool, BooleanResult, BooleanSolver, BooleanPrecondition>(new BooleanPrecondition(v3, true, s3));
-            a4.AddResult<bool, BooleanResult, BooleanSolver, BooleanPrecondition>(new BooleanResult(v3, false), s3);
-            a4.AddResult<int, IntegerAddResult, IntegerSolver, IntegerPrecondition>(new IntegerAddResult(v1, 1), s1);
+            a4.AddPrecondition(v3, new BooleanPrecondition(true));
+            a4.AddResult(v3, new BooleanResult(false));
+            a4.AddResult(v1, new IntegerAddResult(1));
 
             a5.AddCost(1);
-            a5.AddPrecondition<bool, BooleanResult, BooleanSolver, BooleanPrecondition>(new BooleanPrecondition(v4, true, s4));
-            a5.AddResult<bool, BooleanResult, BooleanSolver, BooleanPrecondition>(new BooleanResult(v4, false), s4);
-            a5.AddResult<int, IntegerAddResult, IntegerSolver, IntegerPrecondition>(new IntegerAddResult(v1, 1), s1);
+            a5.AddPrecondition(v4, new BooleanPrecondition(true));
+            a5.AddResult(v4, new BooleanResult(false));
+            a5.AddResult(v1, new IntegerAddResult(1));
 
             agent.AddActions(a1, a2, a3, a4, a5);
             agent.AddNeed(n1);

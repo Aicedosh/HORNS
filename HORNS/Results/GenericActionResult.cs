@@ -6,12 +6,11 @@ namespace HORNS
 {
     public abstract class ActionResult<T> : ActionResult
     {
-        protected Variable<T> Variable { get; private set; }
+        protected internal Variable<T> Variable { get; internal set; }
         internal override Variable AbstractVariable => Variable;
 
-        private protected ActionResult(Variable<T> variable)
+        private protected ActionResult()
         {
-            Variable = variable;
         }
 
         protected internal abstract T GetResultValue(Variable<T> variable);

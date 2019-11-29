@@ -8,7 +8,7 @@ namespace HORNS
     {
         public int Term { get; }
 
-        public IntegerAddResult(Variable<int> variable, int term) : base(variable)
+        public IntegerAddResult(int term)
         {
             Term = term;
         }

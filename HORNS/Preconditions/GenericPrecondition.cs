@@ -6,25 +6,22 @@ namespace HORNS
 {
     public abstract class Precondition<T> : Precondition
     {
-        // reference to global variable
-        protected Variable<T> Variable { get; }
-        // target value
+        protected internal Variable<T> Variable { get; internal set; }
         public T Value { get; }
         // current state
         internal T State { get; set; }
 
-        public Precondition(Variable<T> variable, T value) : base(variable.Id)
+        public Precondition(T value)
         {
-            Variable = variable;
             Value = value;
             State = value;
         }
 
-        public Precondition(Precondition<T> precondition) : base(precondition.Variable.Id)
+        public Precondition(Precondition<T> precondition)
         {
-            Variable = precondition.Variable;
             Value = precondition.Value;
             State = precondition.State;
+            Variable = precondition.Variable;
         }
 
         internal override Variable GetVariable()

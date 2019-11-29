@@ -4,7 +4,7 @@ namespace HORNS
 {
     public abstract class Precondition : IIdentifiable
     {
-        internal int Id { get; }
+        internal int Id => GetVariable().Id;
         int IIdentifiable.Id => Id;
 
         protected internal abstract Precondition Clone();
@@ -24,10 +24,5 @@ namespace HORNS
         protected internal abstract Precondition Combine(Precondition precondition);
 
         internal abstract Variable GetVariable();
-
-        public Precondition(int id)
-        {
-            Id = id;
-        }
     }
 }

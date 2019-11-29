@@ -6,16 +6,16 @@ namespace HORNS
 {
     public class BooleanPrecondition : Precondition<bool, BooleanSolver>
     {
-        private readonly BooleanSolver solver;
-
-        public BooleanPrecondition(Variable<bool> variable, bool value, BooleanSolver solver) : base(variable, value, solver)
+        public BooleanPrecondition(bool value) : base(value)
         {
-            this.solver = solver;
+        }
+
+        private BooleanPrecondition(bool value, BooleanPrecondition other) : base(value, other)
+        {
         }
 
         public BooleanPrecondition(BooleanPrecondition precondition) : base(precondition)
         {
-            solver = precondition.solver;
         }
 
         protected internal override Precondition Combine(Precondition precondition)
@@ -24,7 +24,7 @@ namespace HORNS
             {
                 return null;
             }
-            return new BooleanPrecondition(Variable, Value, solver);
+            return new BooleanPrecondition(Value, this);
         }
 
         protected internal override bool IsEqualOrWorse(Precondition precondition)
@@ -37,13 +37,9 @@ namespace HORNS
             return Variable.Value == boolPre.Variable.Value;
         }
 
-        protected internal override Precondition Subtract(ActionResult actionResult)
+        protected internal override Precondition Subtract(ActionResult result)
         {
-            if (!(actionResult is BooleanResult))
-            {
-                return null;
-            }
-            return new BooleanPrecondition(Variable, !(actionResult as BooleanResult).EndValue, solver);
+            return new BooleanPrecondition(!(result as BooleanResult).EndValue, this);
         }
 
         protected internal override bool IsFulfilled(bool value)

@@ -39,8 +39,8 @@ namespace HORNS_UnitTests
     // BooleanNeed
     class BooleanNeed : Need<bool>
     {
-        public BooleanNeed(Variable<bool> variable, bool desired, VariableSolver<bool> solver)
-            : base(variable, desired, solver)
+        public BooleanNeed(Variable<bool> variable, bool desired)
+            : base(variable, desired)
         {
         }
 
@@ -52,8 +52,8 @@ namespace HORNS_UnitTests
 
     class LinearIntegerNeed : Need<int>
     {
-        public LinearIntegerNeed(Variable<int> variable, int desired, VariableSolver<int> solver)
-            : base(variable, desired, solver)
+        public LinearIntegerNeed(Variable<int> variable, int desired)
+            : base(variable, desired)
         {
         }
 

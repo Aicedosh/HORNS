@@ -15,22 +15,28 @@ namespace HORNS
 
         //TODO: Implement builder pattern to ensure all results, costs and precondidtions are added before adding to agent's possible actions
         //      This may also make it possible to ommit passing same solver in every call (first calling setup for solver and then adding results/preconditions)
-        public void AddResult<T, RT, ST, PT>(RT result, ST solver)
-            where ST : VariableSolver<T, RT, PT>
+        public void AddResult<T, RT, ST, PT>(Variable<T, RT, ST, PT> variable, RT result)
+            where ST : VariableSolver<T, RT, PT>, new()
             where RT : ActionResult<T, ST>
             where PT : Precondition<T, ST>
         {
-            solver.Register(result);
+            //TODO: Clone beforehand
+            variable.Solver.Register(result);
+            result.Variable = variable;
             result.Action = this;
             results.Add(result);
         }
 
-        public void AddPrecondition<T, RT, ST, PT>(PT precondition)
-            where ST : VariableSolver<T, RT, PT>
+        public void AddPrecondition<T, RT, ST, PT>(Variable<T, RT, ST, PT> variable, PT precondition)
+            where ST : VariableSolver<T, RT, PT>, new()
             where RT : ActionResult<T, ST>
             where PT : Precondition<T, ST>
         {
+            //TODO: Clone beforehand
             preconditions.Add(precondition);
+
+            precondition.SetSolver(variable.Solver);
+            precondition.Variable = variable;
         }
 
         public void AddCost<T>(Variable<T> variable, Func<T, float> evaluationFunction)

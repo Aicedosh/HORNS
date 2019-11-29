@@ -6,24 +6,24 @@ namespace HORNS
 {
     public class IntegerPrecondition : Precondition<int, IntegerSolver>
     {
-        private readonly IntegerSolver solver;
-
         public enum Condition
         {
             AtLeast, AtMost
         }
         public Condition Direction { get; }
 
-        public IntegerPrecondition(Variable<int> variable, int value, Condition direction, IntegerSolver solver)
-            : base(variable, value, solver)
+        public IntegerPrecondition(int value, Condition direction)
+            : base(value)
         {
             Direction = direction;
-            this.solver = solver;
+        }
+
+        private IntegerPrecondition(int value, IntegerPrecondition other) : base(value, other)
+        {
         }
 
         public IntegerPrecondition(IntegerPrecondition precondition) : base(precondition)
         {
-            solver = precondition.solver;
             Direction = precondition.Direction;
         }
 
@@ -33,7 +33,7 @@ namespace HORNS
             {
                 return null;
             }
-            return new IntegerPrecondition(Variable, Value + intPre.Value, Direction, solver);
+            return new IntegerPrecondition(Value + intPre.Value, this);
         }
 
         protected internal override bool IsEqualOrWorse(Precondition precondition)
@@ -50,7 +50,7 @@ namespace HORNS
             var addRes = actionResult as IntegerAddResult;
             int newVal = Value + addRes.Term * (Direction == Condition.AtMost ? 1 : -1);
 
-            return new IntegerPrecondition(Variable, newVal, Direction, solver);
+            return new IntegerPrecondition(newVal, this);
         }
 
         protected internal override bool IsFulfilled(int value)
