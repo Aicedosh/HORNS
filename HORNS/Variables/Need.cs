@@ -6,16 +6,16 @@ namespace HORNS
 {
     public abstract class Need<T> : Variable<T>, INeed
     {
-        private readonly VariableSolver<T> solver;
         private protected override T _Value { get => Variable.Value; set => Variable.Value = value; }
         internal Variable<T> Variable { get; private set; }
         public T Desired { get; private set; }
 
-        public Need(Variable<T> variable, T desired, VariableSolver<T> solver)
+        internal override VariableSolver<T> GenericSolver => Variable.GenericSolver;
+
+        public Need(Variable<T> variable, T desired)
         {
             Variable = variable;
             Desired = desired;
-            this.solver = solver;
         }
 
         public abstract override float Evaluate(T value);
@@ -27,7 +27,7 @@ namespace HORNS
 
         public IEnumerable<Action> GetActionsTowards()
         {
-            return solver.GetActionsTowards(Variable, Desired);
+            return GenericSolver.GetActionsTowards(Variable, Desired);
         }
 
         public bool IsSatisfied()

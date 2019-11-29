@@ -79,7 +79,7 @@ namespace HORNS_Sandbox
 
         private class Woodesire : Need<bool>
         {
-            public Woodesire(Variable<bool> variable, bool desired, VariableSolver<bool> solver) : base(variable, desired, solver)
+            public Woodesire(Variable<bool> variable, bool desired) : base(variable, desired)
             {
             }
 
@@ -91,7 +91,7 @@ namespace HORNS_Sandbox
 
         private class SleepNeed : Need<bool>
         {
-            public SleepNeed(Variable<bool> variable, bool desired, VariableSolver<bool> solver) : base(variable, desired, solver)
+            public SleepNeed(Variable<bool> variable, bool desired) : base(variable, desired)
             {
             }
 
@@ -111,7 +111,7 @@ namespace HORNS_Sandbox
 
         private class RzodkiewNeed : Need<int>
         {
-            public RzodkiewNeed(Variable<int> variable, int desired, VariableSolver<int> solver) : base(variable, desired, solver)
+            public RzodkiewNeed(Variable<int> variable, int desired) : base(variable, desired)
             {
             }
 
@@ -125,47 +125,43 @@ namespace HORNS_Sandbox
         public static void Run()
         {
             Agent agent = new Agent();
-            BooleanSolver treeSolver = new BooleanSolver();
-            BooleanSolver axeSolver = new BooleanSolver();
-            BooleanSolver energySolver = new BooleanSolver();
-            IntegerSolver rzodkiewSolver = new IntegerSolver();
 
-            Variable<bool> hasTree = new Variable<bool>() { Value = false };
-            Variable<bool> hasAxe = new Variable<bool>() { Value = false };
-            Variable<bool> hasEnergy = new Variable<bool>() { Value = true };
-            Variable<int> rzodkiews = new Variable<int>() { Value = 5 };
+            BoolVariable hasTree = new BoolVariable(false);
+            BoolVariable hasAxe = new BoolVariable(false);
+            BoolVariable hasEnergy = new BoolVariable(true);
+            IntVariable rzodkiews = new IntVariable(5);
 
             HORNS.Action chop = new ChopAction(hasEnergy, rzodkiews, 3);
             chop.AddCost(5);
-            chop.AddPrecondition<bool, BooleanResult, BooleanSolver, BooleanPrecondition>(new BooleanPrecondition(hasAxe, true, axeSolver));
-            chop.AddPrecondition<bool, BooleanResult, BooleanSolver, BooleanPrecondition>(new BooleanPrecondition(hasEnergy, true, energySolver));
-            chop.AddPrecondition<int, IntegerAddResult, IntegerSolver, IntegerPrecondition>(new IntegerPrecondition(rzodkiews, 1, IntegerPrecondition.Condition.AtLeast, rzodkiewSolver));
-            chop.AddResult<bool, BooleanResult, BooleanSolver, BooleanPrecondition>(new BooleanResult(hasTree, true), treeSolver);
+            chop.AddPrecondition(hasAxe, new BooleanPrecondition(true));
+            chop.AddPrecondition(hasEnergy, new BooleanPrecondition(true));
+            chop.AddPrecondition(rzodkiews, new IntegerPrecondition(1, IntegerPrecondition.Condition.AtLeast));
+            chop.AddResult(hasTree, new BooleanResult(true));
 
             HORNS.Action chop2 = new ChopAction(hasEnergy, rzodkiews, 3, "without axe");
             chop2.AddCost(2);
             chop2.AddCost(rzodkiews, rz => rz);
-            chop2.AddPrecondition<bool, BooleanResult, BooleanSolver, BooleanPrecondition>(new BooleanPrecondition(hasEnergy, true, energySolver));
-            chop2.AddPrecondition<int, IntegerAddResult, IntegerSolver, IntegerPrecondition>(new IntegerPrecondition(rzodkiews, 1, IntegerPrecondition.Condition.AtLeast, rzodkiewSolver));
-            chop2.AddResult<bool, BooleanResult, BooleanSolver, BooleanPrecondition>(new BooleanResult(hasTree, true), treeSolver);
+            chop2.AddPrecondition(hasEnergy, new BooleanPrecondition(true));
+            chop2.AddPrecondition(rzodkiews, new IntegerPrecondition(1, IntegerPrecondition.Condition.AtLeast));
+            chop2.AddResult(hasTree, new BooleanResult(true));
 
             HORNS.Action pick = new PickAction();
             pick.AddCost(1);
-            pick.AddPrecondition<bool, BooleanResult, BooleanSolver, BooleanPrecondition>(new BooleanPrecondition(hasAxe, false, axeSolver));
-            pick.AddResult<bool, BooleanResult, BooleanSolver, BooleanPrecondition>(new BooleanResult(hasAxe, true), axeSolver);
+            pick.AddPrecondition(hasAxe, new BooleanPrecondition(false));
+            pick.AddResult(hasAxe, new BooleanResult(true));
 
             HORNS.Action put = new PutAction();
             put.AddCost(1);
-            put.AddPrecondition<bool, BooleanResult, BooleanSolver, BooleanPrecondition>(new BooleanPrecondition(hasAxe, true, axeSolver));
-            put.AddResult<bool, BooleanResult, BooleanSolver, BooleanPrecondition>(new BooleanResult(hasAxe, false), axeSolver);
+            put.AddPrecondition(hasAxe, new BooleanPrecondition(true));
+            put.AddResult(hasAxe, new BooleanResult(false));
 
             HORNS.Action sleep = new SleepAction();
             sleep.AddCost(100);
-            sleep.AddPrecondition<bool, BooleanResult, BooleanSolver, BooleanPrecondition>(new BooleanPrecondition(hasAxe, false, axeSolver));
-            sleep.AddResult<bool, BooleanResult, BooleanSolver, BooleanPrecondition>(new BooleanResult(hasEnergy, true), energySolver);
+            sleep.AddPrecondition(hasAxe, new BooleanPrecondition(false));
+            sleep.AddResult(hasEnergy, new BooleanResult(true));
 
-            Woodesire n = new Woodesire(hasTree, true, treeSolver);
-            SleepNeed sleepNeed = new SleepNeed(hasEnergy, true, energySolver);
+            Woodesire n = new Woodesire(hasTree, true);
+            SleepNeed sleepNeed = new SleepNeed(hasEnergy, true);
             
             agent.AddActions(chop, chop2, pick, put, sleep);
 
@@ -174,12 +170,11 @@ namespace HORNS_Sandbox
 
             HORNS.Action getRzodkiew = new GetRzodkiewAction();
             getRzodkiew.AddCost(3);
-            getRzodkiew.AddResult<int, IntegerAddResult, IntegerSolver, IntegerPrecondition>(
-                new IntegerAddResult(rzodkiews, 1), rzodkiewSolver);
-            RzodkiewNeed rzodkiewNeed = new RzodkiewNeed(rzodkiews, 1, rzodkiewSolver);
+            getRzodkiew.AddResult(rzodkiews, new IntegerAddResult(1));
+            RzodkiewNeed rzodkiewNeed = new RzodkiewNeed(rzodkiews, 1);
 
             agent.AddAction(getRzodkiew);
-            //agent.AddNeed(rzodkiewNeed);
+            agent.AddNeed(rzodkiewNeed);
 
             for(; ; )
             {

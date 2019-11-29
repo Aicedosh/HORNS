@@ -6,7 +6,8 @@ namespace HORNS
 {
     public class BooleanResult : ActionResult<bool, BooleanSolver>
     {
-        public BooleanResult(Variable<bool> variable, bool endValue) : base(variable)
+        //TODO: [!] Replace with static factory methods?
+        public BooleanResult(bool endValue)
         {
             EndValue = endValue;
         }

@@ -17,11 +17,11 @@ namespace HORNS_UnitTests
             BasicAction a1 = new BasicAction("increase");
             BasicAction a2 = new BasicAction("decrease");
 
-            Variable<int> v = new Variable<int>(value);
+            Variable<int> v = new IntVariable(value);
             IntegerSolver s = new IntegerSolver();
 
-            IntegerAddResult r1 = new IntegerAddResult(v, 1);
-            IntegerAddResult r2 = new IntegerAddResult(v, -1);
+            IntegerAddResult r1 = new IntegerAddResult(1);
+            IntegerAddResult r2 = new IntegerAddResult(-1);
 
             r1.Action = a1;
             r2.Action = a2;

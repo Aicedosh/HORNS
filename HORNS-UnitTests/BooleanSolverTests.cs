@@ -13,9 +13,9 @@ namespace HORNS_UnitTests
         public void GetActionsTowards_ShouldReturnRegisteredActionResult(bool value)
         {
             BasicAction a = new BasicAction("1");
-            Variable<bool> v = new Variable<bool>();
+            Variable<bool> v = new BoolVariable();
             BooleanSolver s = new BooleanSolver();
-            BooleanResult result = new BooleanResult(v, value);
+            BooleanResult result = new BooleanResult(value);
 
             result.Action = a;
             s.Register(result);
@@ -33,10 +33,10 @@ namespace HORNS_UnitTests
             BasicAction a = new BasicAction("1");
             BasicAction b = new BasicAction("2");
 
-            Variable<bool> v = new Variable<bool>();
+            Variable<bool> v = new BoolVariable();
             BooleanSolver s = new BooleanSolver();
-            BooleanResult result = new BooleanResult(v, value);
-            BooleanResult other_result = new BooleanResult(v, !value);
+            BooleanResult result = new BooleanResult(value);
+            BooleanResult other_result = new BooleanResult(!value);
             result.Action = a;
             other_result.Action = b;
 
@@ -54,7 +54,7 @@ namespace HORNS_UnitTests
         [InlineData(false, 7)]
         public void GetActionsTowards_MultipleResults_ShouldReturnAll(bool value, int num)
         {
-            Variable<bool> v = new Variable<bool>();
+            Variable<bool> v = new BoolVariable();
             BooleanSolver s = new BooleanSolver();
 
             List<BasicAction> actions = new List<BasicAction>();
@@ -62,7 +62,7 @@ namespace HORNS_UnitTests
             for (int i = 0; i < num; i++)
             {
                 BasicAction action = new BasicAction(i.ToString());
-                BooleanResult br = new BooleanResult(v, value);
+                BooleanResult br = new BooleanResult(value);
 
                 actions.Add(action);
                 br.Action = action;
@@ -80,16 +80,16 @@ namespace HORNS_UnitTests
         [InlineData(false)]
         public void GetActionsSatisfying_SingleMatchingResult_ShouldReturnAction(bool value)
         {
-            Variable<bool> v = new Variable<bool>();
+            Variable<bool> v = new BoolVariable();
             BooleanSolver s = new BooleanSolver();
 
             BasicAction a = new BasicAction("1");
-            BooleanResult result = new BooleanResult(v, value);
+            BooleanResult result = new BooleanResult(value);
             result.Action = a;
 
             s.Register(result);
 
-            List<Action> got = new List<Action>(s.GetActionsSatisfying(new BooleanPrecondition(v, value, s)));
+            List<Action> got = new List<Action>(s.GetActionsSatisfying(new BooleanPrecondition(value)));
             Assert.Single(got);
             Assert.Equal(a.Tag, (got[0] as BasicAction).Tag);
         }
@@ -99,16 +99,16 @@ namespace HORNS_UnitTests
         [InlineData(false)]
         public void GetActionsSatisfying_SingleNonMatchingResult_ShouldReturnNoActions(bool value)
         {
-            Variable<bool> v = new Variable<bool>();
+            Variable<bool> v = new BoolVariable();
             BooleanSolver s = new BooleanSolver();
 
             BasicAction a = new BasicAction("1");
-            BooleanResult result = new BooleanResult(v, !value);
+            BooleanResult result = new BooleanResult(!value);
             result.Action = a;
 
             s.Register(result);
 
-            List<Action> got = new List<Action>(s.GetActionsSatisfying(new BooleanPrecondition(v, value, s)));
+            List<Action> got = new List<Action>(s.GetActionsSatisfying(new BooleanPrecondition(value)));
             Assert.Empty(got);
         }
     }
