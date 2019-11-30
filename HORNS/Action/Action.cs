@@ -90,18 +90,13 @@ namespace HORNS
             }
         }
 
-        internal IEnumerable<Action> GetActionsSatisfying(Requirement requirement)
-        {
-            return requirement.GetActions();
-        }
-
         internal IEnumerable<Precondition> GetPreconditions()
         {
             return preconditions;
         }
 
         //internal void SubtractResults(RequirementSet requirements)
-        internal void SubtractResults(RequirementSet requirements)
+        internal void SubtractResults(PreconditionSet requirements)
         {
             foreach (var result in results)
             {

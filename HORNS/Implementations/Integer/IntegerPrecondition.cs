@@ -21,30 +21,36 @@ namespace HORNS
             this.solver = solver;
         }
 
-        protected override Precondition<int> Combine(Precondition<int> pre)
+        public IntegerPrecondition(IntegerPrecondition precondition) : base(precondition)
         {
-            if (!(pre is IntegerPrecondition intPre) || Direction != intPre.Direction)
+            solver = precondition.solver;
+            Direction = precondition.Direction;
+        }
+
+        protected internal override Precondition Combine(Precondition precondition)
+        {
+            if (!(precondition is IntegerPrecondition intPre) || Direction != intPre.Direction)
             {
                 return null;
             }
             return new IntegerPrecondition(Variable, Value + intPre.Value, Direction, solver);
         }
 
-        protected override bool IsEqualOrWorse(Precondition<int> pre)
+        protected internal override bool IsEqualOrWorse(Precondition precondition)
         {
-            if (!(pre is IntegerPrecondition intPre) || Direction != intPre.Direction || Value != intPre.Value)
+            if (!(precondition is IntegerPrecondition intPre) || Direction != intPre.Direction || Value != intPre.Value)
             {
                 return false;
             }
             return Variable.Value >= intPre.Variable.Value;
         }
 
-        internal override PreconditionRequirement Subtract(PreconditionRequirement req, ActionResult<int> result)
+        protected internal override Precondition Subtract(ActionResult actionResult)
         {
-            var addRes = result as IntegerAddResult;
+            var addRes = actionResult as IntegerAddResult;
             int newVal = Value + addRes.Term * (Direction == Condition.AtMost ? 1 : -1);
 
-            return new IntegerPrecondition(Variable, newVal, Direction, solver).GetRequirement() as PreconditionRequirement;
+            return new IntegerPrecondition(Variable, newVal, Direction, solver);
         }
 
         protected internal override bool IsFulfilled(int value)
@@ -52,9 +58,14 @@ namespace HORNS
             return Direction == Condition.AtLeast ? value >= Value : value <= Value;
         }
 
-        protected internal override bool IsReqZeroed(int value)
+        protected internal override bool IsZeroed(int value)
         {
             return value <= 0;
+        }
+
+        protected internal override Precondition Clone()
+        {
+            return new IntegerPrecondition(this);
         }
     }
 }

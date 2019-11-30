@@ -8,31 +8,10 @@ namespace HORNS_UnitTests
 {
     public class BooleanPreconditionTests
     {
-        [Fact]
-        public void Combine_WithEqualValue_True_ShouldReturnSamePrecondition()
-        {
-            CombineWihEqual(true);
-        }
-
-        [Fact]
-        public void Combine_WithEqualValue_False_ShouldReturnSamePrecondition()
-        {
-            CombineWihEqual(false);
-        }
-
-        [Fact]
-        public void Combine_WithDifferentValue_True_ShouldReturnNull()
-        {
-            CombineWihDIfferent(true);
-        }
-
-        [Fact]
-        public void Combine_WithDifferentValue_False_ShouldReturnNull()
-        {
-            CombineWihDIfferent(false);
-        }
-
-        private void CombineWihEqual(bool value)
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public void Combine_WithEqualValue_ShouldReturnSamePrecondition(bool value)
         {
             Variable<bool> v = new Variable<bool>();
             BooleanSolver solver = new BooleanSolver();
@@ -40,14 +19,17 @@ namespace HORNS_UnitTests
 
             BooleanPrecondition p2 = new BooleanPrecondition(v, value, solver);
 
-            var req = p.GetRequirement().Combine(p2.GetRequirement());
-            Assert.NotNull(req);
-            Assert.Equal(v.Id, req.Id);
-            Assert.IsType<BooleanPrecondition.PreconditionRequirement>(req);
-            Assert.Equal(p.Value, ((req as BooleanPrecondition.PreconditionRequirement).precondition as BooleanPrecondition).Value);
+            var pre = p.Combine(p2);
+            Assert.NotNull(pre);
+            Assert.Equal(v.Id, pre.Id);
+            Assert.IsType<BooleanPrecondition>(pre);
+            Assert.Equal(p.Value, (pre as BooleanPrecondition).Value);
         }
 
-        private void CombineWihDIfferent(bool value)
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public void Combine_WithDifferentValue_ShouldReturnNull(bool value)
         {
             Variable<bool> v = new Variable<bool>();
             BooleanSolver solver = new BooleanSolver();
@@ -55,8 +37,8 @@ namespace HORNS_UnitTests
 
             BooleanPrecondition p2 = new BooleanPrecondition(v, !value, solver);
 
-            var req = p.GetRequirement().Combine(p2.GetRequirement());
-            Assert.Null(req);
+            var pre = p.Combine(p2);
+            Assert.Null(pre);
         }
     }
 }
