@@ -18,14 +18,5 @@ namespace HORNS
         {
             return EndValue;
         }
-
-        internal override void Apply(IdSet<Variable> variables)
-        {
-            if(!variables.Contains(Variable.Id))
-            {
-                variables.Add(Variable.GetCopy());
-            }
-            (variables[Variable.Id] as Variable<bool>).Value = EndValue;
-        }
     }
 }

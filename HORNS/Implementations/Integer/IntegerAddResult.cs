@@ -17,16 +17,5 @@ namespace HORNS
         {
             return variable.Value + Term;
         }
-
-        // TODO: is this necessary to override? maybe it's enough to Apply always using GetResultValue?
-        internal override void Apply(IdSet<Variable> variables)
-        {
-            if (!variables.Contains(Variable.Id))
-            {
-                variables.Add(Variable.GetCopy());
-            }
-            var variable = variables[Variable.Id] as Variable<int>;
-            variable.Value = GetResultValue(variable);
-        }
     }
 }

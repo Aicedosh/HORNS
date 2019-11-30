@@ -31,6 +31,16 @@ namespace HORNS
             Variable.Value = GetResultValue(Variable);
         }
 
+        internal override void Apply(IdSet<Variable> variables)
+        {
+            if (!variables.Contains(Variable.Id))
+            {
+                variables.Add(Variable.GetCopy());
+            }
+            var variable = variables[Variable.Id] as Variable<T>;
+            variable.Value = GetResultValue(variable);
+        }
+
         internal override void SubtractFrom(PreconditionSet preconditions)
         {
             if (!preconditions.Contains(Variable.Id)) return;
@@ -38,17 +48,5 @@ namespace HORNS
             Precondition newPre = pre.Subtract(this);
             preconditions.Replace(newPre);
         }
-
-        //internal override void Apply(VariableSet variables)
-        //{
-        //    Variable currentVariable = Variable;
-        //    if (!variables.TryGet(ref currentVariable))
-        //    {
-        //        currentVariable = Variable.GetCopy();
-        //        variables.Add(currentVariable);
-        //    }
-        //    Variable<T> curr = currentVariable as Variable<T>;
-        //    curr.Value = GetResultValue(curr);
-        //}
     }
 }
