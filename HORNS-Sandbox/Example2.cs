@@ -27,7 +27,7 @@ namespace HORNS_Sandbox
 
         private class Hunger : Need<int>
         {
-            public Hunger(Variable<int> variable, int desired, VariableSolver<int> solver) : base(variable, desired, solver) { }
+            public Hunger(Variable<int> variable, int desired) : base(variable, desired) { }
 
             public override float Evaluate(int value)
             {
@@ -37,7 +37,7 @@ namespace HORNS_Sandbox
 
         private class Energy : Need<int>
         {
-            public Energy(Variable<int> variable, int desired, VariableSolver<int> solver) : base(variable, desired, solver) { }
+            public Energy(Variable<int> variable, int desired) : base(variable, desired) { }
 
             public override float Evaluate(int value)
             {
@@ -47,16 +47,16 @@ namespace HORNS_Sandbox
 
         public static void Run()
         {
-            var hasAxe    = new Variable<bool>();
-            var hunger    = new Variable<int>(50);
-            var energy    = new Variable<int>(105);
-            var money     = new Variable<int>();
-            var wood      = new Variable<int>();
-            var chairs    = new Variable<int>();
-            var rzodkiews = new Variable<int>();
-            var soups     = new Variable<int>();
+            var hasAxe    = new BoolVariable();
+            var hunger    = new IntVariable(50);
+            var energy    = new IntVariable(105);
+            var money     = new IntVariable();
+            var wood      = new IntVariable();
+            var chairs    = new IntVariable();
+            var rzodkiews = new IntVariable();
+            var soups     = new IntVariable();
 
-            var feelingSoupy = new Variable<bool>();
+            var feelingSoupy = new BoolVariable();
 
             var hasAxeSolver    = new BooleanSolver();
             var hungerSolver    = new IntegerSolver();
@@ -161,8 +161,8 @@ namespace HORNS_Sandbox
             var idle = new MessageAction("Is bored");
             idle.AddCost(100000);
 
-            var hungerNeed = new Hunger(hunger, 0, hungerSolver);
-            var energyNeed = new Energy(energy, int.MaxValue, energySolver);
+            var hungerNeed = new Hunger(hunger, 0);
+            var energyNeed = new Energy(energy, int.MaxValue);
 
             var agent = new Agent();
             agent.AddNeed(hungerNeed);
