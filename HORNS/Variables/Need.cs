@@ -32,7 +32,12 @@ namespace HORNS
 
         public bool IsSatisfied()
         {
-            return _Value.Equals(Desired);
+            return IsSatisfied(_Value);
+        }
+
+        public virtual bool IsSatisfied(T value)
+        {
+            return value.Equals(Desired);
         }
     }
 }
