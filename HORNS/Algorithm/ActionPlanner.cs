@@ -9,12 +9,9 @@ namespace HORNS
         private class ActionPlannerNode
         {
             public float Distance { get; set; }
-            // TODO: is Actions actually needed? we're looking at actions per requirement anyway
-            // public List<Action> Actions { get; set; } = new List<Action>();
-            public RequirementSet Requirements { get; set; } = new RequirementSet();
+            public PreconditionSet Preconditions { get; set; } = new PreconditionSet();
             public ActionPlannerNode Prev { get; set; }
             public Action PrevAction { get; set; }
-            // public VariableSet VariablePatch { get; set; }
 
             public ActionPlannerNode(float dist = float.MaxValue)
             {
@@ -52,7 +49,7 @@ namespace HORNS
             {
                 var open = new SimplePriorityQueue<ActionPlannerNode>();
                 // TODO: optimize close
-                var close = new List<RequirementSet>();
+                var close = new List<PreconditionSet>();
 
                 var goal = new ActionPlannerNode(0);
                 foreach (var action in need.GetActionsTowards().Where(a=>agent.PossibleActions.Contains(a)))
@@ -69,53 +66,52 @@ namespace HORNS
                     var node = open.Dequeue();
 
                     var res = true;
-                    foreach (var req in node.Prev.Requirements)
+                    foreach (var pre in node.Prev.Preconditions)
                     {
-                        res = node.Requirements.Add(req.Clone());
+                        res = node.Preconditions.Add(pre.Clone());
                     }
 
-                    node.PrevAction.SubtractResults(node.Requirements);
-                    node.Requirements.RemoveWhere(x => x.Fulfilled);
-                    bool badReq = false;
+                    node.PrevAction.SubtractResults(node.Preconditions);
+                    node.Preconditions.RemoveWhere(x => x.IsFulfilled());
+                    bool badPre = false;
                     foreach (var pre in node.PrevAction.GetPreconditions())
                     {
-                        if (!node.Requirements.Add(pre.GetRequirement()))
+                        if (!node.Preconditions.Add(pre.Clone()))
                         {
-                            badReq = true;
+                            badPre = true;
                             break;
                         }
                     }
-                    if (badReq)
+                    if (badPre)
                     {
                         continue;
                     }
 
-                    bool reqLeft = false;
-                    foreach (var req in node.Requirements)
+                    bool preLeft = false;
+                    foreach (var pre in node.Preconditions)
                     {
-                        // TODO: move fulfilled to another set? after we figure out what to do abt partial fulfillment
-                        if (!req.Fulfilled && !req.IsFulfilled(agent.Variables))
+                        if (!pre.IsFulfilled() && !pre.IsFulfilledByWorld())
                         {
-                            reqLeft = true;
+                            preLeft = true;
                             break;
                         }
                     }
-                    if (!reqLeft)
+                    if (!preLeft)
                     {
                         last = node;
                         break;
                     }
 
                     bool cut = false;
-                    foreach (var reqSet in close)
+                    foreach (var preSet in close)
                     {
                         cut = true;
-                        // if reqSet has a req that we don't have then we're not equal/worse
-                        // if we have a req that's better than the same req in reqSet then we're not equal/worse
-                        foreach (var req in reqSet)
+                        // if preSet has a pre that we don't have then we're not equal/worse
+                        // if we have a pre that's better than the same pre in preSet then we're not equal/worse
+                        foreach (var pre in preSet)
                         {
-                            Requirement refReq = req;
-                            if (!node.Requirements.TryGet(ref refReq) || !refReq.IsEqualOrWorse(req))
+                            Precondition refPre = pre;
+                            if (!node.Preconditions.TryGet(ref refPre) || !refPre.IsEqualOrWorse(pre))
                             {
                                 cut = false;
                                 break;
@@ -131,11 +127,11 @@ namespace HORNS
                         continue;
                     }
 
-                    close.Add(node.Requirements);
+                    close.Add(node.Preconditions);
                     
-                    foreach (var req in node.Requirements)
+                    foreach (var pre in node.Preconditions)
                     {
-                        var actions = req.GetActions();
+                        var actions = pre.GetActions();
                         foreach (var action in actions.Where(a => agent.PossibleActions.Contains(a)))
                         {                           
                             var newNode = new ActionPlannerNode(node.Distance + action.CachedCost);

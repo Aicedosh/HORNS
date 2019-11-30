@@ -13,18 +13,23 @@ namespace HORNS
             this.solver = solver;
         }
 
-        protected override Precondition<bool> Combine(Precondition<bool> pre)
+        public BooleanPrecondition(BooleanPrecondition precondition) : base(precondition)
         {
-            if (!(pre is BooleanPrecondition boolPre) || Value != boolPre.Value)
+            solver = precondition.solver;
+        }
+
+        protected internal override Precondition Combine(Precondition precondition)
+        {
+            if (!(precondition is BooleanPrecondition boolPre) || Value != boolPre.Value)
             {
                 return null;
             }
             return new BooleanPrecondition(Variable, Value, solver);
         }
 
-        protected override bool IsEqualOrWorse(Precondition<bool> pre)
+        protected internal override bool IsEqualOrWorse(Precondition precondition)
         {
-            if (!(pre is BooleanPrecondition boolPre) || Value != boolPre.Value)
+            if (!(precondition is BooleanPrecondition boolPre) || Value != boolPre.Value)
             {
                 return false;
             }
@@ -32,9 +37,13 @@ namespace HORNS
             return Variable.Value == boolPre.Variable.Value;
         }
 
-        internal override PreconditionRequirement Subtract(PreconditionRequirement req, ActionResult<bool> result)
+        protected internal override Precondition Subtract(ActionResult actionResult)
         {
-            return new BooleanPrecondition(Variable, !(result as BooleanResult).EndValue, solver).GetRequirement() as PreconditionRequirement; //TODO: refactor
+            if (!(actionResult is BooleanResult))
+            {
+                return null;
+            }
+            return new BooleanPrecondition(Variable, !(actionResult as BooleanResult).EndValue, solver);
         }
 
         protected internal override bool IsFulfilled(bool value)
@@ -43,9 +52,14 @@ namespace HORNS
         }
 
         // TODO: this is temporary
-        protected internal override bool IsReqZeroed(bool value)
+        protected internal override bool IsZeroed(bool value)
         {
             return value != Value;
+        }
+
+        protected internal override Precondition Clone()
+        {
+            return new BooleanPrecondition(this);
         }
     }
 }

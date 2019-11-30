@@ -32,12 +32,12 @@ namespace HORNS
             Variable.Value = GetResultValue(Variable);
         }
 
-        internal override void SubtractFrom(RequirementSet requirements)
+        internal override void SubtractFrom(PreconditionSet preconditions)
         {
-            if (!requirements.Contains(Variable.Id)) return;
-            Requirement req = requirements[Variable.Id];
-            Requirement newReq = req.Subtract(this);
-            requirements.Replace(newReq);
+            if (!preconditions.Contains(Variable.Id)) return;
+            Precondition pre = preconditions[Variable.Id];
+            Precondition newPre = pre.Subtract(this);
+            preconditions.Replace(newPre);
         }
 
         //internal override void Apply(VariableSet variables)

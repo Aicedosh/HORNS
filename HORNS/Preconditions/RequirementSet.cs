@@ -4,11 +4,11 @@ using System.Text;
 
 namespace HORNS
 {
-    internal class RequirementSet : IdSet<Requirement>
+    internal class PreconditionSet : IdSet<Precondition>
     {
-        internal override bool Add(Requirement r)
+        internal override bool Add(Precondition r)
         {
-            if (elements.TryGetValue(r.Id, out Requirement existing))
+            if (elements.TryGetValue(r.Id, out Precondition existing))
             {
                 r = r.Combine(existing);
                 if (r == null)

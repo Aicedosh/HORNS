@@ -13,7 +13,12 @@ namespace HORNS
             this.solver = solver;
         }
 
-        protected override IEnumerable<Action> GetActions()
+        public Precondition(Precondition<T, ST> precondition) : base(precondition)
+        {
+            solver = precondition.solver;
+        }
+
+        protected internal override IEnumerable<Action> GetActions()
         {
             return solver.GetActionsSatisfying(this);
         }
