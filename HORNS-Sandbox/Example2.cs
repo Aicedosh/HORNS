@@ -44,7 +44,7 @@ namespace HORNS_Sandbox
                 return (value > 100 ? 1000000 : 20) + value;
             }
         }
-
+        
         public static void Run()
         {
             var hasAxe    = new BoolVariable();
@@ -58,105 +58,66 @@ namespace HORNS_Sandbox
 
             var feelingSoupy = new BoolVariable();
 
-            var hasAxeSolver    = new BooleanSolver();
-            var hungerSolver    = new IntegerSolver();
-            var energySolver    = new IntegerSolver();
-            var moneySolver     = new IntegerSolver();
-            var woodSolver      = new IntegerSolver();
-            var chairsSolver    = new IntegerSolver();
-            var rzodkiewsSolver = new IntegerSolver();
-            var soupsSolver     = new IntegerSolver();
-
             var pickAxe = new MessageAction("Picked up an axe");
             pickAxe.AddCost(10);
-            pickAxe.AddPrecondition<bool, BooleanResult, BooleanSolver, BooleanPrecondition>(
-                new BooleanPrecondition(hasAxe, false, hasAxeSolver));
-            pickAxe.AddResult<bool, BooleanResult, BooleanSolver, BooleanPrecondition>(
-                new BooleanResult(hasAxe, true), hasAxeSolver);
+            pickAxe.AddPrecondition(hasAxe, new BooleanPrecondition(false));
+            pickAxe.AddResult(hasAxe, new BooleanResult(true));
 
             var chopTree = new MessageAction("Chopped down a tree");
             chopTree.AddCost(50);
-            chopTree.AddPrecondition<bool, BooleanResult, BooleanSolver, BooleanPrecondition>(
-                new BooleanPrecondition(hasAxe, true, hasAxeSolver));
-            chopTree.AddResult<int, IntegerAddResult, IntegerSolver, IntegerPrecondition>(
-                new IntegerAddResult(wood, 1), woodSolver);
-            chopTree.AddResult<int, IntegerAddResult, IntegerSolver, IntegerPrecondition>(
-                new IntegerAddResult(energy, -10), energySolver);
+            chopTree.AddPrecondition(hasAxe, new BooleanPrecondition(true));
+            chopTree.AddResult(wood, new IntegerAddResult(1));
+            chopTree.AddResult(energy, new IntegerAddResult(-10));
 
             var sellWood = new MessageAction("Sold a piece of wood");
             sellWood.AddCost(30);
-            sellWood.AddPrecondition<int, IntegerAddResult, IntegerSolver, IntegerPrecondition>(
-                new IntegerPrecondition(wood, 1, IntegerPrecondition.Condition.AtLeast, woodSolver));
-            sellWood.AddResult<int, IntegerAddResult, IntegerSolver, IntegerPrecondition>(
-                new IntegerAddResult(wood, -1), woodSolver);
-            sellWood.AddResult<int, IntegerAddResult, IntegerSolver, IntegerPrecondition>(
-                new IntegerAddResult(money, 1), moneySolver);
+            sellWood.AddPrecondition(wood, new IntegerPrecondition(1, IntegerPrecondition.Condition.AtLeast));
+            sellWood.AddResult(wood, new IntegerAddResult(-1));
+            sellWood.AddResult(money, new IntegerAddResult(1));
 
             var makeChair = new MessageAction("Made a chair");
             makeChair.AddCost(50);
-            makeChair.AddPrecondition<int, IntegerAddResult, IntegerSolver, IntegerPrecondition>(
-                new IntegerPrecondition(wood, 1, IntegerPrecondition.Condition.AtLeast, woodSolver));
-            makeChair.AddResult<int, IntegerAddResult, IntegerSolver, IntegerPrecondition>(
-                new IntegerAddResult(wood, -1), woodSolver);
-            makeChair.AddResult<int, IntegerAddResult, IntegerSolver, IntegerPrecondition>(
-                new IntegerAddResult(chairs, 1), chairsSolver);
-            makeChair.AddResult<int, IntegerAddResult, IntegerSolver, IntegerPrecondition>(
-                new IntegerAddResult(energy, -5), energySolver);
+            makeChair.AddPrecondition(wood, new IntegerPrecondition(1, IntegerPrecondition.Condition.AtLeast));
+            makeChair.AddResult(wood, new IntegerAddResult(-1));
+            makeChair.AddResult(chairs, new IntegerAddResult(1));
+            makeChair.AddResult(energy, new IntegerAddResult(-5));
 
             var sellChair = new MessageAction("Sold a chair");
             sellChair.AddCost(30);
-            sellChair.AddPrecondition<int, IntegerAddResult, IntegerSolver, IntegerPrecondition>(
-                new IntegerPrecondition(chairs, 1, IntegerPrecondition.Condition.AtLeast, chairsSolver));
-            sellChair.AddResult<int, IntegerAddResult, IntegerSolver, IntegerPrecondition>(
-                new IntegerAddResult(chairs, -1), chairsSolver);
-            sellChair.AddResult<int, IntegerAddResult, IntegerSolver, IntegerPrecondition>(
-                new IntegerAddResult(money, 3), moneySolver);
+            sellChair.AddPrecondition(chairs, new IntegerPrecondition(1, IntegerPrecondition.Condition.AtLeast));
+            sellChair.AddResult(chairs, new IntegerAddResult(-1));
+            sellChair.AddResult(money, new IntegerAddResult(3));
 
             var buyRzodkiew = new MessageAction("Bought a rzodkiew");
             buyRzodkiew.AddCost(30);
-            buyRzodkiew.AddPrecondition<int, IntegerAddResult, IntegerSolver, IntegerPrecondition>(
-                new IntegerPrecondition(money, 3, IntegerPrecondition.Condition.AtLeast, moneySolver));
-            buyRzodkiew.AddResult<int, IntegerAddResult, IntegerSolver, IntegerPrecondition>(
-                new IntegerAddResult(money, -3), moneySolver);
-            buyRzodkiew.AddResult<int, IntegerAddResult, IntegerSolver, IntegerPrecondition>(
-                new IntegerAddResult(rzodkiews, 1), rzodkiewsSolver);
+            buyRzodkiew.AddPrecondition(money, new IntegerPrecondition(3, IntegerPrecondition.Condition.AtLeast));
+            buyRzodkiew.AddResult(money, new IntegerAddResult(-3));
+            buyRzodkiew.AddResult(rzodkiews, new IntegerAddResult(1));
 
             var eatRzodkiew = new MessageAction("Ate a rzodkiew");
             eatRzodkiew.AddCost(10);
             eatRzodkiew.AddCost(feelingSoupy, x => x ? 1000 : 0);
-            eatRzodkiew.AddPrecondition<int, IntegerAddResult, IntegerSolver, IntegerPrecondition>(
-                new IntegerPrecondition(rzodkiews, 1, IntegerPrecondition.Condition.AtLeast, rzodkiewsSolver));
-            eatRzodkiew.AddResult<int, IntegerAddResult, IntegerSolver, IntegerPrecondition>(
-                new IntegerAddResult(rzodkiews, -1), rzodkiewsSolver);
-            eatRzodkiew.AddResult<int, IntegerAddResult, IntegerSolver, IntegerPrecondition>(
-                new IntegerAddResult(hunger, -20), hungerSolver);
+            eatRzodkiew.AddPrecondition(rzodkiews, new IntegerPrecondition(1, IntegerPrecondition.Condition.AtLeast));
+            eatRzodkiew.AddResult(rzodkiews, new IntegerAddResult(-1));
+            eatRzodkiew.AddResult(hunger, new IntegerAddResult(-20));
 
             var makeSoup = new MessageAction("Made some soup");
             makeSoup.AddCost(20);
-            makeSoup.AddPrecondition<int, IntegerAddResult, IntegerSolver, IntegerPrecondition>(
-                new IntegerPrecondition(rzodkiews, 2, IntegerPrecondition.Condition.AtLeast, rzodkiewsSolver));
-            makeSoup.AddResult<int, IntegerAddResult, IntegerSolver, IntegerPrecondition>(
-                new IntegerAddResult(rzodkiews, -2), rzodkiewsSolver);
-            makeSoup.AddResult<int, IntegerAddResult, IntegerSolver, IntegerPrecondition>(
-                new IntegerAddResult(soups, 1), soupsSolver);
-            makeSoup.AddResult<int, IntegerAddResult, IntegerSolver, IntegerPrecondition>(
-                new IntegerAddResult(energy, -3), energySolver);
+            makeSoup.AddPrecondition(rzodkiews, new IntegerPrecondition(2, IntegerPrecondition.Condition.AtLeast));
+            makeSoup.AddResult(rzodkiews, new IntegerAddResult(-2));
+            makeSoup.AddResult(soups, new IntegerAddResult(1));
+            makeSoup.AddResult(energy, new IntegerAddResult(-3));
 
             var eatSoup = new MessageAction("Ate some soup");
             eatSoup.AddCost(1);
-            eatSoup.AddPrecondition<int, IntegerAddResult, IntegerSolver, IntegerPrecondition>(
-                new IntegerPrecondition(soups, 1, IntegerPrecondition.Condition.AtLeast, soupsSolver));
-            eatSoup.AddResult<int, IntegerAddResult, IntegerSolver, IntegerPrecondition>(
-                new IntegerAddResult(soups, -1), soupsSolver);
-            eatSoup.AddResult<int, IntegerAddResult, IntegerSolver, IntegerPrecondition>(
-                new IntegerAddResult(hunger, -60), hungerSolver);
-            eatSoup.AddResult<int, IntegerAddResult, IntegerSolver, IntegerPrecondition>(
-                new IntegerAddResult(energy, 1), energySolver);
+            eatSoup.AddPrecondition(soups, new IntegerPrecondition(1, IntegerPrecondition.Condition.AtLeast));
+            eatSoup.AddResult(soups, new IntegerAddResult(-1));
+            eatSoup.AddResult(hunger, new IntegerAddResult(-60));
+            eatSoup.AddResult(energy, new IntegerAddResult(1));
 
             var sleep = new MessageAction("Went to sleep");
             sleep.AddCost(10);
-            sleep.AddResult<int, IntegerAddResult, IntegerSolver, IntegerPrecondition>(
-                new IntegerAddResult(energy, 100), energySolver);
+            sleep.AddResult(energy, new IntegerAddResult(100));
 
             var idle = new MessageAction("Is bored");
             idle.AddCost(100000);
@@ -171,7 +132,7 @@ namespace HORNS_Sandbox
             agent.AddIdleAction(idle);
 
             // main loop
-            Random random = new Random();
+            Random random = new Random(42);
             while (true)
             {
                 energy.Value -= 1;
@@ -188,7 +149,7 @@ namespace HORNS_Sandbox
                     nextAction.Perform();
                 }
 
-                Thread.Sleep(100);
+                Thread.Sleep(500);
             }
         }
     }
