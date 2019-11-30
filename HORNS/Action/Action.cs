@@ -96,6 +96,17 @@ namespace HORNS
             }
         }
 
+        internal void ApplyResults(Variable variable)
+        {
+            foreach (ActionResult result in results)
+            {
+                if (variable.Id == result.AbstractVariable.Id)
+                {
+                    result.Apply(variable);
+                }
+            }
+        }
+
         internal IEnumerable<Precondition> GetPreconditions()
         {
             return preconditions;

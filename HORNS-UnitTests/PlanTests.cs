@@ -128,7 +128,6 @@ namespace HORNS_UnitTests
             const int REQUIRED = 4;
 
             var agent = new Agent();
-            var solver = new IntegerSolver();
             var v1 = new IntVariable();
             var v2 = new IntVariable(1);
 
@@ -157,6 +156,29 @@ namespace HORNS_UnitTests
             {
                 Assert.Equal(betterTag, (actions[i] as BasicAction).Tag);
             }
+        }
+
+        [Fact]
+        public void Plan_PathMakesNeedWorse_DiscardPath()
+        {
+            var agent = new Agent();
+            var v1 = new IntVariable(3);
+            var v2 = new IntVariable();
+            var need = new LinearIntegerNeed(v1, 10);
+
+            var a1 = new BasicAction("Fulfills need");
+            a1.AddPrecondition(v2, new IntegerPrecondition(1, IntegerPrecondition.Condition.AtLeast));
+            a1.AddResult(v1, new IntegerAddResult(1));
+
+            var a2 = new BasicAction("Makes need worse");
+            a2.AddResult(v1, new IntegerAddResult(-3));
+            a2.AddResult(v2, new IntegerAddResult(1));
+
+            agent.AddNeed(need);
+            agent.AddActions(a1, a2);
+
+            var actions = Plan(agent);
+            Assert.Empty(actions);
         }
 
         private class LinearNeed : Need<int>

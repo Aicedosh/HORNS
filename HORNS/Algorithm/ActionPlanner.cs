@@ -12,6 +12,7 @@ namespace HORNS
             public PreconditionSet Preconditions { get; set; } = new PreconditionSet();
             public ActionPlannerNode Prev { get; set; }
             public Action PrevAction { get; set; }
+            public Variable NeedState { get; set; }
 
             public ActionPlannerNode(float dist = float.MaxValue)
             {
@@ -51,13 +52,21 @@ namespace HORNS
                 // TODO: optimize close
                 var close = new List<PreconditionSet>();
 
-                var goal = new ActionPlannerNode(0);
+                var goal = new ActionPlannerNode(0)
+                {
+                    NeedState = need.GetVariable().GetCopy()
+                };
+
                 foreach (var action in need.GetActionsTowards().Where(a=>agent.PossibleActions.Contains(a)))
                 {
-                    var nodeFromGoal = new ActionPlannerNode(action.CachedCost);
-                    nodeFromGoal.Prev = goal;
-                    nodeFromGoal.PrevAction = action;
-                    open.Enqueue(nodeFromGoal, nodeFromGoal.Distance);  // TODO: something smarter than adding the same value twice
+                    var nodeFromGoal = new ActionPlannerNode(action.CachedCost)
+                    {
+                        Prev = goal,
+                        PrevAction = action,
+                        NeedState = goal.NeedState.GetCopy()
+                    };
+                    action.ApplyResults(nodeFromGoal.NeedState);
+                    open.Enqueue(nodeFromGoal, nodeFromGoal.Distance);
                 }
 
                 ActionPlannerNode last = null;
@@ -65,6 +74,7 @@ namespace HORNS
                 {
                     var node = open.Dequeue();
 
+                    // copy and update preconditions
                     var res = true;
                     foreach (var pre in node.Prev.Preconditions)
                     {
@@ -133,13 +143,21 @@ namespace HORNS
                     {
                         var actions = pre.GetActions();
                         foreach (var action in actions.Where(a => agent.PossibleActions.Contains(a)))
-                        {                           
-                            var newNode = new ActionPlannerNode(node.Distance + action.CachedCost);
-                            // copy as little as possible at this stage; copy the rest when we visit it
-                            newNode.Prev = node;
-                            newNode.PrevAction = action;
+                        {
+                            var needState = node.NeedState.GetCopy();
+                            action.ApplyResults(needState);
+                            if (need.EvaluateFor(node.NeedState) <= need.EvaluateFor(needState))
+                            {
+                                // copy as little as possible at this stage; copy the rest when we visit it
+                                var newNode = new ActionPlannerNode(node.Distance + action.CachedCost)
+                                {
+                                    Prev = node,
+                                    PrevAction = action,
+                                    NeedState = needState
+                                };
 
-                            open.Enqueue(newNode, newNode.Distance);
+                                open.Enqueue(newNode, newNode.Distance);
+                            }
                         }
                     }
                 }

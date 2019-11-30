@@ -31,6 +31,12 @@ namespace HORNS
             Variable.Value = GetResultValue(Variable);
         }
 
+        internal override void Apply(Variable variable)
+        {
+            Variable<T> typedVar = variable as Variable<T>;
+            typedVar.Value = GetResultValue(typedVar);
+        }
+
         internal override void Apply(IdSet<Variable> variables)
         {
             if (!variables.Contains(Variable.Id))

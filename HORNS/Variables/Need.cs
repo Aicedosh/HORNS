@@ -25,6 +25,11 @@ namespace HORNS
             return Evaluate(Value);
         }
 
+        public float EvaluateFor(Variable variable)
+        {
+            return Evaluate((variable as Variable<T>).Value);
+        }
+
         public IEnumerable<Action> GetActionsTowards()
         {
             return GenericSolver.GetActionsTowards(Variable, Desired);
@@ -38,6 +43,12 @@ namespace HORNS
         public virtual bool IsSatisfied(T value)
         {
             return value.Equals(Desired);
+        }
+
+        // TODO: can this be done in a nice internal way?
+        public Variable GetVariable()
+        {
+            return Variable;
         }
     }
 }
