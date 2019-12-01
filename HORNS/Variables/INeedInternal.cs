@@ -4,7 +4,7 @@ using System.Text;
 
 namespace HORNS
 {
-    internal interface INeedInternal : INeed
+    internal interface INeedInternal : INeed, IIdentifiable
     {
         float EvaluateFor(Variable variable);
 

@@ -27,22 +27,12 @@ namespace HORNS_Sandbox
 
         private class Hunger : Need<int>
         {
-            public Hunger(Variable<int> variable, int desired) : base(variable, desired) { }
-
-            public override float Evaluate(int value)
-            {
-                return 100 - value;
-            }
+            public Hunger(Variable<int> variable, int desired) : base(variable, desired, v => 100 - v) { }
         }
 
         private class Energy : Need<int>
         {
-            public Energy(Variable<int> variable, int desired) : base(variable, desired) { }
-
-            public override float Evaluate(int value)
-            {
-                return (value > 100 ? 1000000 : 20) + value;
-            }
+            public Energy(Variable<int> variable, int desired) : base(variable, desired, v=> (v > 100 ? 1000000 : 20) + v) { }
         }
         
         public static void Run()

@@ -79,25 +79,15 @@ namespace HORNS_Sandbox
 
         private class Woodesire : Need<bool>
         {
-            public Woodesire(Variable<bool> variable, bool desired) : base(variable, desired)
+            public Woodesire(Variable<bool> variable, bool desired) : base(variable, desired, v=>v ? 100 : 0)
             {
-            }
-
-            public override float Evaluate(bool value)
-            {
-                return value ? 100 : 0;
             }
         }
 
         private class SleepNeed : Need<bool>
         {
-            public SleepNeed(Variable<bool> variable, bool desired) : base(variable, desired)
+            public SleepNeed(Variable<bool> variable, bool desired) : base(variable, desired, v=>v ? 10000 : 1)
             {
-            }
-
-            public override float Evaluate(bool value)
-            {
-                return value ? 10000 : 1;
             }
         }
 
@@ -111,13 +101,8 @@ namespace HORNS_Sandbox
 
         private class RzodkiewNeed : Need<int>
         {
-            public RzodkiewNeed(Variable<int> variable, int desired) : base(variable, desired)
+            public RzodkiewNeed(Variable<int> variable, int desired) : base(variable, desired, v=> v-1)
             {
-            }
-
-            public override float Evaluate(int value)
-            {
-                return value - 1;
             }
         }
 

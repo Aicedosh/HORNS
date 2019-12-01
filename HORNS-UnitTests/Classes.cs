@@ -40,26 +40,16 @@ namespace HORNS_UnitTests
     class BooleanNeed : Need<bool>
     {
         public BooleanNeed(Variable<bool> variable, bool desired)
-            : base(variable, desired)
+            : base(variable, desired, v => v ? 100 : 1)
         {
-        }
-
-        public override float Evaluate(bool value)
-        {
-            return value ? 100 : 1;
         }
     }
 
     class LinearIntegerNeed : Need<int>
     {
         public LinearIntegerNeed(Variable<int> variable, int desired)
-            : base(variable, desired)
+            : base(variable, desired, v => v)
         {
-        }
-
-        public override float Evaluate(int value)
-        {
-            return value;
         }
     }
 }

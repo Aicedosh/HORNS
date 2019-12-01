@@ -15,7 +15,7 @@ namespace HORNS
 
         protected internal abstract T GetResultValue(Variable<T> variable);
 
-        internal override float GetCost(IdSet<Variable> variables)
+        internal override float GetCost(IdSet<Variable> variables, Agent agent)
         {
             Variable currentVariable = Variable;
             if (variables != null)
@@ -23,7 +23,14 @@ namespace HORNS
                 variables.TryGet(ref currentVariable);
             }
             Variable<T> curr = currentVariable as Variable<T>; //TODO: Can we remove this cast?
-            return curr.Evaluate(GetResultValue(curr)) - curr.Evaluate(curr.Value);
+
+            Variable<T> evaluator = curr;
+            if(agent.NeedsInternal.Contains(evaluator.Id))
+            {
+                evaluator = agent.NeedsInternal[evaluator.Id] as Variable<T>;
+            }
+
+            return evaluator.Evaluate(curr.Value) - evaluator.Evaluate(GetResultValue(curr));
         }
 
         internal override void Apply()

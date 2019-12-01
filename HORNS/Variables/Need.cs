@@ -4,21 +4,33 @@ using System.Text;
 
 namespace HORNS
 {
-    public abstract class Need<T> : Variable<T>, INeedInternal
+    public class Need<T> : Variable<T>, INeedInternal
     {
+        private readonly Func<T, float> evaluation;
+
         private protected override T _Value { get => Variable.Value; set => Variable.Value = value; }
         internal Variable<T> Variable { get; private set; }
         public T Desired { get; private set; }
 
         internal override VariableSolver<T> GenericSolver => Variable.GenericSolver;
 
-        public Need(Variable<T> variable, T desired)
+        private Need(Need<T> other) : base(other)
+        {
+            Variable = other.Variable;
+            Desired = other.Desired;
+        }
+
+        public Need(Variable<T> variable, T desired, Func<T, float> evaluation)
         {
             Variable = variable;
             Desired = desired;
+            this.evaluation = evaluation;
         }
 
-        public abstract override float Evaluate(T value);
+        public override float Evaluate(T value)
+        {
+            return evaluation(value);
+        }
 
         public float GetPriority()
         {
@@ -53,5 +65,11 @@ namespace HORNS
         float INeedInternal.EvaluateFor(Variable variable) => EvaluateFor(variable);
         Variable INeedInternal.GetVariable() => GetVariable();
         IEnumerable<Action> INeedInternal.GetActionsTowards(Agent agent) => GetActionsTowards(agent);
+
+        int IIdentifiable.Id => Variable.Id;
+        IIdentifiable IIdentifiable.GetCopy()
+        {
+            return this; //TODO: Is this legal?
+        }
     }
 }

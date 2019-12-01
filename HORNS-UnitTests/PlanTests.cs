@@ -181,27 +181,17 @@ namespace HORNS_UnitTests
             Assert.Empty(actions);
         }
 
-        private class LinearNeed : Need<int>
+        private class LogNeed : Need<int>
         {
-            public LinearNeed(Variable<int> variable, int desired) : base(variable, desired)
+            public LogNeed(Variable<int> variable, int desired) : base(variable, desired, v=>(float)(8*System.Math.Log10(v+1)))
             {
-            }
-
-            public override float Evaluate(int value)
-            {
-                return 25 * value;
             }
         }
 
         private class BoolNeed : Need<bool>
         {
-            public BoolNeed(Variable<bool> variable, bool desired) : base(variable, desired)
+            public BoolNeed(Variable<bool> variable, bool desired) : base(variable, desired, v=>v ? 1 : 0)
             {
-            }
-
-            public override float Evaluate(bool value)
-            {
-                return value ? 100 : 40;
             }
         }
 
@@ -215,30 +205,27 @@ namespace HORNS_UnitTests
             var a4 = new BasicAction("4");
             var a5 = new BasicAction("5");
 
-            var v1 = new IntVariable(1);
+            var v1 = new IntVariable(0);
             var v2 = new BoolVariable(false);
             var v3 = new BoolVariable(false);
             var v4 = new BoolVariable(false);
 
-            var n1 = new LinearNeed(v1, 10);
+            var n1 = new LogNeed(v1, 10);
             var n2 = new BoolNeed(v2, true);
 
-            a1.AddCost(2);
             a1.AddResult(v2, new BooleanResult(true));
 
             a2.AddCost(3);
             a2.AddResult(v3, new BooleanResult(true));
 
             a3.AddCost(1);
-            a3.AddCost(v2, v => v ? 100 : 0);
+            a3.AddCost(v2, v => v ? 99 : 0);
             a3.AddResult(v4, new BooleanResult(true));
 
-            a4.AddCost(1);
             a4.AddPrecondition(v3, new BooleanPrecondition(true));
             a4.AddResult(v3, new BooleanResult(false));
             a4.AddResult(v1, new IntegerAddResult(1));
 
-            a5.AddCost(1);
             a5.AddPrecondition(v4, new BooleanPrecondition(true));
             a5.AddResult(v4, new BooleanResult(false));
             a5.AddResult(v1, new IntegerAddResult(1));
@@ -301,7 +288,7 @@ namespace HORNS_UnitTests
             Agent agent = new Agent();
 
             var v = new IntVariable(0);
-            var n = new LinearNeed(v, 10);
+            var n = new LogNeed(v, 10);
             agent.AddNeed(n);
 
             var a1 = new BasicAction("1");

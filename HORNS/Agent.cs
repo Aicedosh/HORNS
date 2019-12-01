@@ -19,13 +19,12 @@ namespace HORNS
         private int currentAction = 0;
         internal IdSet<Variable> Variables { get; } = new IdSet<Variable>();
 
-        private ICollection<INeedInternal> needs = new List<INeedInternal>();
-        internal IEnumerable<INeedInternal> NeedsInternal => needs;
-        public IEnumerable<INeed> Needs => needs;
+        internal IdSet<INeedInternal> NeedsInternal { get; } = new IdSet<INeedInternal>();
+        public IEnumerable<INeed> Needs => NeedsInternal;
 
         public void AddNeed<T>(Need<T> need) //Necessary to ensure only this implementation of the interface can be added to the list
         {
-            needs.Add(need);
+            NeedsInternal.Add(need);
             Variables.Add(need);
             Variables.Add(need.Variable);
         }
