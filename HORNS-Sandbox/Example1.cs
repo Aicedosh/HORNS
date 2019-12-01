@@ -26,9 +26,7 @@ namespace HORNS_Sandbox
                 this.message = message;
             }
 
-            // just a reminder that we really shouldn't be modifying variables in ActionResult()...
-            // it'll break pathfinding since we can't apply this result to requirements
-            protected override void ActionResult()
+            public override void Perform()
             {
                 Console.WriteLine($"Chop {message}");
                 Random random = new Random();
@@ -47,33 +45,37 @@ namespace HORNS_Sandbox
 
         private class PickAction : HORNS.Action
         {
-            protected override void ActionResult()
+            public override void Perform()
             {
                 Console.WriteLine("Pick axe");
+                Apply();
             }
         }
 
         private class SleepAction : HORNS.Action
         {
-            protected override void ActionResult()
+            public override void Perform()
             {
                 Console.WriteLine("Sleep");
+                Apply();
             }
         }
 
         private class PutAction : HORNS.Action
         {
-            protected override void ActionResult()
+            public override void Perform()
             {
                 Console.WriteLine("Put axe");
+                Apply();
             }
         }
 
         private class BoredAction : HORNS.Action
         {
-            protected override void ActionResult()
+            public override void Perform()
             {
                 Console.WriteLine("Be bored");
+                Apply();
             }
         }
 
@@ -103,9 +105,10 @@ namespace HORNS_Sandbox
 
         private class GetRzodkiewAction : HORNS.Action
         {
-            protected override void ActionResult()
+            public override void Perform()
             {
                 Console.WriteLine("Spawn rzodkiew");
+                Apply();
             }
         }
 
