@@ -19,7 +19,7 @@ namespace HORNS
         internal abstract bool IsFulfilledByWorld();
 
         protected internal abstract bool IsEqualOrWorse(Precondition other);
-        protected internal abstract IEnumerable<Action> GetActions();
+        protected internal abstract IEnumerable<Action> GetActions(Agent agent);
         protected internal abstract Precondition Subtract(ActionResult actionResult);
         protected internal abstract Precondition Combine(Precondition precondition);
 

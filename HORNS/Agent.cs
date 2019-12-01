@@ -19,7 +19,8 @@ namespace HORNS
         private int currentAction = 0;
         internal IdSet<Variable> Variables { get; } = new IdSet<Variable>();
 
-        private ICollection<INeed> needs = new List<INeed>();
+        private ICollection<INeedInternal> needs = new List<INeedInternal>();
+        internal IEnumerable<INeedInternal> NeedsInternal => needs;
         public IEnumerable<INeed> Needs => needs;
 
         public void AddNeed<T>(Need<T> need) //Necessary to ensure only this implementation of the interface can be added to the list
@@ -29,8 +30,8 @@ namespace HORNS
             Variables.Add(need.Variable);
         }
 
-        private ICollection<Action> possibleActions = new HashSet<Action>();
-        internal ICollection<Action> PossibleActions => possibleActions; //TODO: Extract IImmutableSet<T> interface and implement via decorator?
+        private HashSet<Action> possibleActions = new HashSet<Action>();
+        internal ISet<Action> PossibleActions => possibleActions;
 
         public void AddAction(Action action)
         {

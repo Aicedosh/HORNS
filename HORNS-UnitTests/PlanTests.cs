@@ -273,6 +273,26 @@ namespace HORNS_UnitTests
             Assert.Equal("4", (actions[1] as BasicAction).Tag);
         }
 
+        [Fact]
+        public void Plan_AgentShouldOnlyPlanUsingHisOwnActions()
+        {
+            var agent1 = new Agent();
+            var agent2 = new Agent();
+
+            var v1 = new BoolVariable(false);
+
+            Action a1 = new BasicAction();
+            a1.AddResult(v1, new BooleanResult(true));
+
+            agent2.AddAction(a1);
+
+            BoolNeed b1 = new BoolNeed(v1, true);
+            agent1.AddNeed(b1);
+
+            var actions = Plan(agent1);
+            Assert.Empty(actions);
+        }
+
         // helper functions
         List<Action> Plan(Agent agent, IEnumerable<Action> idleActions = null)
         {

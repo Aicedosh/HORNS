@@ -28,8 +28,8 @@ namespace HORNS
                 action.GetCost();      // cache costs
             }
 
-            List<(INeed Need, float Priority)> needs = new List<(INeed, float)>();
-            foreach (var need in agent.Needs)
+            List<(INeedInternal Need, float Priority)> needs = new List<(INeedInternal, float)>();
+            foreach (var need in agent.NeedsInternal)
             {
                 if (!need.IsSatisfied())
                 {
@@ -57,7 +57,7 @@ namespace HORNS
                     NeedState = need.GetVariable().GetCopy()
                 };
 
-                foreach (var action in need.GetActionsTowards().Where(a=>agent.PossibleActions.Contains(a)))
+                foreach (var action in need.GetActionsTowards(agent))
                 {
                     var nodeFromGoal = new ActionPlannerNode(action.CachedCost)
                     {
@@ -141,8 +141,8 @@ namespace HORNS
                     
                     foreach (var pre in node.Preconditions)
                     {
-                        var actions = pre.GetActions();
-                        foreach (var action in actions.Where(a => agent.PossibleActions.Contains(a)))
+                        var actions = pre.GetActions(agent);
+                        foreach (var action in actions)
                         {
                             var needState = node.NeedState.GetCopy();
                             action.ApplyResults(needState);

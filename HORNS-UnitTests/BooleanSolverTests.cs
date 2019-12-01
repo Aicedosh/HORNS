@@ -20,7 +20,10 @@ namespace HORNS_UnitTests
             result.Action = a;
             s.Register(result);
 
-            List<Action> actions = new List<Action>(s.GetActionsTowards(v, value));
+            Agent agent = new Agent();
+            agent.AddAction(a);
+
+            List<Action> actions = new List<Action>(s.GetActionsTowards(v, value, agent));
             Assert.Single(actions);
             Assert.Equal(a.Tag, (actions[0] as BasicAction).Tag);
         }
@@ -43,7 +46,11 @@ namespace HORNS_UnitTests
             s.Register(result);
             s.Register(other_result);
 
-            List<Action> actions = new List<Action>(s.GetActionsTowards(v, value));
+            Agent agent = new Agent();
+            agent.AddAction(a);
+            agent.AddAction(b);
+
+            List<Action> actions = new List<Action>(s.GetActionsTowards(v, value, agent));
 
             Assert.Single(actions);
             Assert.Equal(a.Tag, (actions[0] as BasicAction).Tag);
@@ -58,6 +65,7 @@ namespace HORNS_UnitTests
             BooleanSolver s = new BooleanSolver();
 
             List<BasicAction> actions = new List<BasicAction>();
+            Agent agent = new Agent();
 
             for (int i = 0; i < num; i++)
             {
@@ -67,9 +75,11 @@ namespace HORNS_UnitTests
                 actions.Add(action);
                 br.Action = action;
                 s.Register(br);
+
+                agent.AddAction(action);
             }
 
-            List<Action> got = new List<Action>(s.GetActionsTowards(v, value));
+            List<Action> got = new List<Action>(s.GetActionsTowards(v, value, agent));
 
             Assert.Equal(num, got.Count);
             Assert.Equal(actions.Select(a => a.Tag).OrderBy(n => n), got.Select(a => (a as BasicAction).Tag).OrderBy(n => n));
@@ -89,7 +99,10 @@ namespace HORNS_UnitTests
 
             s.Register(result);
 
-            List<Action> got = new List<Action>(s.GetActionsSatisfying(new BooleanPrecondition(value)));
+            Agent agent = new Agent();
+            agent.AddAction(a);
+
+            List<Action> got = new List<Action>(s.GetActionsSatisfying(new BooleanPrecondition(value), agent));
             Assert.Single(got);
             Assert.Equal(a.Tag, (got[0] as BasicAction).Tag);
         }
@@ -108,7 +121,10 @@ namespace HORNS_UnitTests
 
             s.Register(result);
 
-            List<Action> got = new List<Action>(s.GetActionsSatisfying(new BooleanPrecondition(value)));
+            Agent agent = new Agent();
+            agent.AddAction(a);
+
+            List<Action> got = new List<Action>(s.GetActionsSatisfying(new BooleanPrecondition(value), agent));
             Assert.Empty(got);
         }
     }
