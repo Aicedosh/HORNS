@@ -28,7 +28,11 @@ namespace HORNS_UnitTests
             s.Register(r1);
             s.Register(r2);
 
-            List<Action> actions = new List<Action>(s.GetActionsTowards(v, goalValue));
+            Agent agent = new Agent();
+            agent.AddAction(a1);
+            agent.AddAction(a2);
+
+            List<Action> actions = new List<Action>(s.GetActionsTowards(v, goalValue, agent));
             Assert.Single(actions);
             Assert.Equal(pickedActionTag, (actions[0] as BasicAction).Tag);
         }

@@ -15,7 +15,7 @@ namespace HORNS
                 .Select(res => res.Action);
         }
 
-        protected internal override IEnumerable<Action> GetActionsTowards(Variable<int> variable, int desiredValue)
+        protected override IEnumerable<Action> GetActionsTowards(Variable<int> variable, int desiredValue)
         {
             if (variable.Value == desiredValue)
             {

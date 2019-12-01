@@ -4,7 +4,7 @@ using System.Text;
 
 namespace HORNS
 {
-    public abstract class Need<T> : Variable<T>, INeed
+    public abstract class Need<T> : Variable<T>, INeedInternal
     {
         private protected override T _Value { get => Variable.Value; set => Variable.Value = value; }
         internal Variable<T> Variable { get; private set; }
@@ -25,14 +25,14 @@ namespace HORNS
             return Evaluate(Value);
         }
 
-        public float EvaluateFor(Variable variable)
+        internal float EvaluateFor(Variable variable)
         {
             return Evaluate((variable as Variable<T>).Value);
         }
 
-        public IEnumerable<Action> GetActionsTowards()
+        IEnumerable<Action> GetActionsTowards(Agent agent)
         {
-            return GenericSolver.GetActionsTowards(Variable, Desired);
+            return GenericSolver.GetActionsTowards(Variable, Desired, agent);
         }
 
         public bool IsSatisfied()
@@ -40,15 +40,18 @@ namespace HORNS
             return IsSatisfied(_Value);
         }
 
-        public virtual bool IsSatisfied(T value)
+        protected virtual bool IsSatisfied(T value)
         {
             return value.Equals(Desired);
         }
 
-        // TODO: can this be done in a nice internal way?
-        public Variable GetVariable()
+        Variable GetVariable()
         {
             return Variable;
         }
+
+        float INeedInternal.EvaluateFor(Variable variable) => EvaluateFor(variable);
+        Variable INeedInternal.GetVariable() => GetVariable();
+        IEnumerable<Action> INeedInternal.GetActionsTowards(Agent agent) => GetActionsTowards(agent);
     }
 }

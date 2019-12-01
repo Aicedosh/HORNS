@@ -13,7 +13,7 @@ namespace HORNS
             return GetActions(precondition.Value);
         }
 
-        protected internal override IEnumerable<Action> GetActionsTowards(Variable<bool> variable, bool desiredValue)
+        protected override IEnumerable<Action> GetActionsTowards(Variable<bool> variable, bool desiredValue)
         {
             return GetActions(desiredValue);
         }

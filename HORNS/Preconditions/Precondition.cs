@@ -29,9 +29,9 @@ namespace HORNS
             solver = precondition.solver;
         }
 
-        protected internal override IEnumerable<Action> GetActions()
+        protected internal override IEnumerable<Action> GetActions(Agent agent)
         {
-            return solver.GetActionsSatisfying(this);
+            return solver.GetActionsSatisfying(this, agent);
         }
     }
 }
