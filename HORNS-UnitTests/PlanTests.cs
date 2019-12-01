@@ -293,6 +293,30 @@ namespace HORNS_UnitTests
             Assert.Empty(actions);
         }
 
+        [Theory]
+        [InlineData(1, 2, "2")]
+        [InlineData(2, 1, "1")]
+        public void Plan_TwoActionsWithSameBaseCost_PreferOneThatChangesNeedMore(int change1, int change2, string expectedTag)
+        {
+            Agent agent = new Agent();
+
+            var v = new IntVariable(0);
+            var n = new LinearNeed(v, 10);
+            agent.AddNeed(n);
+
+            var a1 = new BasicAction("1");
+            var a2 = new BasicAction("2");
+
+            a1.AddResult(v, new IntegerAddResult(change1));
+            a2.AddResult(v, new IntegerAddResult(change2));
+
+            agent.AddActions(a1, a2);
+
+            var actions = Plan(agent);
+            Assert.Single(actions);
+            Assert.Equal(expectedTag, (actions[0] as BasicAction).Tag);
+        }
+
         // helper functions
         List<Action> Plan(Agent agent, IEnumerable<Action> idleActions = null)
         {
