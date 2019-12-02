@@ -42,6 +42,16 @@ namespace HORNS
             return Evaluate((variable as Variable<T>).Value);
         }
 
+        internal float EvaluateFor(IdSet<Variable> variables)
+        {
+            Variable variable = Variable;
+            if (variables != null)
+            {
+                variables.TryGet(ref variable);
+            }
+            return EvaluateFor(variable);
+        }
+
         IEnumerable<Action> GetActionsTowards(Agent agent)
         {
             return GenericSolver.GetActionsTowards(Variable, Desired, agent);
@@ -50,6 +60,16 @@ namespace HORNS
         public bool IsSatisfied()
         {
             return IsSatisfied(_Value);
+        }
+
+        internal bool IsSatisfied(IdSet<Variable> variables)
+        {
+            Variable variable = Variable;
+            if (variables != null)
+            {
+                variables.TryGet(ref variable);
+            }
+            return IsSatisfied((variable as Variable<T>).Value);
         }
 
         protected virtual bool IsSatisfied(T value)
@@ -63,6 +83,8 @@ namespace HORNS
         }
 
         float INeedInternal.EvaluateFor(Variable variable) => EvaluateFor(variable);
+        float INeedInternal.EvaluateFor(IdSet<Variable> variables) => EvaluateFor(variables);
+        bool INeedInternal.IsSatisfied(IdSet<Variable> variables) => IsSatisfied(variables);
         Variable INeedInternal.GetVariable() => GetVariable();
         IEnumerable<Action> INeedInternal.GetActionsTowards(Agent agent) => GetActionsTowards(agent);
 

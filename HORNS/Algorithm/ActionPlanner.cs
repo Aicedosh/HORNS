@@ -21,19 +21,21 @@ namespace HORNS
         }
         
         // TODO: possibleGoals as param or field in agent?
-        internal List<Action> Plan(Agent agent, IEnumerable<Action> idleActions, int possibleGoals = 5)
+        internal List<Action> Plan(Agent agent, IEnumerable<Action> idleActions, bool useSnapshot = false, int possibleGoals = 5)
         {
+            var variableSet = useSnapshot ? agent.Variables.Clone() : null;
+
             foreach (var action in agent.PossibleActions)
             {
-                action.GetCost(agent);      // cache costs
+                action.GetCost(agent, variableSet);      // cache costs
             }
 
             List<(INeedInternal Need, float Priority)> needs = new List<(INeedInternal, float)>();
             foreach (var need in agent.NeedsInternal)
             {
-                if (!need.IsSatisfied())
+                if (!need.IsSatisfied(variableSet))
                 {
-                    needs.Add((need, need.GetPriority()));
+                    needs.Add((need, need.EvaluateFor(variableSet)));
                 }
             }
             // lower "priority" => more important need
@@ -52,9 +54,14 @@ namespace HORNS
                 // TODO: optimize close
                 var close = new List<PreconditionSet>();
 
+                var needState = need.GetVariable().GetCopy();
+                if (variableSet != null)
+                {
+                    variableSet.TryGet(ref needState);
+                }
                 var goal = new ActionPlannerNode(0)
                 {
-                    NeedState = need.GetVariable().GetCopy()
+                    NeedState = needState
                 };
 
                 foreach (var action in need.GetActionsTowards(agent))
@@ -100,7 +107,7 @@ namespace HORNS
                     bool preLeft = false;
                     foreach (var pre in node.Preconditions)
                     {
-                        if (!pre.IsFulfilled() && !pre.IsFulfilledByWorld())
+                        if (!pre.IsFulfilled() && !pre.IsFulfilledBy(variableSet))
                         {
                             preLeft = true;
                             break;
@@ -144,16 +151,16 @@ namespace HORNS
                         var actions = pre.GetActions(agent);
                         foreach (var action in actions)
                         {
-                            var needState = node.NeedState.GetCopy();
-                            action.ApplyResults(needState);
-                            if (need.EvaluateFor(node.NeedState) <= need.EvaluateFor(needState))
+                            var newNeedState = node.NeedState.GetCopy();
+                            action.ApplyResults(newNeedState);
+                            if (need.EvaluateFor(node.NeedState) <= need.EvaluateFor(newNeedState))
                             {
                                 // copy as little as possible at this stage; copy the rest when we visit it
                                 var newNode = new ActionPlannerNode(node.Distance + action.CachedCost)
                                 {
                                     Prev = node,
                                     PrevAction = action,
-                                    NeedState = needState
+                                    NeedState = newNeedState
                                 };
 
                                 open.Enqueue(newNode, newNode.Distance);
@@ -172,13 +179,20 @@ namespace HORNS
                     }
 
                     float cost = 0f;
-                    IdSet<Variable> variables = new IdSet<Variable>();
+                    IdSet<Variable> variables;
+                    if (variableSet != null)
+                    {
+                        variables = variableSet.Clone();
+                    }
+                    else
+                    {
+                        variables = new IdSet<Variable>();
+                    }
                     foreach (var action in plan)
                     {
                         cost += action.GetCost(agent, variables);
                         action.ApplyResults(variables);
                     }
-                    //cost *= priority;
                     if (cost < bestCost)
                     {
                         bestPlan = plan;

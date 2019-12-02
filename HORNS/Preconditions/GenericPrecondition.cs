@@ -41,5 +41,15 @@ namespace HORNS
         {
             return IsFulfilled(Variable.Value);
         }
+
+        internal override bool IsFulfilledBy(IdSet<Variable> variables)
+        {
+            Variable variable = Variable;
+            if (variables != null)
+            {
+                variables.TryGet(ref variable);
+            }
+            return IsFulfilled((variable as Variable<T>).Value);
+        }
     }
 }
