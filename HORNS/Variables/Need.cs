@@ -69,7 +69,7 @@ namespace HORNS
         int IIdentifiable.Id => Variable.Id;
         IIdentifiable IIdentifiable.GetCopy()
         {
-            return this; //TODO: Is this legal?
+            throw new NotImplementedException();
         }
     }
 }
