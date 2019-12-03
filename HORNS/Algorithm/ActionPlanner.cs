@@ -89,7 +89,7 @@ namespace HORNS
                 {
                     if (token.HasValue && token.Value.IsCancellationRequested)
                     {
-                        return null;
+                        throw new TaskCanceledException();
                     }
 
                     var node = open.Dequeue();

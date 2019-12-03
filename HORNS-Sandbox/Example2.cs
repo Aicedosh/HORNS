@@ -11,14 +11,28 @@ namespace HORNS_Sandbox
     class Example2
     {
         private readonly static object lo = new object();
+        private readonly static object wo = new object();
+
+        private static void Write(string s, ConsoleColor color)
+        {
+            lock(wo)
+            {
+                Console.ForegroundColor = color;
+                Console.WriteLine(s);
+                Console.ResetColor();
+            }
+        }
+
         private class MessageAction : HORNS.Action
         {
             private readonly string agentName;
+            private readonly ConsoleColor color;
             private readonly string[] messages;
 
-            public MessageAction(string agentName, params string[] messages)
+            public MessageAction(string agentName, ConsoleColor color, params string[] messages)
             {
                 this.agentName = agentName;
+                this.color = color;
                 this.messages = messages;
             }
 
@@ -28,7 +42,7 @@ namespace HORNS_Sandbox
                 foreach (var m in messages)
                 {
                     Thread.Sleep(rand.Next(700, 1300));
-                    Console.WriteLine($"Agent {agentName}: {m}");
+                    Write($"Agent {agentName}: {m}", color);
                 }
                 lock (lo)
                 {
@@ -41,11 +55,13 @@ namespace HORNS_Sandbox
         {
             private readonly EventWaitHandle e;
             private readonly string name;
+            private readonly ConsoleColor color;
             private bool sleeping;
 
-            public HibernateAction(string name, params HORNS.Variable[] vars)
+            public HibernateAction(string name, ConsoleColor color, params HORNS.Variable[] vars)
             {
                 this.name = name;
+                this.color = color;
                 e = new EventWaitHandle(false, EventResetMode.AutoReset);
                 foreach (var v in vars)
                 {
@@ -55,11 +71,11 @@ namespace HORNS_Sandbox
 
             public override void Perform()
             {
-                Console.WriteLine($"Agent {name}: Went to sleep");
+                Write($"Agent {name}: Went to sleep", color);
                 sleeping = true;
                 e.WaitOne();
                 sleeping = false;
-                Console.WriteLine($"Agent {name}: Woke up");
+                Write($"Agent {name}: Woke up", color);
                 lock (lo)
                 {
                     Apply();
@@ -78,16 +94,18 @@ namespace HORNS_Sandbox
         private class WaitForAction : HORNS.Action, IVariableObserver
         {
             private readonly string agentname;
+            private readonly ConsoleColor color;
             private readonly IntVariable v;
             private readonly string m;
             private readonly EventWaitHandle e;
             private bool sleeping;
 
-            public WaitForAction(string agentname, IntVariable v, string m)
+            public WaitForAction(string agentname, ConsoleColor color, IntVariable v, string m)
             {
                 e = new EventWaitHandle(false, EventResetMode.AutoReset);
                 v.Observe(this);
                 this.agentname = agentname;
+                this.color = color;
                 this.v = v;
                 this.m = m;
             }
@@ -98,15 +116,15 @@ namespace HORNS_Sandbox
                 {
                     lock (lo)
                     {
-                        if (v.Value > 1)
+                        if (v.Value >= 1)
                         {
-                            Console.WriteLine($"Agent {agentname}: {m}");
+                            Write($"Agent {agentname}: {m}", color);
                             Apply();
                             break;
                         }
                     }
                     sleeping = true;
-                    Console.WriteLine($"Agent {agentname}: Waiting...");
+                    Write($"Agent {agentname}: Waiting...", color);
                     e.WaitOne();
                     sleeping = false;
                 }
@@ -139,7 +157,7 @@ namespace HORNS_Sandbox
             }
         }
 
-        public static Agent CreateWoodcutter(string agentName, IntVariable radishesOnCounter, IntVariable chairDemand, IntVariable chairsInStock)
+        public static Agent CreateWoodcutter(string agentName, ConsoleColor color, IntVariable radishesOnCounter, IntVariable chairDemand, IntVariable chairsInStock)
         {
             var hasAxe = new BoolVariable();
             var hunger = new IntVariable(100);
@@ -152,62 +170,62 @@ namespace HORNS_Sandbox
 
             var feelingSoupy = new BoolVariable();
 
-            var pickAxe = new MessageAction(agentName, "Picked up an axe");
+            var pickAxe = new MessageAction(agentName, color, "Picked up an axe");
             pickAxe.AddPrecondition(hasAxe, new BooleanPrecondition(false));
             pickAxe.AddResult(hasAxe, new BooleanResult(true));
 
-            var chopTree = new MessageAction(agentName, "Chop", "Chopped down a tree");
+            var chopTree = new MessageAction(agentName, color, "Chop", "Chopped down a tree");
             chopTree.AddPrecondition(hasAxe, new BooleanPrecondition(true));
             chopTree.AddResult(wood, new IntegerAddResult(1));
             chopTree.AddResult(energy, new IntegerAddResult(-2));
 
-            var sellWood = new MessageAction(agentName, "Sold a piece of wood");
+            var sellWood = new MessageAction(agentName, color, "Sold a piece of wood");
             sellWood.AddPrecondition(wood, new IntegerPrecondition(1, IntegerPrecondition.Condition.AtLeast));
             sellWood.AddResult(wood, new IntegerAddResult(-1));
             sellWood.AddResult(money, new IntegerAddResult(1));
 
-            var makeChair = new MessageAction(agentName, "Made a chair");
+            var makeChair = new MessageAction(agentName, color, "Made a chair");
             makeChair.AddPrecondition(wood, new IntegerPrecondition(1, IntegerPrecondition.Condition.AtLeast));
             makeChair.AddResult(wood, new IntegerAddResult(-1));
             makeChair.AddResult(chairs, new IntegerAddResult(1));
             makeChair.AddResult(energy, new IntegerAddResult(-3));
 
-            var sellChair = new MessageAction(agentName, "Sold a chair");
+            var sellChair = new MessageAction(agentName, color, "Sold a chair");
             sellChair.AddPrecondition(chairDemand, new IntegerPrecondition(1, IntegerPrecondition.Condition.AtLeast));
             sellChair.AddPrecondition(chairs, new IntegerPrecondition(1, IntegerPrecondition.Condition.AtLeast));
             sellChair.AddResult(chairs, new IntegerAddResult(-1));
             sellChair.AddResult(money, new IntegerAddResult(3));
             sellChair.AddResult(chairsInStock, new IntegerAddResult(1));
 
-            var buyRzodkiew = new MessageAction(agentName, "Bought a rzodkiew");
+            var buyRzodkiew = new MessageAction(agentName, color, "Bought a rzodkiew");
             buyRzodkiew.AddPrecondition(radishesOnCounter, new IntegerPrecondition(1, IntegerPrecondition.Condition.AtLeast));
             buyRzodkiew.AddPrecondition(money, new IntegerPrecondition(3, IntegerPrecondition.Condition.AtLeast));
             buyRzodkiew.AddResult(money, new IntegerAddResult(-3));
             buyRzodkiew.AddResult(rzodkiews, new IntegerAddResult(1));
             buyRzodkiew.AddResult(radishesOnCounter, new IntegerAddResult(-1));
 
-            var eatRzodkiew = new MessageAction(agentName, "Ate a rzodkiew");
+            var eatRzodkiew = new MessageAction(agentName, color, "Ate a rzodkiew");
             eatRzodkiew.AddPrecondition(rzodkiews, new IntegerPrecondition(1, IntegerPrecondition.Condition.AtLeast));
             eatRzodkiew.AddResult(rzodkiews, new IntegerAddResult(-1));
             eatRzodkiew.AddResult(hunger, new IntegerAddResult(-5));
 
-            var makeSoup = new MessageAction(agentName, "Made some soup");
+            var makeSoup = new MessageAction(agentName, color, "Made some soup");
             makeSoup.AddPrecondition(rzodkiews, new IntegerPrecondition(2, IntegerPrecondition.Condition.AtLeast));
             makeSoup.AddResult(rzodkiews, new IntegerAddResult(-2));
             makeSoup.AddResult(soups, new IntegerAddResult(1));
             makeSoup.AddResult(energy, new IntegerAddResult(-11));
 
-            var eatSoup = new MessageAction(agentName, "Ate some soup");
+            var eatSoup = new MessageAction(agentName, color, "Ate some soup");
             eatSoup.AddPrecondition(soups, new IntegerPrecondition(1, IntegerPrecondition.Condition.AtLeast));
             eatSoup.AddResult(soups, new IntegerAddResult(-1));
             eatSoup.AddResult(hunger, new IntegerAddResult(-20));
             eatSoup.AddResult(energy, new IntegerAddResult(1));
 
-            var sleep = new MessageAction(agentName, "Went to sleep");
+            var sleep = new MessageAction(agentName, color, "Went to sleep");
             sleep.AddCost(10);
             sleep.AddResult(energy, new IntegerAddResult(25));
 
-            var idle = new MessageAction(agentName, "Is bored");
+            var idle = new MessageAction(agentName, color, "Is bored");
             idle.AddCost(100000);
 
             var hungerNeed = new Hunger(hunger, 0);
@@ -222,13 +240,13 @@ namespace HORNS_Sandbox
             return agent;
         }
 
-        private static Agent CreateSeller(string agentName, IntVariable radishesOnCounter)
+        private static Agent CreateSeller(string agentName, ConsoleColor color, IntVariable radishesOnCounter)
         {
             Need<int> sellRadishes = new Need<int>(radishesOnCounter, 10, v => v);
-            MessageAction putRadish = new MessageAction(agentName, "Searching for radish", "Carrying radish", "Put radish on counter");
+            MessageAction putRadish = new MessageAction(agentName, color, "Searching for radish", "Carrying radish", "Put radish on counter");
             putRadish.AddResult(radishesOnCounter, new IntegerAddResult(1));
 
-            var sleep = new HibernateAction(agentName, radishesOnCounter);
+            var sleep = new HibernateAction(agentName, color, radishesOnCounter);
 
             Agent agent = new Agent();
             agent.AddIdleAction(sleep);
@@ -238,14 +256,14 @@ namespace HORNS_Sandbox
             return agent;
         }
 
-        private static Agent CreateArtist(string agentName, IntVariable chairDemand, IntVariable chairsInStock)
+        private static Agent CreateArtist(string agentName, ConsoleColor color, IntVariable chairDemand, IntVariable chairsInStock)
         {
             IntVariable chairs = new IntVariable();
 
-            MessageAction demandChair = new MessageAction(agentName, "Demanding chair");
+            MessageAction demandChair = new MessageAction(agentName, color, "Demanding chair");
             demandChair.AddResult(chairDemand, new IntegerAddResult(1));
 
-            var buyChair = new WaitForAction(agentName, chairsInStock, "Bought a chair");
+            var buyChair = new WaitForAction(agentName, color, chairsInStock, "Bought a chair");
             buyChair.AddPrecondition(chairDemand, new IntegerPrecondition(1, IntegerPrecondition.Condition.AtLeast));
             buyChair.AddResult(chairs, new IntegerAddResult(1));
             buyChair.AddResult(chairDemand, new IntegerAddResult(-1));
@@ -290,16 +308,16 @@ namespace HORNS_Sandbox
         public static void Run()
         {
             IntVariable radishesOnCounter = new IntVariable(9);
-            IntVariable chairDemand = new IntVariable(3);
-            IntVariable chairsInStock = new IntVariable(3);
+            IntVariable chairDemand = new IntVariable(0);
+            IntVariable chairsInStock = new IntVariable(0);
 
             CancellationTokenSource source = new CancellationTokenSource();
             CancellationToken token = source.Token;
 
-            RunAgent(CreateWoodcutter("woodcutter", radishesOnCounter, chairDemand, chairsInStock), token);
-            RunAgent(CreateSeller("seller", radishesOnCounter), token);
-            RunAgent(CreateArtist("artist 1", chairDemand, chairsInStock), token);
-            RunAgent(CreateArtist("artist 2", chairDemand, chairsInStock), token);
+            RunAgent(CreateWoodcutter("woodcutter", ConsoleColor.Cyan, radishesOnCounter, chairDemand, chairsInStock), token);
+            RunAgent(CreateSeller("seller", ConsoleColor.Yellow, radishesOnCounter), token);
+            RunAgent(CreateArtist("artist 1", ConsoleColor.White, chairDemand, chairsInStock), token);
+            RunAgent(CreateArtist("artist 2", ConsoleColor.Magenta, chairDemand, chairsInStock), token);
 
             Console.ReadLine();
             source.Cancel();
