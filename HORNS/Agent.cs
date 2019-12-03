@@ -4,8 +4,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Threading.Tasks;
 
 namespace HORNS
 {
@@ -83,6 +82,20 @@ namespace HORNS
             return plannedActions[currentAction++];
         }
 
+        public async Task<Action> GetNextActionAsync()
+        {
+            if (plannedActions.Count == currentAction)
+            {
+                await RecalculateActionsAsync();
+            }
+
+            if (plannedActions.Count == 0)
+            {
+                return null;
+            }
+            return plannedActions[currentAction++];
+        }
+
         public void RecalculateActions()
         {
             // TODO: remove?
@@ -90,12 +103,18 @@ namespace HORNS
             var sw = new System.Diagnostics.Stopwatch();
             sw.Start();
 #endif
-            plannedActions = new List<Action>(planner.Plan(this, idleActions));
+            plannedActions = planner.Plan(this, idleActions);
             currentAction = 0;
 #if MEASURE_TIME
             sw.Stop();
             Console.WriteLine($"[DEBUG] Planning took {sw.Elapsed}");
 #endif
+        }
+
+        public async Task RecalculateActionsAsync()
+        {
+            plannedActions = await Task.Run(() => planner.Plan(this, idleActions, true));
+            currentAction = 0;
         }
     }
 }
