@@ -10,9 +10,9 @@ namespace HORNS_Sandbox
 {
     class Example2
     {
+        private readonly static object lo = new object();
         private class MessageAction : HORNS.Action
         {
-            private readonly static object lo = new object();
             private readonly string agentName;
             private readonly string[] messages;
 
@@ -25,12 +25,12 @@ namespace HORNS_Sandbox
             public override void Perform()
             {
                 Random rand = new Random();
-                foreach(var m in messages)
+                foreach (var m in messages)
                 {
                     Thread.Sleep(rand.Next(700, 1300));
                     Console.WriteLine($"Agent {agentName}: {m}");
                 }
-                lock(lo)
+                lock (lo)
                 {
                     Apply();
                 }
@@ -60,11 +60,61 @@ namespace HORNS_Sandbox
                 e.WaitOne();
                 sleeping = false;
                 Console.WriteLine($"Agent {name}: Woke up");
+                lock (lo)
+                {
+                    Apply();
+                }
             }
 
             public void ValueChanged()
             {
-                if(sleeping)
+                if (sleeping)
+                {
+                    e.Set();
+                }
+            }
+        }
+
+        private class WaitForAction : HORNS.Action, IVariableObserver
+        {
+            private readonly string agentname;
+            private readonly IntVariable v;
+            private readonly string m;
+            private readonly EventWaitHandle e;
+            private bool sleeping;
+
+            public WaitForAction(string agentname, IntVariable v, string m)
+            {
+                e = new EventWaitHandle(false, EventResetMode.AutoReset);
+                v.Observe(this);
+                this.agentname = agentname;
+                this.v = v;
+                this.m = m;
+            }
+
+            public override void Perform()
+            {
+                while(true)
+                {
+                    lock (lo)
+                    {
+                        if (v.Value > 1)
+                        {
+                            Console.WriteLine($"Agent {agentname}: {m}");
+                            Apply();
+                            break;
+                        }
+                    }
+                    sleeping = true;
+                    Console.WriteLine($"Agent {agentname}: Waiting...");
+                    e.WaitOne();
+                    sleeping = false;
+                }
+            }
+
+            public void ValueChanged()
+            {
+                if (sleeping)
                 {
                     e.Set();
                 }
@@ -89,7 +139,7 @@ namespace HORNS_Sandbox
             }
         }
 
-        public static Agent CreateWoodcutter(string agentName, IntVariable radishesOnCounter)
+        public static Agent CreateWoodcutter(string agentName, IntVariable radishesOnCounter, IntVariable chairDemand, IntVariable chairsInStock)
         {
             var hasAxe = new BoolVariable();
             var hunger = new IntVariable(100);
@@ -123,9 +173,11 @@ namespace HORNS_Sandbox
             makeChair.AddResult(energy, new IntegerAddResult(-3));
 
             var sellChair = new MessageAction(agentName, "Sold a chair");
+            sellChair.AddPrecondition(chairDemand, new IntegerPrecondition(1, IntegerPrecondition.Condition.AtLeast));
             sellChair.AddPrecondition(chairs, new IntegerPrecondition(1, IntegerPrecondition.Condition.AtLeast));
             sellChair.AddResult(chairs, new IntegerAddResult(-1));
             sellChair.AddResult(money, new IntegerAddResult(3));
+            sellChair.AddResult(chairsInStock, new IntegerAddResult(1));
 
             var buyRzodkiew = new MessageAction(agentName, "Bought a rzodkiew");
             buyRzodkiew.AddPrecondition(radishesOnCounter, new IntegerPrecondition(1, IntegerPrecondition.Condition.AtLeast));
@@ -186,6 +238,28 @@ namespace HORNS_Sandbox
             return agent;
         }
 
+        private static Agent CreateArtist(string agentName, IntVariable chairDemand, IntVariable chairsInStock)
+        {
+            IntVariable chairs = new IntVariable();
+
+            MessageAction demandChair = new MessageAction(agentName, "Demanding chair");
+            demandChair.AddResult(chairDemand, new IntegerAddResult(1));
+
+            var buyChair = new WaitForAction(agentName, chairsInStock, "Bought a chair");
+            buyChair.AddPrecondition(chairDemand, new IntegerPrecondition(1, IntegerPrecondition.Condition.AtLeast));
+            buyChair.AddResult(chairs, new IntegerAddResult(1));
+            buyChair.AddResult(chairDemand, new IntegerAddResult(-1));
+            buyChair.AddResult(chairsInStock, new IntegerAddResult(-1));
+
+            Need<int> idea = new Need<int>(chairs, 100, v => 10000 * v);
+
+            Agent agent = new Agent();
+            agent.AddActions(demandChair, buyChair);
+            agent.AddNeed(idea);
+
+            return agent;
+        }
+
         private static void RunAgent(Agent agent, CancellationToken token)
         {
             Task.Run(async () =>
@@ -216,12 +290,16 @@ namespace HORNS_Sandbox
         public static void Run()
         {
             IntVariable radishesOnCounter = new IntVariable(9);
+            IntVariable chairDemand = new IntVariable(3);
+            IntVariable chairsInStock = new IntVariable(3);
 
             CancellationTokenSource source = new CancellationTokenSource();
             CancellationToken token = source.Token;
 
-            RunAgent(CreateWoodcutter("woodcutter", radishesOnCounter), token);
+            RunAgent(CreateWoodcutter("woodcutter", radishesOnCounter, chairDemand, chairsInStock), token);
             RunAgent(CreateSeller("seller", radishesOnCounter), token);
+            RunAgent(CreateArtist("artist 1", chairDemand, chairsInStock), token);
+            RunAgent(CreateArtist("artist 2", chairDemand, chairsInStock), token);
 
             Console.ReadLine();
             source.Cancel();
