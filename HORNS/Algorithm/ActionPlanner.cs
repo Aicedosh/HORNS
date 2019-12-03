@@ -25,7 +25,7 @@ namespace HORNS
         {
             foreach (var action in agent.PossibleActions)
             {
-                action.GetCost();      // cache costs
+                action.GetCost(agent);      // cache costs
             }
 
             List<(INeedInternal Need, float Priority)> needs = new List<(INeedInternal, float)>();
@@ -175,10 +175,10 @@ namespace HORNS
                     IdSet<Variable> variables = new IdSet<Variable>();
                     foreach (var action in plan)
                     {
-                        cost += action.GetCost(variables);
+                        cost += action.GetCost(agent, variables);
                         action.ApplyResults(variables);
                     }
-                    cost *= priority;
+                    //cost *= priority;
                     if (cost < bestCost)
                     {
                         bestPlan = plan;
@@ -189,7 +189,7 @@ namespace HORNS
             
             foreach (var idle in idleActions)
             {
-                if (idle.GetCost() < bestCost)
+                if (idle.GetCost(agent) < bestCost)
                 {
                     bestPlan = new List<Action>() { idle };
                     bestCost = idle.CachedCost;
