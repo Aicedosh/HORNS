@@ -12,17 +12,62 @@ namespace HORNS_Sandbox
     {
         private class MessageAction : HORNS.Action
         {
-            public string Message { get; }
+            private readonly static object lo = new object();
+            private readonly string agentName;
+            private readonly string[] messages;
 
-            public MessageAction(string message)
+            public MessageAction(string agentName, params string[] messages)
             {
-                Message = message;
+                this.agentName = agentName;
+                this.messages = messages;
             }
 
             public override void Perform()
             {
-                Console.WriteLine(Message);
-                Apply();
+                Random rand = new Random();
+                foreach(var m in messages)
+                {
+                    Thread.Sleep(rand.Next(700, 1300));
+                    Console.WriteLine($"Agent {agentName}: {m}");
+                }
+                lock(lo)
+                {
+                    Apply();
+                }
+            }
+        }
+
+        private class HibernateAction : HORNS.Action, HORNS.IVariableObserver
+        {
+            private readonly EventWaitHandle e;
+            private readonly string name;
+            private bool sleeping;
+
+            public HibernateAction(string name, params HORNS.Variable[] vars)
+            {
+                this.name = name;
+                e = new EventWaitHandle(false, EventResetMode.AutoReset);
+                foreach (var v in vars)
+                {
+                    v.Observe(this);
+                }
+            }
+
+            public override void Perform()
+            {
+                Console.WriteLine($"Agent {name}: Went to sleep");
+                sleeping = true;
+                e.WaitOne();
+                sleeping = false;
+                Console.WriteLine($"Agent {name}: Woke up");
+            }
+
+            public void ValueChanged()
+            {
+                if(sleeping)
+                {
+                    e.Set();
+                }
             }
         }
 
@@ -43,81 +88,74 @@ namespace HORNS_Sandbox
                 return value >= 100;
             }
         }
-        
-        public static void Run()
+
+        public static Agent CreateWoodcutter(string agentName, IntVariable radishesOnCounter)
         {
-            var hasAxe    = new BoolVariable();
-            var hunger    = new IntVariable(100);
-            var energy    = new IntVariable(100);
-            var money     = new IntVariable();
-            var wood      = new IntVariable();
-            var chairs    = new IntVariable();
+            var hasAxe = new BoolVariable();
+            var hunger = new IntVariable(100);
+            var energy = new IntVariable(100);
+            var money = new IntVariable();
+            var wood = new IntVariable();
+            var chairs = new IntVariable();
             var rzodkiews = new IntVariable();
-            var soups     = new IntVariable();
+            var soups = new IntVariable();
 
             var feelingSoupy = new BoolVariable();
 
-            var pickAxe = new MessageAction("Picked up an axe");
-            //pickAxe.AddCost(10);
+            var pickAxe = new MessageAction(agentName, "Picked up an axe");
             pickAxe.AddPrecondition(hasAxe, new BooleanPrecondition(false));
             pickAxe.AddResult(hasAxe, new BooleanResult(true));
 
-            var chopTree = new MessageAction("Chopped down a tree");
-            //chopTree.AddCost(50);
+            var chopTree = new MessageAction(agentName, "Chop", "Chopped down a tree");
             chopTree.AddPrecondition(hasAxe, new BooleanPrecondition(true));
             chopTree.AddResult(wood, new IntegerAddResult(1));
             chopTree.AddResult(energy, new IntegerAddResult(-2));
 
-            var sellWood = new MessageAction("Sold a piece of wood");
-            //sellWood.AddCost(30);
+            var sellWood = new MessageAction(agentName, "Sold a piece of wood");
             sellWood.AddPrecondition(wood, new IntegerPrecondition(1, IntegerPrecondition.Condition.AtLeast));
             sellWood.AddResult(wood, new IntegerAddResult(-1));
             sellWood.AddResult(money, new IntegerAddResult(1));
 
-            var makeChair = new MessageAction("Made a chair");
-            //makeChair.AddCost(5);
+            var makeChair = new MessageAction(agentName, "Made a chair");
             makeChair.AddPrecondition(wood, new IntegerPrecondition(1, IntegerPrecondition.Condition.AtLeast));
             makeChair.AddResult(wood, new IntegerAddResult(-1));
             makeChair.AddResult(chairs, new IntegerAddResult(1));
             makeChair.AddResult(energy, new IntegerAddResult(-3));
 
-            var sellChair = new MessageAction("Sold a chair");
-            //sellChair.AddCost(30);
+            var sellChair = new MessageAction(agentName, "Sold a chair");
             sellChair.AddPrecondition(chairs, new IntegerPrecondition(1, IntegerPrecondition.Condition.AtLeast));
             sellChair.AddResult(chairs, new IntegerAddResult(-1));
             sellChair.AddResult(money, new IntegerAddResult(3));
 
-            var buyRzodkiew = new MessageAction("Bought a rzodkiew");
-            //buyRzodkiew.AddCost(30);
+            var buyRzodkiew = new MessageAction(agentName, "Bought a rzodkiew");
+            buyRzodkiew.AddPrecondition(radishesOnCounter, new IntegerPrecondition(1, IntegerPrecondition.Condition.AtLeast));
             buyRzodkiew.AddPrecondition(money, new IntegerPrecondition(3, IntegerPrecondition.Condition.AtLeast));
             buyRzodkiew.AddResult(money, new IntegerAddResult(-3));
             buyRzodkiew.AddResult(rzodkiews, new IntegerAddResult(1));
+            buyRzodkiew.AddResult(radishesOnCounter, new IntegerAddResult(-1));
 
-            var eatRzodkiew = new MessageAction("Ate a rzodkiew++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-            //eatRzodkiew.AddCost(20);
+            var eatRzodkiew = new MessageAction(agentName, "Ate a rzodkiew");
             eatRzodkiew.AddPrecondition(rzodkiews, new IntegerPrecondition(1, IntegerPrecondition.Condition.AtLeast));
             eatRzodkiew.AddResult(rzodkiews, new IntegerAddResult(-1));
             eatRzodkiew.AddResult(hunger, new IntegerAddResult(-5));
 
-            var makeSoup = new MessageAction("Made some soup__________________________________________________________________________");
-            //makeSoup.AddCost(5);
+            var makeSoup = new MessageAction(agentName, "Made some soup");
             makeSoup.AddPrecondition(rzodkiews, new IntegerPrecondition(2, IntegerPrecondition.Condition.AtLeast));
             makeSoup.AddResult(rzodkiews, new IntegerAddResult(-2));
             makeSoup.AddResult(soups, new IntegerAddResult(1));
             makeSoup.AddResult(energy, new IntegerAddResult(-11));
 
-            var eatSoup = new MessageAction("Ate some soup");
-            //eatSoup.AddCost(1);
+            var eatSoup = new MessageAction(agentName, "Ate some soup");
             eatSoup.AddPrecondition(soups, new IntegerPrecondition(1, IntegerPrecondition.Condition.AtLeast));
             eatSoup.AddResult(soups, new IntegerAddResult(-1));
             eatSoup.AddResult(hunger, new IntegerAddResult(-20));
             eatSoup.AddResult(energy, new IntegerAddResult(1));
 
-            var sleep = new MessageAction("Went to sleep$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
+            var sleep = new MessageAction(agentName, "Went to sleep");
             sleep.AddCost(10);
             sleep.AddResult(energy, new IntegerAddResult(25));
 
-            var idle = new MessageAction("Is bored");
+            var idle = new MessageAction(agentName, "Is bored");
             idle.AddCost(100000);
 
             var hungerNeed = new Hunger(hunger, 0);
@@ -129,27 +167,66 @@ namespace HORNS_Sandbox
             agent.AddActions(pickAxe, chopTree, sellWood, buyRzodkiew, eatRzodkiew, makeChair, sellChair, makeSoup, eatSoup, sleep);
             agent.AddIdleAction(idle);
 
-            // main loop
-            Random random = new Random(42);
-            while (true)
+            return agent;
+        }
+
+        private static Agent CreateSeller(string agentName, IntVariable radishesOnCounter)
+        {
+            Need<int> sellRadishes = new Need<int>(radishesOnCounter, 10, v => v);
+            MessageAction putRadish = new MessageAction(agentName, "Searching for radish", "Carrying radish", "Put radish on counter");
+            putRadish.AddResult(radishesOnCounter, new IntegerAddResult(1));
+
+            var sleep = new HibernateAction(agentName, radishesOnCounter);
+
+            Agent agent = new Agent();
+            agent.AddIdleAction(sleep);
+            agent.AddAction(putRadish);
+            agent.AddNeed(sellRadishes);
+
+            return agent;
+        }
+
+        private static void RunAgent(Agent agent, CancellationToken token)
+        {
+            Task.Run(async () =>
             {
-                //energy.Value -= 1;
-                hunger.Value += random.Next(3);
-
-                Console.WriteLine($"    Energy: {energy.Value} Hunger: {hunger.Value}");
-
-                var nextAction = agent.GetNextAction();
-                if (nextAction == null)
+                while (!token.IsCancellationRequested)
                 {
-                    Console.WriteLine("No plan was found!");
+                    try
+                    {
+                        var nextAction = await agent.GetNextActionAsync(token);
+                        if (nextAction == null)
+                        {
+                            Console.WriteLine("No plan was found!");
+                        }
+                        else
+                        {
+                            nextAction.Perform();
+                        }
+                    }
+                    catch (TaskCanceledException)
+                    {
+                        Console.WriteLine("Canceled plan calculation");
+                    }
                 }
-                else
-                {
-                    nextAction.Perform();
-                }
+                Console.WriteLine("End agent loop");
+            });
+        }
 
-                Console.ReadLine();
-            }
+        public static void Run()
+        {
+            IntVariable radishesOnCounter = new IntVariable(9);
+
+            CancellationTokenSource source = new CancellationTokenSource();
+            CancellationToken token = source.Token;
+
+            RunAgent(CreateWoodcutter("woodcutter", radishesOnCounter), token);
+            RunAgent(CreateSeller("seller", radishesOnCounter), token);
+
+            Console.ReadLine();
+            source.Cancel();
+            Console.WriteLine("Done!");
+            Console.ReadLine();
         }
     }
 }

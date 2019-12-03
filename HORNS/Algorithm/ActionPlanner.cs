@@ -25,9 +25,13 @@ namespace HORNS
         internal List<Action> Plan(Agent agent, IEnumerable<Action> idleActions,
                                    bool useSnapshot = false, CancellationToken? token = null, int possibleGoals = 5)
         {
-            Variable.VariableLock.EnterReadLock();
-            var variableSet = useSnapshot ? agent.Variables.Clone() : null;
-            Variable.VariableLock.ExitReadLock();
+            IdSet<Variable> variableSet = null;
+            if (useSnapshot)
+            {
+                Variable.VariableLock.EnterReadLock();
+                variableSet = agent.Variables.Clone();
+                Variable.VariableLock.ExitReadLock();
+            }      
 
             foreach (var action in agent.PossibleActions)
             {
@@ -85,7 +89,7 @@ namespace HORNS
                 {
                     if (token.HasValue && token.Value.IsCancellationRequested)
                     {
-                        throw new TaskCanceledException();
+                        return null;
                     }
 
                     var node = open.Dequeue();
