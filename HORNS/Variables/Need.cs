@@ -4,17 +4,17 @@ using System.Text;
 
 namespace HORNS
 {
-    public class Need<T> : Variable<T>, INeedInternal
+    public class Need<T> : INeedInternal, IIdentifiable, IEvaluable<T>
     {
         private readonly Func<T, float> evaluation;
 
-        private protected override T _Value { get => Variable.Value; set => Variable.Value = value; }
+        public T Value { get => Variable.Value; }
         internal Variable<T> Variable { get; private set; }
         public T Desired { get; private set; }
 
-        internal override VariableSolver<T> GenericSolver => Variable.GenericSolver;
+        internal VariableSolver<T> GenericSolver => Variable.GenericSolver;
 
-        private Need(Need<T> other) : base(other)
+        private Need(Need<T> other)
         {
             Variable = other.Variable;
             Desired = other.Desired;
@@ -27,12 +27,12 @@ namespace HORNS
             this.evaluation = evaluation;
         }
 
-        public override float Evaluate(T value)
+        public float Evaluate(T value)
         {
             return evaluation(value);
         }
 
-        public float GetPriority()
+        public float Evaluate()
         {
             return Evaluate(Value);
         }
@@ -59,7 +59,7 @@ namespace HORNS
 
         public bool IsSatisfied()
         {
-            return IsSatisfied(_Value);
+            return IsSatisfied(Value);
         }
 
         internal bool IsSatisfied(IdSet<Variable> variables)

@@ -98,7 +98,6 @@ namespace HORNS
 
         public void RecalculateActions()
         {
-            // TODO: remove?
 #if MEASURE_TIME
             var sw = new System.Diagnostics.Stopwatch();
             sw.Start();
@@ -113,8 +112,16 @@ namespace HORNS
 
         public async Task RecalculateActionsAsync()
         {
+#if MEASURE_TIME
+            var sw = new System.Diagnostics.Stopwatch();
+            sw.Start();
+#endif
             plannedActions = await Task.Run(() => planner.Plan(this, idleActions, true));
             currentAction = 0;
+#if MEASURE_TIME
+            sw.Stop();
+            Console.WriteLine($"[DEBUG] Planning took {sw.Elapsed}");
+#endif
         }
     }
 }
