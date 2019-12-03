@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Priority_Queue;
 
 namespace HORNS
@@ -21,7 +22,8 @@ namespace HORNS
         }
         
         // TODO: possibleGoals as param or field in agent?
-        internal List<Action> Plan(Agent agent, IEnumerable<Action> idleActions, bool useSnapshot = false, int possibleGoals = 5)
+        internal List<Action> Plan(Agent agent, IEnumerable<Action> idleActions,
+                                   bool useSnapshot = false, CancellationToken? token = null, int possibleGoals = 5)
         {
             var variableSet = useSnapshot ? agent.Variables.Clone() : null;
 
@@ -79,6 +81,11 @@ namespace HORNS
                 ActionPlannerNode last = null;
                 while (open.Count > 0)
                 {
+                    if (token.HasValue && token.Value.IsCancellationRequested)
+                    {
+                        throw new TaskCanceledException();
+                    }
+
                     var node = open.Dequeue();
 
                     // copy and update preconditions

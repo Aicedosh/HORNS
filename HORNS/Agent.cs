@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace HORNS
@@ -82,11 +83,11 @@ namespace HORNS
             return plannedActions[currentAction++];
         }
 
-        public async Task<Action> GetNextActionAsync()
+        public async Task<Action> GetNextActionAsync(CancellationToken? token = null)
         {
             if (plannedActions.Count == currentAction)
             {
-                await RecalculateActionsAsync();
+                await RecalculateActionsAsync(token);
             }
 
             if (plannedActions.Count == 0)
@@ -110,13 +111,13 @@ namespace HORNS
 #endif
         }
 
-        public async Task RecalculateActionsAsync()
+        public async Task RecalculateActionsAsync(CancellationToken? token = null)
         {
 #if MEASURE_TIME
             var sw = new System.Diagnostics.Stopwatch();
             sw.Start();
 #endif
-            plannedActions = await Task.Run(() => planner.Plan(this, idleActions, true));
+            plannedActions = await Task.Run(() => planner.Plan(this, idleActions, true, token));
             currentAction = 0;
 #if MEASURE_TIME
             sw.Stop();
