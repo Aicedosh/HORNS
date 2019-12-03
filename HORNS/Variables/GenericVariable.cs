@@ -33,8 +33,8 @@ namespace HORNS
             {
                 VariableLock.EnterWriteLock();
                 _value = value;
-                Notify(value);
                 VariableLock.ExitWriteLock();
+                Notify(value);
             }
         }
 

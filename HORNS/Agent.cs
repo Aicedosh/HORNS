@@ -1,5 +1,5 @@
 ﻿#if DEBUG
-#define MEASURE_TIME
+//#define MEASURE_TIME
 #endif
 
 using System;
@@ -21,6 +21,8 @@ namespace HORNS
 
         internal IdSet<INeedInternal> NeedsInternal { get; } = new IdSet<INeedInternal>();
         public IEnumerable<INeed> Needs => NeedsInternal;
+
+        public bool Recalculate { get; set; }
 
         public void AddNeed<T>(Need<T> need) //Necessary to ensure only this implementation of the interface can be added to the list
         {
@@ -70,10 +72,11 @@ namespace HORNS
 
         public Action GetNextAction()
         {
-            if(plannedActions.Count == currentAction)
+            if(Recalculate || plannedActions.Count == currentAction)
             {
                 //We have ran out of planned actions, recalculate
                 RecalculateActions();
+                Recalculate = false;
             }
 
             if (plannedActions.Count == 0)
@@ -85,9 +88,10 @@ namespace HORNS
 
         public async Task<Action> GetNextActionAsync(CancellationToken? token = null)
         {
-            if (plannedActions.Count == currentAction)
+            if (Recalculate || plannedActions.Count == currentAction)
             {
                 await RecalculateActionsAsync(token);
+                Recalculate = false;
             }
 
             if (plannedActions.Count == 0)

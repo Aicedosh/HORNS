@@ -9,41 +9,7 @@ using HORNS;
 namespace HORNS_Sandbox
 {
     class Example2
-    {
-        private class MessageAction : HORNS.Action
-        {
-            public string Message { get; }
-
-            public MessageAction(string message)
-            {
-                Message = message;
-            }
-
-            public override void Perform()
-            {
-                Console.WriteLine(Message);
-                Apply();
-            }
-        }
-
-        private class Hunger : Need<int>
-        {
-            public Hunger(Variable<int> variable, int desired) : base(variable, desired, v =>
-            v > 100 ? -100 :
-            (float)(50*Math.Log10(-v+1+100))) { }
-        }
-
-        private class Energy : Need<int>
-        {
-            public Energy(Variable<int> variable, int desired) : base(variable, desired, v => 
-            v < 0 ? 100 : (float)(50*Math.Log10(v + 1))) { }
-
-            protected override bool IsSatisfied(int value)
-            {
-                return value >= 100;
-            }
-        }
-        
+    {        
         public static void Run()
         {
             var hasAxe    = new BoolVariable();
@@ -99,7 +65,7 @@ namespace HORNS_Sandbox
             eatRzodkiew.AddResult(rzodkiews, new IntegerAddResult(-1));
             eatRzodkiew.AddResult(hunger, new IntegerAddResult(-5));
 
-            var makeSoup = new MessageAction("Made some soup__________________________________________________________________________");
+            var makeSoup = new MessageAction("Made some soup");
             //makeSoup.AddCost(5);
             makeSoup.AddPrecondition(rzodkiews, new IntegerPrecondition(2, IntegerPrecondition.Condition.AtLeast));
             makeSoup.AddResult(rzodkiews, new IntegerAddResult(-2));
@@ -113,7 +79,7 @@ namespace HORNS_Sandbox
             eatSoup.AddResult(hunger, new IntegerAddResult(-20));
             eatSoup.AddResult(energy, new IntegerAddResult(1));
 
-            var sleep = new MessageAction("Went to sleep$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
+            var sleep = new MessageAction("Went to sleep");
             sleep.AddCost(10);
             sleep.AddResult(energy, new IntegerAddResult(25));
 
