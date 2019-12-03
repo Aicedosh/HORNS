@@ -25,7 +25,8 @@ namespace HORNS
         public void AddNeed<T>(Need<T> need) //Necessary to ensure only this implementation of the interface can be added to the list
         {
             NeedsInternal.Add(need);
-            Variables.Add(need);
+            // TODO: think about this
+            //Variables.Add(need);
             Variables.Add(need.Variable);
         }
 
