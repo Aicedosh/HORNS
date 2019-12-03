@@ -49,7 +49,7 @@ namespace HORNS
             costEvaluators.Add(new ConstantCostEvaluator(cost));
         }
 
-        internal float GetCost(Agent agent, IdSet<Variable> variablesPatch = null)
+        internal float GetCost(Agent agent, IdSet<Variable> variables = null)
         {
             float cost = 0f;
 
@@ -60,7 +60,7 @@ namespace HORNS
 
             foreach(ActionResult result in results)
             {
-                cost += result.GetCost(variablesPatch, agent);
+                cost += result.GetCost(variables, agent);
             }
 
             CachedCost = cost;

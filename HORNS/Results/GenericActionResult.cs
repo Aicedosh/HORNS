@@ -24,10 +24,10 @@ namespace HORNS
             }
             Variable<T> curr = currentVariable as Variable<T>; //TODO: Can we remove this cast?
 
-            Variable<T> evaluator = curr;
-            if(agent.NeedsInternal.Contains(evaluator.Id))
+            IEvaluable<T> evaluator = curr;
+            if(agent.NeedsInternal.Contains(Variable.Id))
             {
-                evaluator = agent.NeedsInternal[evaluator.Id] as Variable<T>;
+                evaluator = agent.NeedsInternal[Variable.Id] as Need<T>;
             }
 
             return evaluator.Evaluate(curr.Value) - evaluator.Evaluate(GetResultValue(curr));

@@ -6,7 +6,7 @@ namespace HORNS
 {
     public interface INeed
     {
-        float GetPriority();
+        float Evaluate();
         bool IsSatisfied();
     }
 }

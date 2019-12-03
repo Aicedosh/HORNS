@@ -7,8 +7,10 @@ namespace HORNS_UnitTests
 {
     public class PlanTests
     {
-        [Fact]
-        public void Plan_OneAction_NoPreconditions()
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public void Plan_OneAction_NoPreconditions(bool snapshot)
         {
             var agent = new Agent();
             var variable = new BoolVariable();
@@ -22,7 +24,7 @@ namespace HORNS_UnitTests
             agent.AddAction(action);
             agent.AddNeed(need);
 
-            var actions = Plan(agent);
+            var actions = Plan(agent, snapshot);
 
             Assert.Single(actions);
 
@@ -31,8 +33,10 @@ namespace HORNS_UnitTests
             Assert.True(need.IsSatisfied());
         }
 
-        [Fact]
-        public void Plan_ThreeStepResult_BooleanVariables()
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public void Plan_ThreeStepResult_BooleanVariables(bool snapshot)
         {
             var agent = new Agent();
             
@@ -56,7 +60,7 @@ namespace HORNS_UnitTests
             agent.AddNeed(need);
             agent.AddActions(a1, a2, a3);
 
-            var actions = Plan(agent);
+            var actions = Plan(agent, snapshot);
 
             Assert.Equal(3, actions.Count);
             Assert.Equal("1", (actions[0] as BasicAction).Tag);
@@ -64,8 +68,10 @@ namespace HORNS_UnitTests
             Assert.Equal("3", (actions[2] as BasicAction).Tag);
         }
 
-        [Fact]
-        public void Plan_SingleIntPrecondition_RequiredMultipleTimesOnPath()
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public void Plan_SingleIntPrecondition_RequiredMultipleTimesOnPath(bool snapshot)
         {
             const int REQUIRED_NUMBER = 5;
             var agent = new Agent();
@@ -85,7 +91,7 @@ namespace HORNS_UnitTests
             agent.AddActions(a1, a2);
             agent.AddNeed(need);
 
-            var actions = Plan(agent);
+            var actions = Plan(agent, snapshot);
 
             Assert.Equal(REQUIRED_NUMBER + 1, actions.Count);
             Assert.Equal("Last", (actions[REQUIRED_NUMBER] as BasicAction).Tag);
@@ -95,8 +101,10 @@ namespace HORNS_UnitTests
             }
         }
 
-        [Fact]
-        public void Plan_TwoActionsBooleanResult_PicksBetterAction()
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public void Plan_TwoActionsBooleanResult_PicksBetterAction(bool snapshot)
         {
             var agent = new Agent();
             var variable = new BoolVariable();
@@ -114,16 +122,18 @@ namespace HORNS_UnitTests
             agent.AddNeed(need);
             agent.AddActions(a1, a2);
 
-            var actions = Plan(agent);
+            var actions = Plan(agent, snapshot);
 
             Assert.Single(actions);
             Assert.Equal("Better", (actions[0] as BasicAction).Tag);
         }
 
         [Theory]
-        [InlineData(1, 5, 4, "Cheap")]
-        [InlineData(2, 5, 1, "Expensive")]
-        public void Plan_TwoActionsIntegerResult_PickCheaperPath(int cost1, int cost2, int actionCount, string betterTag)
+        [InlineData(1, 5, 4, "Cheap", true)]
+        [InlineData(2, 5, 1, "Expensive", true)]
+        [InlineData(1, 5, 4, "Cheap", false)]
+        [InlineData(2, 5, 1, "Expensive", false)]
+        public void Plan_TwoActionsIntegerResult_PickCheaperPath(int cost1, int cost2, int actionCount, string betterTag, bool snapshot)
         {
             const int REQUIRED = 4;
 
@@ -148,7 +158,7 @@ namespace HORNS_UnitTests
             agent.AddNeed(need);
             agent.AddActions(a1, a2, a3);
 
-            var actions = Plan(agent);
+            var actions = Plan(agent, snapshot);
 
             Assert.Equal(actionCount + 1, actions.Count);
             Assert.Equal("Last", (actions[actionCount] as BasicAction).Tag);
@@ -158,8 +168,10 @@ namespace HORNS_UnitTests
             }
         }
 
-        [Fact]
-        public void Plan_PathMakesNeedWorse_DiscardPath()
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public void Plan_PathMakesNeedWorse_DiscardPath(bool snapshot)
         {
             var agent = new Agent();
             var v1 = new IntVariable(3);
@@ -177,7 +189,7 @@ namespace HORNS_UnitTests
             agent.AddNeed(need);
             agent.AddActions(a1, a2);
 
-            var actions = Plan(agent);
+            var actions = Plan(agent, snapshot);
             Assert.Empty(actions);
         }
 
@@ -195,8 +207,10 @@ namespace HORNS_UnitTests
             }
         }
 
-        [Fact]
-        public void Plan_ChoosingDifferentPathAfterConditionsChanged()
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public void Plan_ChoosingDifferentPathAfterConditionsChanged(bool snapshot)
         {
             var agent = new Agent();
             var a1 = new BasicAction("1");
@@ -234,7 +248,7 @@ namespace HORNS_UnitTests
             agent.AddNeed(n1);
             agent.AddNeed(n2);
 
-            List<Action> actions = Plan(agent);
+            List<Action> actions = Plan(agent, snapshot);
 
             Assert.Equal(2, actions.Count);
             Assert.Equal("3", (actions[0] as BasicAction).Tag);
@@ -245,7 +259,7 @@ namespace HORNS_UnitTests
                 a.Perform();
             }
 
-            actions = Plan(agent);
+            actions = Plan(agent, snapshot);
             Assert.Single(actions);
             Assert.Equal("1", (actions[0] as BasicAction).Tag);
 
@@ -254,14 +268,16 @@ namespace HORNS_UnitTests
                 a.Perform();
             }
 
-            actions = Plan(agent);
+            actions = Plan(agent, snapshot);
             Assert.Equal(2, actions.Count);
             Assert.Equal("2", (actions[0] as BasicAction).Tag);
             Assert.Equal("4", (actions[1] as BasicAction).Tag);
         }
 
-        [Fact]
-        public void Plan_AgentShouldOnlyPlanUsingHisOwnActions()
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public void Plan_AgentShouldOnlyPlanUsingHisOwnActions(bool snapshot)
         {
             var agent1 = new Agent();
             var agent2 = new Agent();
@@ -276,14 +292,16 @@ namespace HORNS_UnitTests
             BoolNeed b1 = new BoolNeed(v1, true);
             agent1.AddNeed(b1);
 
-            var actions = Plan(agent1);
+            var actions = Plan(agent1, snapshot);
             Assert.Empty(actions);
         }
 
         [Theory]
-        [InlineData(1, 2, "2")]
-        [InlineData(2, 1, "1")]
-        public void Plan_TwoActionsWithSameBaseCost_PreferOneThatChangesNeedMore(int change1, int change2, string expectedTag)
+        [InlineData(1, 2, "2", true)]
+        [InlineData(2, 1, "1", true)]
+        [InlineData(1, 2, "2", false)]
+        [InlineData(2, 1, "1", false)]
+        public void Plan_TwoActionsWithSameBaseCost_PreferOneThatChangesNeedMore(int change1, int change2, string expectedTag, bool snapshot)
         {
             Agent agent = new Agent();
 
@@ -299,20 +317,20 @@ namespace HORNS_UnitTests
 
             agent.AddActions(a1, a2);
 
-            var actions = Plan(agent);
+            var actions = Plan(agent, snapshot);
             Assert.Single(actions);
             Assert.Equal(expectedTag, (actions[0] as BasicAction).Tag);
         }
 
         // helper functions
-        List<Action> Plan(Agent agent, IEnumerable<Action> idleActions = null)
+        List<Action> Plan(Agent agent, bool snapshot, IEnumerable<Action> idleActions = null)
         {
             if (idleActions == null)
             {
                 idleActions = Enumerable.Empty<Action>();
             }
             var planner = new ActionPlanner();
-            return planner.Plan(agent, idleActions);
+            return planner.Plan(agent, idleActions, snapshot);
         }
     }
 }

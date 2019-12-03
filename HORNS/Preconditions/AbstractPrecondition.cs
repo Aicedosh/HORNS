@@ -15,7 +15,7 @@ namespace HORNS
 
         //private protected bool Fulfilled { get; set; } = false;
         internal abstract bool IsFulfilled();
-        //internal abstract bool IsFulfilled(IdSet<Variable> variables);
+        internal abstract bool IsFulfilledBy(IdSet<Variable> variables);
         internal abstract bool IsFulfilledByWorld();
 
         protected internal abstract bool IsEqualOrWorse(Precondition other);

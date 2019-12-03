@@ -4,8 +4,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace HORNS
 {
@@ -25,7 +25,8 @@ namespace HORNS
         public void AddNeed<T>(Need<T> need) //Necessary to ensure only this implementation of the interface can be added to the list
         {
             NeedsInternal.Add(need);
-            Variables.Add(need);
+            // TODO: think about this
+            //Variables.Add(need);
             Variables.Add(need.Variable);
         }
 
@@ -82,14 +83,41 @@ namespace HORNS
             return plannedActions[currentAction++];
         }
 
+        public async Task<Action> GetNextActionAsync(CancellationToken? token = null)
+        {
+            if (plannedActions.Count == currentAction)
+            {
+                await RecalculateActionsAsync(token);
+            }
+
+            if (plannedActions.Count == 0)
+            {
+                return null;
+            }
+            return plannedActions[currentAction++];
+        }
+
         public void RecalculateActions()
         {
-            // TODO: remove?
 #if MEASURE_TIME
             var sw = new System.Diagnostics.Stopwatch();
             sw.Start();
 #endif
-            plannedActions = new List<Action>(planner.Plan(this, idleActions));
+            plannedActions = planner.Plan(this, idleActions);
+            currentAction = 0;
+#if MEASURE_TIME
+            sw.Stop();
+            Console.WriteLine($"[DEBUG] Planning took {sw.Elapsed}");
+#endif
+        }
+
+        public async Task RecalculateActionsAsync(CancellationToken? token = null)
+        {
+#if MEASURE_TIME
+            var sw = new System.Diagnostics.Stopwatch();
+            sw.Start();
+#endif
+            plannedActions = await Task.Run(() => planner.Plan(this, idleActions, true, token));
             currentAction = 0;
 #if MEASURE_TIME
             sw.Stop();

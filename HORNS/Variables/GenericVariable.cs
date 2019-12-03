@@ -5,7 +5,7 @@ using System.Text;
 namespace HORNS
 {
     //TODO: Replace with interface?
-    public abstract class Variable<T> : Variable
+    public abstract class Variable<T> : Variable, IEvaluable<T>
     {
         internal abstract VariableSolver<T> GenericSolver { get; }
         private ICollection<IVariableObserver<T>> observers = new HashSet<IVariableObserver<T>>();
