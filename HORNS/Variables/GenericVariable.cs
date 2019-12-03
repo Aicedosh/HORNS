@@ -26,12 +26,15 @@ namespace HORNS
         {
             get
             {
+                // TODO: add read lock here as well?
                 return _value;
             }
             set
             {
+                VariableLock.EnterWriteLock();
                 _value = value;
                 Notify(value);
+                VariableLock.ExitWriteLock();
             }
         }
 
