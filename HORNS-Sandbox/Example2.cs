@@ -19,9 +19,10 @@ namespace HORNS_Sandbox
                 Message = message;
             }
 
-            protected override void ActionResult()
+            public override void Perform()
             {
                 Console.WriteLine(Message);
+                Apply();
             }
         }
 

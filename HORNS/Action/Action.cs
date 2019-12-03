@@ -77,12 +77,11 @@ namespace HORNS
             return variables;
         }
 
-        protected abstract void ActionResult();
+        public abstract void Perform();
 
-        public void Perform()
+        public void Apply()
         {
-            ActionResult();
-            foreach(ActionResult result in results)
+            foreach (ActionResult result in results)
             {
                 result.Apply();
             }

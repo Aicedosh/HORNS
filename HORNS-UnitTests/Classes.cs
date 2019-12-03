@@ -14,8 +14,9 @@ namespace HORNS_UnitTests
 
         public string Tag { get; }
 
-        protected override void ActionResult()
+        public override void Perform()
         {
+            Apply();
         }
     }
 
@@ -28,9 +29,10 @@ namespace HORNS_UnitTests
     class ChangeStateAction : Action
     {
         public State State { get; private set; } = new State();
-        protected override void ActionResult()
+        public override void Perform()
         {
             State.Value = true;
+            Apply();
         }
     }
 
