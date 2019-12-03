@@ -85,6 +85,11 @@ namespace HORNS
 
         public async Task<Action> GetNextActionAsync(CancellationToken? token = null)
         {
+            if(token.HasValue && token.Value.IsCancellationRequested)
+            {
+                return null;
+            }
+
             if (plannedActions.Count == currentAction)
             {
                 await RecalculateActionsAsync(token);
