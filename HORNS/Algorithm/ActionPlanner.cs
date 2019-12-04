@@ -25,7 +25,13 @@ namespace HORNS
         internal List<Action> Plan(Agent agent, IEnumerable<Action> idleActions,
                                    bool useSnapshot = false, CancellationToken? token = null, int possibleGoals = 5)
         {
-            var variableSet = useSnapshot ? agent.Variables.Clone() : null;
+            IdSet<Variable> variableSet = null;
+            if (useSnapshot)
+            {
+                Variable.VariableLock.EnterReadLock();
+                variableSet = agent.Variables.Clone();
+                Variable.VariableLock.ExitReadLock();
+            }      
 
             foreach (var action in agent.PossibleActions)
             {

@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
 
 namespace HORNS
 {
     public class Variable : IIdentifiable
     {
+        internal static ReaderWriterLockSlim VariableLock = new ReaderWriterLockSlim();
+
         private static int MaxId = 0;
         internal int Id { get; private set; }
 
