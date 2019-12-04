@@ -7,7 +7,7 @@ namespace HORNS
 {
     public class Variable : IIdentifiable
     {
-        public static ReaderWriterLockSlim VariableLock = new ReaderWriterLockSlim();
+        internal static ReaderWriterLockSlim VariableLock = new ReaderWriterLockSlim();
 
         private static int MaxId = 0;
         internal int Id { get; private set; }
