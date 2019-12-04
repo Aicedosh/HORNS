@@ -15,8 +15,16 @@ namespace HORNS
         //      should the Agent be simple object and planning actions should be responsibility of application's wrapper class
         private ActionPlanner planner = new ActionPlanner();
         private List<Action> plannedActions = new List<Action>();
-        private List<Action> idleActions = new List<Action>();
-        private int currentAction = 0;
+        private bool shouldRecalculate = false;
+        private System.Action<Agent> recalculateCallback = null;
+
+        public int CurrentAction { get; private set; } = 0;
+        public int PlannedActions => plannedActions.Count;
+        public int PlannedActionsLeft => plannedActions.Count - CurrentAction;
+#if MEASURE_TIME
+        public TimeSpan LastPlanTime { get; private set; }
+#endif
+
         internal IdSet<Variable> Variables { get; } = new IdSet<Variable>();
 
         internal IdSet<INeedInternal> NeedsInternal { get; } = new IdSet<INeedInternal>();
@@ -25,8 +33,6 @@ namespace HORNS
         public void AddNeed<T>(Need<T> need) //Necessary to ensure only this implementation of the interface can be added to the list
         {
             NeedsInternal.Add(need);
-            // TODO: think about this
-            //Variables.Add(need);
             Variables.Add(need.Variable);
         }
 
@@ -50,6 +56,8 @@ namespace HORNS
             }
         }
 
+        private List<Action> idleActions = new List<Action>();
+
         public void AddIdleAction(Action action)
         {
             idleActions.Add(action);
@@ -68,11 +76,21 @@ namespace HORNS
             }
         }
 
+        public void ForceRecalculate()
+        {
+            shouldRecalculate = true;
+        }
+
+        public void SetRecalculateCallback(System.Action<Agent> callback)
+        {
+            recalculateCallback = callback;
+        }
+
         public Action GetNextAction()
         {
-            if(plannedActions.Count == currentAction)
+            if(shouldRecalculate || plannedActions.Count == CurrentAction)
             {
-                //We have ran out of planned actions, recalculate
+                shouldRecalculate = false;
                 RecalculateActions();
             }
 
@@ -80,7 +98,7 @@ namespace HORNS
             {
                 return null;
             }
-            return plannedActions[currentAction++];
+            return plannedActions[CurrentAction++];
         }
 
         public async Task<Action> GetNextActionAsync(CancellationToken? token = null)
@@ -90,8 +108,9 @@ namespace HORNS
                 return null;
             }
 
-            if (plannedActions.Count == currentAction)
+            if (shouldRecalculate || plannedActions.Count == CurrentAction)
             {
+                shouldRecalculate = false;
                 await RecalculateActionsAsync(token);
             }
 
@@ -99,7 +118,7 @@ namespace HORNS
             {
                 return null;
             }
-            return plannedActions[currentAction++];
+            return plannedActions[CurrentAction++];
         }
 
         public void RecalculateActions()
@@ -109,11 +128,12 @@ namespace HORNS
             sw.Start();
 #endif
             plannedActions = planner.Plan(this, idleActions);
-            currentAction = 0;
+            CurrentAction = 0;
 #if MEASURE_TIME
             sw.Stop();
-            Console.WriteLine($"[DEBUG] Planning took {sw.Elapsed}");
+            LastPlanTime = sw.Elapsed;
 #endif
+            recalculateCallback?.Invoke(this);
         }
 
         public async Task RecalculateActionsAsync(CancellationToken? token = null)
@@ -123,11 +143,12 @@ namespace HORNS
             sw.Start();
 #endif
             plannedActions = await Task.Run(() => planner.Plan(this, idleActions, true, token));
-            currentAction = 0;
+            CurrentAction = 0;
 #if MEASURE_TIME
             sw.Stop();
-            Console.WriteLine($"[DEBUG] Planning took {sw.Elapsed}");
+            LastPlanTime = sw.Elapsed;
 #endif
+            recalculateCallback?.Invoke(this);
         }
     }
 }
