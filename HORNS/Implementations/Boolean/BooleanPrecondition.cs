@@ -4,8 +4,15 @@ using System.Text;
 
 namespace HORNS
 {
+    /// <summary>
+    /// Klasa reprezentująca wymaganie związane ze zmienną typu bool.
+    /// </summary>
     public class BooleanPrecondition : Precondition<bool, BooleanSolver>
     {
+        /// <summary>
+        /// Tworzy nowe wymaganie typu bool o określonej wartości docelowej.
+        /// </summary>
+        /// <param name="value">Wartość docelowa wymagania.</param>
         public BooleanPrecondition(bool value) : base(value)
         {
         }
@@ -14,10 +21,19 @@ namespace HORNS
         {
         }
 
+        /// <summary>
+        /// Tworzy nowe wymaganie typu bool bedące kopią innego wymagania.
+        /// </summary>
+        /// <param name="precondition">Wymaganie do skopiowania.</param>
         public BooleanPrecondition(BooleanPrecondition precondition) : base(precondition)
         {
         }
 
+        /// <summary>
+        /// Łączy wymaganie z innym wymaganiem.
+        /// </summary>
+        /// <param name="precondition">Wymaganie do połączenia.</param>
+        /// <returns>Nowe wymaganie będące wynikiem połączenia.</returns>
         protected internal override Precondition Combine(Precondition precondition)
         {
             if (!(precondition is BooleanPrecondition boolPre) || Value != boolPre.Value)
@@ -27,6 +43,11 @@ namespace HORNS
             return new BooleanPrecondition(Value, this);
         }
 
+        /// <summary>
+        /// Porównuje wymaganie z innym wymaganiem.
+        /// </summary>
+        /// <param name="precondition">Wymaganie do porównania.</param>
+        /// <returns>\texttt{true}, jeżeli \texttt{other} jest w takim samym lub gorszym stanie; \texttt{false} w przeciwnym wypadku.</returns>
         protected internal override bool IsEqualOrWorse(Precondition precondition)
         {
             if (!(precondition is BooleanPrecondition boolPre) || Value != boolPre.Value)
@@ -37,22 +58,41 @@ namespace HORNS
             return Variable.Value == boolPre.Variable.Value;
         }
 
-        protected internal override Precondition Subtract(ActionResult result)
+        /// <summary>
+        /// Odejmuje rezultat akcji od wymagania.
+        /// </summary>
+        /// <param name="actionResult">Rezultat do odjęcia.</param>
+        /// <returns>Nowe wymaganie będące wynikiem odjęcia rezultatu.</returns>
+        protected internal override Precondition Subtract(ActionResult actionResult)
         {
-            return new BooleanPrecondition(!(result as BooleanResult).EndValue, this);
+            return new BooleanPrecondition(!(actionResult as BooleanResult).EndValue, this);
         }
 
+        /// <summary>
+        /// Sprawdza, czy dana wartość spełnia wymaganie.
+        /// </summary>
+        /// <param name="value">Wartość do sprawdzenia.</param>
+        /// <returns>\texttt{true}, jeżeli wartość spełnia wymaganie.</returns>
         protected internal override bool IsFulfilled(bool value)
         {
             return value == Value;
         }
 
         // TODO: this is temporary
+        /// <summary>
+        /// Sprawdza, czy wymaganie dążące do danej wartości można uznać za spełnione.
+        /// </summary>
+        /// <param name="value">Wartość do sprawdzenia.</param>
+        /// <returns>\texttt{true}, jeżeli dla danej wartości docelowej wymaganie jest spełnione.</returns>
         protected internal override bool IsZeroed(bool value)
         {
             return value != Value;
         }
 
+        /// <summary>
+        /// Wykonuje kopię obiektu wymagania.
+        /// </summary>
+        /// <returns>Kopia wymagania.</returns>
         protected internal override Precondition Clone()
         {
             return new BooleanPrecondition(this);

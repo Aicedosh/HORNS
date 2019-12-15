@@ -4,6 +4,9 @@ using System.Linq;
 
 namespace HORNS
 {
+    /// <summary>
+    /// Klasa reprezentująca solver dla zmiennych typu bool.
+    /// </summary>
     public class BooleanSolver : VariableSolver<bool, BooleanResult, BooleanPrecondition>
     {
         List<BooleanResult> trueResults = new List<BooleanResult>();

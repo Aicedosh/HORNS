@@ -4,6 +4,9 @@ using System.Linq;
 
 namespace HORNS
 {
+    /// <summary>
+    /// Klasa reprezentująca solver dla zmiennych typu int.
+    /// </summary>
     public class IntegerSolver : VariableSolver<int, IntegerAddResult, IntegerPrecondition>
     {
         List<IntegerAddResult> positiveResults = new List<IntegerAddResult>();
