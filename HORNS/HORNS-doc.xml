@@ -1,0 +1,594 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>HORNS</name>
+    </assembly>
+    <members>
+        <member name="T:HORNS.Action">
+            <summary>
+            Klasa bazowa dla akcji możliwych do wykonania przez agenta. Klasy bazowe muszą implementować metodę Perform.
+            </summary>
+        </member>
+        <member name="P:HORNS.Action.CachedCost">
+            <summary>
+            Ostatni obliczony koszt danej akcji.
+            </summary>
+        </member>
+        <member name="M:HORNS.Action.AddResult``4(HORNS.Variable{``0,``1,``2,``3},``1)">
+            <summary>
+            Dodaje rezultat do zbioru rezultatów akcji.
+            </summary>
+            <typeparam name="T">Typ danych przechowywanych w zmiennej \texttt{variable}.</typeparam>
+            <typeparam name="RT">Typ dodawanego rezultatu.</typeparam>
+            <typeparam name="ST">Typ solvera skojarzony z daną zmienną.</typeparam>
+            <typeparam name="PT">Typ wymagania skojarzony z daną zmienną.</typeparam>
+            <param name="variable">Zmienna, której dotyczy rezultat.</param>
+            <param name="result">Nowy rezultat akcji.</param>
+        </member>
+        <member name="M:HORNS.Action.AddPrecondition``4(HORNS.Variable{``0,``1,``2,``3},``3)">
+            <summary>
+            Dodaje wymaganie do zbioru wymagań akcji.
+            </summary>
+            <typeparam name="T">Typ danych przechowywanych w zmiennej \texttt{variable}.</typeparam>
+            <typeparam name="RT">Typ rezultatu skojarzony z daną zmienną.</typeparam>
+            <typeparam name="ST">Typ solvera skojarzony z daną zmienną.</typeparam>
+            <typeparam name="PT">Typ dodawanego wymagania.</typeparam>
+            <param name="variable">Zmienna, której dotyczy wymaganie.</param>
+            <param name="precondition">Nowe wymaganie akcji.</param>
+        </member>
+        <member name="M:HORNS.Action.AddCost``1(HORNS.Variable{``0},System.Func{``0,System.Single})">
+            <summary>
+            Dodaje koszt zależny od wartości zmiennej do kosztu akcji.
+            </summary>
+            <typeparam name="T">Typ danych przechowywanych w zmiennej \texttt{variable}.</typeparam>
+            <param name="variable">Zmienna, od której zależy koszt.</param>
+            <param name="evaluationFunction">Funkcja wyznaczająca koszt dla danej wartości zmiennej.</param>
+        </member>
+        <member name="M:HORNS.Action.AddCost(System.Single)">
+            <summary>
+            Dodaje stały koszt do kosztu akcji.
+            </summary>
+            <param name="cost">Wartość kosztu.</param>
+        </member>
+        <member name="M:HORNS.Action.Perform">
+            <summary>
+            Wykonuje dowolne operacje związane z realizacją akcji.
+            </summary>
+        </member>
+        <member name="P:HORNS.Action.CanExecute">
+            <summary>
+            \texttt{true}, jeżeli akcja może być wykonana w danym momencie.
+            </summary>
+        </member>
+        <member name="M:HORNS.Action.Apply">
+            <summary>
+            Wykonuje wszystkie rezultaty związane z akcją, jeżeli akcja może być wykonana.
+            </summary>
+            <returns>\texttt{true}, jeżeli akcja została wykonana poprawnie.</returns>
+        </member>
+        <member name="T:HORNS.Agent">
+            <summary>
+            Klasa reprezentująca agenta korzystającego z planowania akcji.
+            </summary>
+        </member>
+        <member name="P:HORNS.Agent.CurrentAction">
+            <summary>
+            Indeks obecnie wykonywanej akcji.
+            </summary>
+        </member>
+        <member name="P:HORNS.Agent.PlannedActions">
+            <summary>
+            Całkowita liczba akcji obecnego planu.
+            </summary>
+        </member>
+        <member name="P:HORNS.Agent.PlannedActionsLeft">
+            <summary>
+            Pozostała liczba akcji obecnego planu.
+            </summary>
+        </member>
+        <member name="P:HORNS.Agent.LastPlanTime">
+            <summary>
+            Czas trwania ostatniego planowania.
+            </summary>
+        </member>
+        <member name="P:HORNS.Agent.Needs">
+            <summary>
+            Kolekcja potrzeb agenta.
+            </summary>
+        </member>
+        <member name="M:HORNS.Agent.AddNeed``1(HORNS.Need{``0})">
+            <summary>
+            Dodaje potrzebę do kolekcji potrzeb agenta.
+            </summary>
+            <typeparam name="T">Typ zmiennej związanej z dodawaną potrzebą.</typeparam>
+            <param name="need">Dodawana potrzeba.</param>
+        </member>
+        <member name="M:HORNS.Agent.AddAction(HORNS.Action)">
+            <summary>
+            Dodaje akcję do możliwych akcji agenta.
+            </summary>
+            <param name="action">Dodawana akcja.</param>
+        </member>
+        <member name="M:HORNS.Agent.AddActions(HORNS.Action[])">
+            <summary>
+            Dodaje wiele akcji do możliwych akcji agenta.
+            </summary>
+            <param name="actions">Dodawane akcje.</param>
+        </member>
+        <member name="M:HORNS.Agent.AddIdleAction(HORNS.Action)">
+            <summary>
+            Dodaje akcję do możliwych akcji bezczynności agenta.
+            </summary>
+            <param name="action">Dodawana akcja.</param>
+        </member>
+        <member name="M:HORNS.Agent.AddIdleActions(HORNS.Action[])">
+            <summary>
+            Dodaje wiele akcji do możliwych akcji bezczynności agenta.
+            </summary>
+            <param name="actions">Dodawane akcje.</param>
+        </member>
+        <member name="M:HORNS.Agent.ForceRecalculate">
+            <summary>
+            Wymusza przeliczenie planu przy następnym pobraniu akcji.
+            </summary>
+        </member>
+        <member name="M:HORNS.Agent.SetRecalculateCallback(System.Action{HORNS.Agent})">
+            <summary>
+            Określa akcję do wykonania po przeliczeniu planu.
+            </summary>
+            <param name="callback">Akcja do wykonania.</param>
+        </member>
+        <member name="M:HORNS.Agent.GetNextAction">
+            <summary>
+            Wyznacza kolejną akcję do wykonania.
+            </summary>
+            <returns>Akcja do wykonania.</returns>
+        </member>
+        <member name="M:HORNS.Agent.GetNextActionAsync(System.Nullable{System.Threading.CancellationToken})">
+            <summary>
+            Wyznacza kolejną akcję do wykonania w sposób asynchroniczny.
+            </summary>
+            <param name="token">Token umożliwiający przerwanie planowania w trakcie.</param>
+            <returns>Akcja do wykonania.</returns>
+        </member>
+        <member name="M:HORNS.Agent.RecalculateActions">
+            <summary>
+            Wyznacza plan akcji do wykonania.
+            </summary>
+        </member>
+        <member name="M:HORNS.Agent.RecalculateActionsAsync(System.Nullable{System.Threading.CancellationToken})">
+            <summary>
+            Wyznacza plan akcji do wykonania w sposób asynchroniczny.
+            </summary>
+            <param name="token">Token umożliwiający przerwanie planowania w trakcie.</param>
+            <returns></returns>
+        </member>
+        <member name="T:HORNS.IEvaluable`1">
+            <summary>
+            Interfejs dla klas podlegających ocenie, tj. zmiennych i potrzeb.
+            </summary>
+            <typeparam name="T">Typ ocenianych danych.</typeparam>
+        </member>
+        <member name="M:HORNS.IEvaluable`1.Evaluate(`0)">
+            <summary>
+            Oblicza ocenę potrzeby dla danej wartości.
+            </summary>
+            <param name="value">Wartość do oceny.</param>
+            <returns>Ocena dla danej wartości.</returns>
+        </member>
+        <member name="T:HORNS.Precondition">
+            <summary>
+            Abstrakcyjna klasa bazowa dla wszystkich wymagań.
+            </summary>
+        </member>
+        <member name="M:HORNS.Precondition.Clone">
+            <summary>
+            Wykonuje kopię obiektu wymagania.
+            </summary>
+            <returns>Kopia wymagania.</returns>
+        </member>
+        <member name="M:HORNS.Precondition.IsEqualOrWorse(HORNS.Precondition)">
+            <summary>
+            Porównuje wymaganie z innym wymaganiem.
+            </summary>
+            <param name="precondition">Wymaganie do porównania.</param>
+            <returns>\texttt{true}, jeżeli \texttt{other} jest w takim samym lub gorszym stanie; \texttt{false} w przeciwnym wypadku.</returns>
+        </member>
+        <member name="M:HORNS.Precondition.GetActions(HORNS.Agent)">
+            <summary>
+            Wyznacza akcje mogące spełnić wymaganie.
+            </summary>
+            <param name="agent">Agent, którego akcje będą rozważane.</param>
+            <returns>Kolekcja akcji.</returns>
+        </member>
+        <member name="M:HORNS.Precondition.Subtract(HORNS.ActionResult)">
+            <summary>
+            Odejmuje rezultat akcji od wymagania.
+            </summary>
+            <param name="actionResult">Rezultat do odjęcia.</param>
+            <returns>Nowe wymaganie będące wynikiem odjęcia rezultatu.</returns>
+        </member>
+        <member name="M:HORNS.Precondition.Combine(HORNS.Precondition)">
+            <summary>
+            Łączy wymaganie z innym wymaganiem.
+            </summary>
+            <param name="precondition">Wymaganie do połączenia.</param>
+            <returns>Nowe wymaganie będące wynikiem połączenia.</returns>
+        </member>
+        <member name="T:HORNS.Precondition`1">
+            <summary>
+            Abstrakcyjna klasa bazowa dla wymagań dla zmiennych typu T.
+            </summary>
+            <typeparam name="T">Typ danych przechowywanych w zmiennej związanej z wymaganiem.</typeparam>
+        </member>
+        <member name="P:HORNS.Precondition`1.Variable">
+            <summary>
+            Zmienna związana z wymaganiem.
+            </summary>
+        </member>
+        <member name="P:HORNS.Precondition`1.Value">
+            <summary>
+            Wartość docelowa wymagania.
+            </summary>
+        </member>
+        <member name="M:HORNS.Precondition`1.#ctor(`0)">
+            <summary>
+            Tworzy nowe wymaganie o określonej wartości docelowej.
+            </summary>
+            <param name="value">Wartość docelowa wymagania.</param>
+        </member>
+        <member name="M:HORNS.Precondition`1.#ctor(HORNS.Precondition{`0})">
+            <summary>
+            Tworzy nowe wymaganie bedące kopią innego wymagania.
+            </summary>
+            <param name="precondition">Wymaganie do skopiowania.</param>
+        </member>
+        <member name="M:HORNS.Precondition`1.IsFulfilled(`0)">
+            <summary>
+            Sprawdza, czy dana wartość spełnia wymaganie.
+            </summary>
+            <param name="value">Wartość do sprawdzenia.</param>
+            <returns>\texttt{true}, jeżeli wartość spełnia wymaganie.</returns>
+        </member>
+        <member name="M:HORNS.Precondition`1.IsZeroed(`0)">
+            <summary>
+            Sprawdza, czy wymaganie dążące do danej wartości można uznać za spełnione.
+            </summary>
+            <param name="value">Wartość do sprawdzenia.</param>
+            <returns>\texttt{true}, jeżeli dla danej wartości docelowej wymaganie jest spełnione.</returns>
+        </member>
+        <member name="T:HORNS.Precondition`2">
+            <summary>
+            Abstrakcyjna klasa bazowa dla wymagań dla zmiennych typu T powiązanych z solverem typu ST.
+            </summary>
+            <typeparam name="T">Typ danych przechowywanych w zmiennej związanej z wymaganiem.</typeparam>
+            <typeparam name="ST">Typ solvera związanego z wymaganiem.</typeparam>
+        </member>
+        <member name="M:HORNS.Precondition`2.#ctor(`0)">
+            <summary>
+            Tworzy nowe wymaganie o określonej wartości docelowej.
+            </summary>
+            <param name="value">Wartość docelowa wymagania.</param>
+        </member>
+        <member name="M:HORNS.Precondition`2.#ctor(`0,HORNS.Precondition{`0,`1})">
+            <summary>
+            Tworzy nowe wymaganie o określonej wartości docelowej i zmiennej pochodzącej z innego wymagania.
+            </summary>
+            <param name="value"></param>
+            <param name="precondition"></param>
+        </member>
+        <member name="M:HORNS.Precondition`2.#ctor(HORNS.Precondition{`0,`1})">
+            <summary>
+            Tworzy nowe wymaganie bedące kopią innego wymagania.
+            </summary>
+            <param name="precondition">Wymaganie do skopiowania.</param>
+        </member>
+        <member name="M:HORNS.Precondition`2.GetActions(HORNS.Agent)">
+            <summary>
+            Wyznacza akcje mogące spełnić wymaganie.
+            </summary>
+            <param name="agent">Agent, którego akcje będą rozważane.</param>
+            <returns>Kolekcja akcji.</returns>
+        </member>
+        <member name="T:HORNS.ActionResult">
+            <summary>
+            Abstrakcyjna klasa bazowa dla wszystkich rezultatów.
+            </summary>
+        </member>
+        <member name="T:HORNS.ActionResult`2">
+            <summary>
+            Abstrakcyjna klasa bazowa dla rezultatów dla zmiennych typu T powiązanych z solverem typu ST.
+            </summary>
+            <typeparam name="T">Typ danych przechowywanych w zmiennej związanej z rezultatem.</typeparam>
+            <typeparam name="ST">Typ solvera związanego z rezultatem.</typeparam>
+        </member>
+        <member name="T:HORNS.ActionResult`1">
+            <summary>
+            Abstrakcyjna klasa bazowa dla rezultatów dla zmiennych typu T.
+            </summary>
+            <typeparam name="T">Typ danych przechowywanych w zmiennej związanej z rezultatem.</typeparam>
+        </member>
+        <member name="P:HORNS.ActionResult`1.Variable">
+            <summary>
+            Zmienna związana z wymaganiem.
+            </summary>
+        </member>
+        <member name="M:HORNS.ActionResult`1.GetResultValue(HORNS.Variable{`0})">
+            <summary>
+            Zwraca wartość końcową rezultatu dla wartości początkowej reprezentowanej daną zmienną.
+            </summary>
+            <param name="variable">Zmienna o wartości początkowej.</param>
+            <returns>Wartość końcowa rezultatu.</returns>
+        </member>
+        <member name="T:HORNS.VariableSolver`1">
+            <summary>
+            Abstrakcyjna klasa bazowa dla solverów dla zmiennych typu T.
+            </summary>
+            <typeparam name="T">Typ danych przechowywanych w zmiennej związanej z solverem.</typeparam>
+        </member>
+        <member name="M:HORNS.VariableSolver`1.GetActionsTowards(HORNS.Variable{`0},`0,HORNS.Agent)">
+            <summary>
+            Wyznacza akcje modyfikujące daną zmienną w kierunku określonej wartości docelowej.
+            </summary>
+            <param name="variable">Zmienna.</param>
+            <param name="desiredValue">Wartość docelowa.</param>
+            <param name="agent">Agent, którego akcje będą rozważane.</param>
+            <returns>Kolekcja akcji.</returns>
+        </member>
+        <member name="T:HORNS.VariableSolver`3">
+            <summary>
+            Abstrakcyjna klasa bazowa dla solverów dla zmiennych typu T powiązanych z rezultatem typu RT i wymaganiem typu PT.
+            </summary>
+            <typeparam name="T">Typ danych przechowywanych w zmiennej związanej z solverem.</typeparam>
+            <typeparam name="RT">Typ rezultatu związany z solverem.</typeparam>
+            <typeparam name="PT">Typ wymagania związany z solverem.</typeparam>
+        </member>
+        <member name="M:HORNS.VariableSolver`3.Register(`1)">
+            <summary>
+            Dodaje rezultat do rezultatów rozważanych przez solver.
+            </summary>
+            <param name="result">Rezultat.</param>
+        </member>
+        <member name="M:HORNS.VariableSolver`3.GetActionsTowards(HORNS.Variable{`0},`0)">
+            <summary>
+            Wyznacza akcje modyfikujące daną zmienną w kierunku określonej wartości docelowej.
+            </summary>
+            <param name="variable">Zmienna.</param>
+            <param name="desiredValue">Wartość docelowa.</param>
+            <returns>Kolekcja akcji.</returns>
+        </member>
+        <member name="M:HORNS.VariableSolver`3.GetActionsSatisfying(`2)">
+            <summary>
+            Wyznacza akcje mogące spełnić dane wymaganie.
+            </summary>
+            <param name="precondition">Wymaganie do spełnienia.</param>
+            <returns>Kolekcja akcji.</returns>
+        </member>
+        <member name="M:HORNS.VariableSolver`3.GetActionsTowards(HORNS.Variable{`0},`0,HORNS.Agent)">
+            <summary>
+            Wyznacza akcje modyfikujące daną zmienną w kierunku określonej wartości docelowej.
+            </summary>
+            <param name="variable">Zmienna.</param>
+            <param name="desiredValue">Wartość docelowa.</param>
+            <param name="agent">Agent, którego akcje będą rozważane.</param>
+            <returns>Kolekcja akcji.</returns>
+        </member>
+        <member name="T:HORNS.Variable`1">
+            <summary>
+            Abstrakcyjna klasa bazowa dla zmiennych przechowujących dane typu T.
+            </summary>
+            <typeparam name="T">Typ danych.</typeparam>
+        </member>
+        <member name="M:HORNS.Variable`1.#ctor(`0)">
+            <summary>
+            Tworzy nową zmienną o określonej wartości początkowej.
+            </summary>
+            <param name="value">Wartość początkowa zmiennej.</param>
+        </member>
+        <member name="M:HORNS.Variable`1.#ctor(HORNS.Variable{`0})">
+            <summary>
+            Tworzy nową zmienną będącą kopią innej zmiennej.
+            </summary>
+            <param name="variable">Zmienna do skopiowania.</param>
+        </member>
+        <member name="P:HORNS.Variable`1.Value">
+            <summary>
+            Wartość zmiennej.
+            </summary>
+        </member>
+        <member name="M:HORNS.Variable`1.Observe(HORNS.IVariableObserver{`0})">
+            <summary>
+            Dodaje obserwatora do listy obserwatorów zmiennej.
+            </summary>
+            <param name="observer">Obserwator.</param>
+        </member>
+        <member name="M:HORNS.Variable`1.Unobserve(HORNS.IVariableObserver{`0})">
+            <summary>
+            Usuwa obserwatora z listy obserwatorów zmiennej.
+            </summary>
+            <param name="observer">Obserwator.</param>
+        </member>
+        <member name="M:HORNS.Variable`1.Evaluate(`0)">
+            <summary>
+            Oblicza ocenę zmiennej dla danej wartości.
+            </summary>
+            <param name="value">Wartość do oceny.</param>
+            <returns>Ocena wartości.</returns>
+        </member>
+        <member name="T:HORNS.Variable`4">
+            <summary>
+            Abstrakcyjna klasa bazowa dla zmiennych typu T powiązanych z typami rezultatu, solvera i wymagania.
+            </summary>
+            <typeparam name="T">Typ danych przechowywanych przez zmienną.</typeparam>
+            <typeparam name="RT">Typ rezultatu związany ze zmienną.</typeparam>
+            <typeparam name="ST">Typ solvera związany ze zmienną.</typeparam>
+            <typeparam name="PT">Typ wymagania związany ze zmienną.</typeparam>
+        </member>
+        <member name="M:HORNS.Variable`4.#ctor(`0)">
+            <summary>
+            Tworzy nową zmienną o określonej wartości początkowej.
+            </summary>
+            <param name="value">Wartość początkowa zmiennej.</param>
+        </member>
+        <member name="T:HORNS.BoolVariable">
+            <summary>
+            Klasa reprezentująca zmienne typu bool.
+            </summary>
+        </member>
+        <member name="M:HORNS.BoolVariable.#ctor(System.Boolean)">
+            <summary>
+            Tworzy nową zmienną typu bool o określonej wartości początkowej.
+            </summary>
+            <param name="value">Wartość początkowa zmiennej.</param>
+        </member>
+        <member name="T:HORNS.IntVariable">
+            <summary>
+            Klasa reprezentująca zmienne typu bool.
+            </summary>
+        </member>
+        <member name="M:HORNS.IntVariable.#ctor(System.Int32)">
+            <summary>
+            Tworzy nową zmienną typu int o określonej wartości początkowej.
+            </summary>
+            <param name="value">Wartość początkowa zmiennej.</param>
+        </member>
+        <member name="T:HORNS.IVariableObserver`1">
+            <summary>
+            Interfejs dla obserwatorów zmiennych typu T.
+            </summary>
+            <typeparam name="T">Typ obserwowanej zmiennej.</typeparam>
+        </member>
+        <member name="M:HORNS.IVariableObserver`1.ValueChanged(`0)">
+            <summary>
+            Metoda wywoływana w reakcji na zmianę obserwowanej zmiennej.
+            </summary>
+            <param name="value">Wartość zmiennej po zmianie.</param>
+        </member>
+        <member name="T:HORNS.INeed">
+            <summary>
+            Interfejs dla wszystkich potrzeb.
+            </summary>
+        </member>
+        <member name="M:HORNS.INeed.Evaluate">
+            <summary>
+            Oblicza ocenę obecnego stanu potrzeby.
+            </summary>
+            <returns>Ocena stanu potrzeby.</returns>
+        </member>
+        <member name="M:HORNS.INeed.IsSatisfied">
+            <summary>
+            Sprawdza, czy potrzeba jest w stanie zaspokojonym.
+            </summary>
+            <returns>\texttt{true}, jeżeli potrzeba jest zaspokojona.</returns>
+        </member>
+        <member name="T:HORNS.IVariableObserver">
+            <summary>
+            Interfejs dla obserwatorów zmiennych niezależnych od typu.
+            </summary>
+        </member>
+        <member name="M:HORNS.IVariableObserver.ValueChanged">
+            <summary>
+            Metoda wywoływana w reakcji na zmianę obserwowanej zmiennej.
+            </summary>
+        </member>
+        <member name="T:HORNS.Need`1">
+            <summary>
+            Klasa reprezentująca potrzeby dotyczące zmiennych typu T.
+            </summary>
+            <typeparam name="T">Typ danych przechowywanych w zmiennej związanej z potrzebą.</typeparam>
+        </member>
+        <member name="P:HORNS.Need`1.Value">
+            <summary>
+            Wartość potrzeby.
+            </summary>
+        </member>
+        <member name="P:HORNS.Need`1.Desired">
+            <summary>
+            Docelowa wartość potrzeby.
+            </summary>
+        </member>
+        <member name="M:HORNS.Need`1.#ctor(HORNS.Variable{`0},`0,System.Func{`0,System.Single})">
+            <summary>
+            Tworzy nową potrzebę powiązaną z określoną zmienną.
+            </summary>
+            <param name="variable">Zmienna, której dotyczy potrzeba.</param>
+            <param name="desired">Docelowa wartość zmiennej.</param>
+            <param name="evaluation">Funkcja wyznaczająca ocenę potrzeby dla konkretnej wartości zmiennej.</param>
+        </member>
+        <member name="M:HORNS.Need`1.Evaluate(`0)">
+            <summary>
+            Oblicza ocenę potrzeby dla danej wartości.
+            </summary>
+            <param name="value">Wartość do oceny.</param>
+            <returns>Ocena dla danej wartości.</returns>
+        </member>
+        <member name="M:HORNS.Need`1.Evaluate">
+            <summary>
+            Oblicza ocenę obecnego stanu potrzeby.
+            </summary>
+            <returns>Ocena stanu potrzeby.</returns>
+        </member>
+        <member name="M:HORNS.Need`1.IsSatisfied">
+            <summary>
+            Sprawdza, czy potrzeba jest w stanie zaspokojonym.
+            </summary>
+            <returns>\texttt{true}, jeżeli potrzeba jest zaspokojona.</returns>
+        </member>
+        <member name="M:HORNS.Need`1.IsSatisfied(`0)">
+            <summary>
+            Sprawdza, czy dana wartość zaspokaja potrzebę.
+            </summary>
+            <param name="value">Wartość do sprawdzenia.</param>
+            <returns>\texttt{true}, jeżeli wartość zaspokaja potrzebę.</returns>
+        </member>
+        <member name="T:HORNS.Variable">
+            <summary>
+            Klasa bazowa dla wszystkich zmiennych.
+            </summary>
+        </member>
+        <member name="M:HORNS.Variable.Observe(HORNS.IVariableObserver)">
+            <summary>
+            Dodaje obserwatora do listy obserwatorów zmiennej.
+            </summary>
+            <param name="observer">Obserwator.</param>
+        </member>
+        <member name="M:HORNS.Variable.Unobserve(HORNS.IVariableObserver)">
+            <summary>
+            Usuwa obserwatora z listy obserwatorów zmiennej.
+            </summary>
+            <param name="observer">Obserwator.</param>
+        </member>
+        <member name="T:HORNS.VariableChangeObserver`1">
+            <summary>
+            Abstrakcyjna klasa bazowa dla obserwatorów zmian zmiennych typu T.
+            </summary>
+            <typeparam name="T">Typ obserwowanej zmiennej.</typeparam>
+        </member>
+        <member name="M:HORNS.VariableChangeObserver`1.Observe(HORNS.IVariableObserver)">
+            <summary>
+            Dodaje obserwatora do listy do wywołania w przypadku konieczności notyfikacji.
+            </summary>
+            <param name="observer">Obserwator.</param>
+        </member>
+        <member name="M:HORNS.VariableChangeObserver`1.Unobserve(HORNS.IVariableObserver)">
+            <summary>
+            Usuwa obserwatora z listy do wywołania.
+            </summary>
+            <param name="observer">Obserwator.</param>
+        </member>
+        <member name="M:HORNS.VariableChangeObserver`1.ValueChanged(`0)">
+            <summary>
+            Przekazuje notyfikację do obserwatorów, jeżeli notyfikacja wymaga obsługi.
+            </summary>
+            <param name="value">Wartość zmiennej po zmianie.</param>
+        </member>
+        <member name="M:HORNS.VariableChangeObserver`1.NotifyValueChanged(`0,`0)">
+            <summary>
+            Sprawdza, czy notyfikacja o zmianie zmiennej wymaga obsługi.
+            </summary>
+            <param name="previousValue">Poprzednia wartość zmiennej.</param>
+            <param name="newValue">Nowa wartość zmiennej.</param>
+            <returns>\texttt{true}, jeżeli notyfikacja wymaga obsługi.</returns>
+        </member>
+    </members>
+</doc>

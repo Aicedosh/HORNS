@@ -9,6 +9,9 @@ using System.Threading.Tasks;
 
 namespace HORNS
 {
+    /// <summary>
+    /// Klasa reprezentująca agenta korzystającego z planowania akcji.
+    /// </summary>
     public class Agent
     {
         //TODO: Should this be a field in Agent, an interface (with possibility to change by the developer) or
@@ -18,18 +21,38 @@ namespace HORNS
         private bool shouldRecalculate = false;
         private System.Action<Agent> recalculateCallback = null;
 
+        /// <summary>
+        /// Indeks obecnie wykonywanej akcji.
+        /// </summary>
         public int CurrentAction { get; private set; } = 0;
+        /// <summary>
+        /// Całkowita liczba akcji obecnego planu.
+        /// </summary>
         public int PlannedActions => plannedActions.Count;
+        /// <summary>
+        /// Pozostała liczba akcji obecnego planu.
+        /// </summary>
         public int PlannedActionsLeft => plannedActions.Count - CurrentAction;
 #if MEASURE_TIME
+        /// <summary>
+        /// Czas trwania ostatniego planowania.
+        /// </summary>
         public TimeSpan LastPlanTime { get; private set; }
 #endif
 
         internal IdSet<Variable> Variables { get; } = new IdSet<Variable>();
 
         internal IdSet<INeedInternal> NeedsInternal { get; } = new IdSet<INeedInternal>();
+        /// <summary>
+        /// Kolekcja potrzeb agenta.
+        /// </summary>
         public IEnumerable<INeed> Needs => NeedsInternal;
 
+        /// <summary>
+        /// Dodaje potrzebę do kolekcji potrzeb agenta.
+        /// </summary>
+        /// <typeparam name="T">Typ zmiennej związanej z dodawaną potrzebą.</typeparam>
+        /// <param name="need">Dodawana potrzeba.</param>
         public void AddNeed<T>(Need<T> need) //Necessary to ensure only this implementation of the interface can be added to the list
         {
             NeedsInternal.Add(need);
@@ -39,6 +62,10 @@ namespace HORNS
         private HashSet<Action> possibleActions = new HashSet<Action>();
         internal ISet<Action> PossibleActions => possibleActions;
 
+        /// <summary>
+        /// Dodaje akcję do możliwych akcji agenta.
+        /// </summary>
+        /// <param name="action">Dodawana akcja.</param>
         public void AddAction(Action action)
         {
             possibleActions.Add(action);
@@ -48,6 +75,10 @@ namespace HORNS
             }
         }
 
+        /// <summary>
+        /// Dodaje wiele akcji do możliwych akcji agenta.
+        /// </summary>
+        /// <param name="actions">Dodawane akcje.</param>
         public void AddActions(params Action[] actions)
         {
             foreach (var action in actions)
@@ -58,6 +89,10 @@ namespace HORNS
 
         private List<Action> idleActions = new List<Action>();
 
+        /// <summary>
+        /// Dodaje akcję do możliwych akcji bezczynności agenta.
+        /// </summary>
+        /// <param name="action">Dodawana akcja.</param>
         public void AddIdleAction(Action action)
         {
             idleActions.Add(action);
@@ -68,6 +103,10 @@ namespace HORNS
             }
         }
 
+        /// <summary>
+        /// Dodaje wiele akcji do możliwych akcji bezczynności agenta.
+        /// </summary>
+        /// <param name="actions">Dodawane akcje.</param>
         public void AddIdleActions(params Action[] actions)
         {
             foreach (var action in actions)
@@ -76,16 +115,27 @@ namespace HORNS
             }
         }
 
+        /// <summary>
+        /// Wymusza przeliczenie planu przy następnym pobraniu akcji.
+        /// </summary>
         public void ForceRecalculate()
         {
             shouldRecalculate = true;
         }
 
+        /// <summary>
+        /// Określa akcję do wykonania po przeliczeniu planu.
+        /// </summary>
+        /// <param name="callback">Akcja do wykonania.</param>
         public void SetRecalculateCallback(System.Action<Agent> callback)
         {
             recalculateCallback = callback;
         }
 
+        /// <summary>
+        /// Wyznacza kolejną akcję do wykonania.
+        /// </summary>
+        /// <returns>Akcja do wykonania.</returns>
         public Action GetNextAction()
         {
             if(shouldRecalculate || plannedActions.Count == CurrentAction)
@@ -101,6 +151,11 @@ namespace HORNS
             return plannedActions[CurrentAction++];
         }
 
+        /// <summary>
+        /// Wyznacza kolejną akcję do wykonania w sposób asynchroniczny.
+        /// </summary>
+        /// <param name="token">Token umożliwiający przerwanie planowania w trakcie.</param>
+        /// <returns>Akcja do wykonania.</returns>
         public async Task<Action> GetNextActionAsync(CancellationToken? token = null)
         {
             if(token.HasValue && token.Value.IsCancellationRequested)
@@ -121,6 +176,9 @@ namespace HORNS
             return plannedActions[CurrentAction++];
         }
 
+        /// <summary>
+        /// Wyznacza plan akcji do wykonania.
+        /// </summary>
         public void RecalculateActions()
         {
 #if MEASURE_TIME
@@ -136,6 +194,11 @@ namespace HORNS
             recalculateCallback?.Invoke(this);
         }
 
+        /// <summary>
+        /// Wyznacza plan akcji do wykonania w sposób asynchroniczny.
+        /// </summary>
+        /// <param name="token">Token umożliwiający przerwanie planowania w trakcie.</param>
+        /// <returns></returns>
         public async Task RecalculateActionsAsync(CancellationToken? token = null)
         {
 #if MEASURE_TIME
