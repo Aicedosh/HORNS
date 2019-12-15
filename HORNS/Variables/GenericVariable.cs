@@ -5,6 +5,10 @@ using System.Text;
 namespace HORNS
 {
     //TODO: Replace with interface?
+    /// <summary>
+    /// Abstrakcyjna klasa bazowa dla zmiennych przechowujących dane określonego typu.
+    /// </summary>
+    /// <typeparam name="T">Typ danych.</typeparam>
     public abstract class Variable<T> : Variable, IEvaluable<T>
     {
         internal abstract VariableSolver<T> GenericSolver { get; }
@@ -12,10 +16,15 @@ namespace HORNS
 
         private T _value;
 
+        /// <summary>
+        /// Tworzy nową zmienną o określonej wartości początkowej.
+        /// </summary>
+        /// <param name="value">Wartość początkowa zmiennej.</param>
         public Variable(T value = default)
         {
             _value = value;
         }
+
 
         protected Variable(Variable<T> variable) : base(variable)
         {

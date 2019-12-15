@@ -4,19 +4,37 @@ using System.Text;
 
 namespace HORNS
 {
+    /// <summary>
+    /// Abstrakcyjna klasa bazowa dla wymagań dla zmiennych typu T.
+    /// </summary>
+    /// <typeparam name="T">Typ danych przechowywanych w zmiennej związanej z wymaganiem.</typeparam>
     public abstract class Precondition<T> : Precondition
     {
+        /// <summary>
+        /// Zmienna związana z wymaganiem.
+        /// </summary>
         protected internal Variable<T> Variable { get; internal set; }
+        /// <summary>
+        /// Wartość docelowa wymagania.
+        /// </summary>
         public T Value { get; }
         // current state
         internal T State { get; set; }
 
+        /// <summary>
+        /// Tworzy nowe wymaganie o określonej wartości docelowej.
+        /// </summary>
+        /// <param name="value">Wartość docelowa wymagania.</param>
         public Precondition(T value)
         {
             Value = value;
             State = value;
         }
 
+        /// <summary>
+        /// Tworzy nowe wymaganie bedące kopią innego wymagania.
+        /// </summary>
+        /// <param name="precondition">Wymaganie do skopiowania.</param>
         public Precondition(Precondition<T> precondition)
         {
             Value = precondition.Value;
@@ -29,7 +47,17 @@ namespace HORNS
             return Variable;
         }
 
+        /// <summary>
+        /// Sprawdza, czy dana wartość spełnia wymaganie.
+        /// </summary>
+        /// <param name="value">Wartość do sprawdzenia.</param>
+        /// <returns>\texttt{true}, jeżeli wartość spełnia wymaganie.</returns>
         protected internal abstract bool IsFulfilled(T value);
+        /// <summary>
+        /// Sprawdza, czy wymaganie dążące do danej wartości można uznać za spełnione.
+        /// </summary>
+        /// <param name="value">Wartość do sprawdzenia.</param>
+        /// <returns>\texttt{true}, jeżeli dla danej wartości docelowej wymaganie jest spełnione.</returns>
         protected internal abstract bool IsZeroed(T value);
 
         internal override bool IsFulfilled()

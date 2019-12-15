@@ -5,7 +5,10 @@ using System.Threading;
 
 namespace HORNS
 {
-    public class Variable : IIdentifiable
+    /// <summary>
+    /// Klasa bazowa dla wszystkich zmiennych.
+    /// </summary>
+    public abstract class Variable : IIdentifiable
     {
         internal static ReaderWriterLockSlim VariableLock = new ReaderWriterLockSlim();
 
@@ -16,11 +19,19 @@ namespace HORNS
 
         private ICollection<IVariableObserver> observers = new HashSet<IVariableObserver>();
 
+        /// <summary>
+        /// Dodaje obserwatora do listy obserwatorów zmiennej.
+        /// </summary>
+        /// <param name="observer">Obserwator.</param>
         public void Observe(IVariableObserver observer)
         {
             observers.Add(observer);
         }
 
+        /// <summary>
+        /// Usuwa obserwatora z listy obserwatorów zmiennej.
+        /// </summary>
+        /// <param name="observer">Obserwator.</param>
         public void Unobserve(IVariableObserver observer)
         {
             observers.Remove(observer);
@@ -44,10 +55,7 @@ namespace HORNS
             Id = other.Id;
         }
 
-        internal virtual Variable GetCopy()
-        {
-            return new Variable(this);
-        }
+        internal abstract Variable GetCopy();
 
         IIdentifiable IIdentifiable.GetCopy()
         {
@@ -55,12 +63,22 @@ namespace HORNS
         }
 
         #region Predefined variable types
+        /// <summary>
+        /// Tworzy zmienną przechowującą wartości typu bool.
+        /// </summary>
+        /// <param name="value">Wartość początkowa zmiennej.</param>
+        /// <returns></returns>
         public static Variable<bool> CreateBoolean(bool value)
         {
             return new Variable<bool, BooleanResult, BooleanSolver, BooleanPrecondition>(value);
         }
 
         //TODO: replace to template
+        /// <summary>
+        /// Tworzy zmienną przechowującą wartości typu int.
+        /// </summary>
+        /// <param name="value">Wartość początkowa zmiennej.</param>
+        /// <returns></returns>
         public static Variable<int> CreateInteger(int value)
         {
             return new Variable<int, IntegerAddResult, IntegerSolver, IntegerPrecondition>(value);

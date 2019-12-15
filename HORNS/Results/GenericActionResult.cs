@@ -4,8 +4,15 @@ using System.Text;
 
 namespace HORNS
 {
+    /// <summary>
+    /// Abstrakcyjna klasa bazowa dla rezultatów dla zmiennych typu T.
+    /// </summary>
+    /// <typeparam name="T">Typ danych przechowywanych w zmiennej związanej z rezultatem.</typeparam>
     public abstract class ActionResult<T> : ActionResult
     {
+        /// <summary>
+        /// Zmienna związana z wymaganiem.
+        /// </summary>
         protected internal Variable<T> Variable { get; internal set; }
         internal override Variable AbstractVariable => Variable;
 
@@ -13,6 +20,11 @@ namespace HORNS
         {
         }
 
+        /// <summary>
+        /// Zwraca wartość końcową rezultatu dla wartości początkowej reprezentowanej daną zmienną.
+        /// </summary>
+        /// <param name="variable">Zmienna o wartości początkowej.</param>
+        /// <returns>Wartość końcowa rezultatu.</returns>
         protected internal abstract T GetResultValue(Variable<T> variable);
 
         internal override float GetCost(IdSet<Variable> variables, Agent agent)

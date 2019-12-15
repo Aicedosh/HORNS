@@ -5,6 +5,10 @@
     <LangVersion>7.2</LangVersion>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>C:\Users\Koto\Desktop\yolo\uni\VII sem\Inż\HORNS\HORNS-doc.xml</DocumentationFile>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="OptimizedPriorityQueue" Version="4.2.0" />
   </ItemGroup>

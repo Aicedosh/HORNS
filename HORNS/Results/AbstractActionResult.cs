@@ -5,6 +5,9 @@ using System.Text;
 
 namespace HORNS
 {
+    /// <summary>
+    /// Abstrakcyjna klasa bazowa dla wszystkich rezultatów.
+    /// </summary>
     public abstract class ActionResult
     {
         internal Action Action { get; set; }
