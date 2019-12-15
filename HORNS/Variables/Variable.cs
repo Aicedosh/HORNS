@@ -61,28 +61,5 @@ namespace HORNS
         {
             return GetCopy();
         }
-
-        #region Predefined variable types
-        /// <summary>
-        /// Tworzy zmienną przechowującą wartości typu bool.
-        /// </summary>
-        /// <param name="value">Wartość początkowa zmiennej.</param>
-        /// <returns></returns>
-        public static Variable<bool> CreateBoolean(bool value)
-        {
-            return new Variable<bool, BooleanResult, BooleanSolver, BooleanPrecondition>(value);
-        }
-
-        //TODO: replace to template
-        /// <summary>
-        /// Tworzy zmienną przechowującą wartości typu int.
-        /// </summary>
-        /// <param name="value">Wartość początkowa zmiennej.</param>
-        /// <returns></returns>
-        public static Variable<int> CreateInteger(int value)
-        {
-            return new Variable<int, IntegerAddResult, IntegerSolver, IntegerPrecondition>(value);
-        }
-        #endregion
     }
 }

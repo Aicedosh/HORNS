@@ -39,7 +39,7 @@ namespace HORNS
         /// <param name="desiredValue">Wartość docelowa.</param>
         /// <param name="agent">Agent, którego akcje będą rozważane.</param>
         /// <returns>Kolekcja akcji.</returns>
-        protected internal override IEnumerable<Action> GetActionsTowards(Variable<T> variable, T desiredValue, Agent agent)
+        internal override IEnumerable<Action> GetActionsTowards(Variable<T> variable, T desiredValue, Agent agent)
         {
             return GetActionsTowards(variable, desiredValue).Where(a => agent.PossibleActions.Contains(a));
         }

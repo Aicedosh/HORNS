@@ -116,15 +116,24 @@ namespace HORNS
         /// </summary>
         public abstract void Perform();
 
+        public bool CanExecute => preconditions.All(p => p.IsFulfilledByWorld());
+
         /// <summary>
         /// Wykonuje wszystkie rezultaty związane z akcją.
         /// </summary>
-        public void Apply()
+        public bool Apply()
         {
+            if(CanExecute == false)
+            {
+                return false;
+            }
+
             foreach (ActionResult result in results)
             {
                 result.Apply();
             }
+
+            return true;
         }
 
         internal void ApplyResults(IdSet<Variable> variables)

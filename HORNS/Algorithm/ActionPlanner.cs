@@ -166,7 +166,9 @@ namespace HORNS
                         {
                             var newNeedState = node.NeedState.GetCopy();
                             action.ApplyResults(newNeedState);
-                            if (need.EvaluateFor(node.NeedState) <= need.EvaluateFor(newNeedState))
+                            var n1 = need.EvaluateFor(node.NeedState);
+                            var n2 = need.EvaluateFor(newNeedState);
+                            if (n1 <= n2)
                             {
                                 // copy as little as possible at this stage; copy the rest when we visit it
                                 var newNode = new ActionPlannerNode(node.Distance + action.CachedCost)

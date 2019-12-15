@@ -19,6 +19,6 @@ namespace HORNS
         /// <param name="desiredValue">Wartość docelowa.</param>
         /// <param name="agent">Agent, którego akcje będą rozważane.</param>
         /// <returns>Kolekcja akcji.</returns>
-        protected internal abstract IEnumerable<Action> GetActionsTowards(Variable<T> variable, T desiredValue, Agent agent);
+        internal abstract IEnumerable<Action> GetActionsTowards(Variable<T> variable, T desiredValue, Agent agent);
     }
 }

@@ -85,13 +85,13 @@ namespace HORNS
             where RT : ActionResult<T, ST>
             where PT : Precondition<T, ST>
     {
-        public Variable(T value = default) : base(value)
+        protected Variable(T value = default) : base(value)
         {
             Solver = new ST();
             Solver.Variable = this;
         }
 
-        public Variable(Variable<T, RT, ST, PT> variable) : base(variable)
+        internal Variable(Variable<T, RT, ST, PT> variable) : base(variable)
         {
             Solver = variable.Solver;
         }
