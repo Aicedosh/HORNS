@@ -79,12 +79,21 @@ namespace HORNS
 
         public abstract void Perform();
 
-        public void Apply()
+        public bool CanExecute => preconditions.All(p => p.IsFulfilledByWorld());
+
+        public bool Apply()
         {
+            if(CanExecute == false)
+            {
+                return false;
+            }
+
             foreach (ActionResult result in results)
             {
                 result.Apply();
             }
+
+            return true;
         }
 
         internal void ApplyResults(IdSet<Variable> variables)

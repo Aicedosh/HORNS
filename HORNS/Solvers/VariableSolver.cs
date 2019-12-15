@@ -11,7 +11,7 @@ namespace HORNS
         protected abstract IEnumerable<Action> GetActionsTowards(Variable<T> variable, T desiredValue);
         protected abstract IEnumerable<Action> GetActionsSatisfying(PT precondition);
 
-        protected internal override IEnumerable<Action> GetActionsTowards(Variable<T> variable, T desiredValue, Agent agent)
+        internal override IEnumerable<Action> GetActionsTowards(Variable<T> variable, T desiredValue, Agent agent)
         {
             return GetActionsTowards(variable, desiredValue).Where(a => agent.PossibleActions.Contains(a));
         }

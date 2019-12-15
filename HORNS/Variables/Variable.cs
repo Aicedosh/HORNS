@@ -53,18 +53,5 @@ namespace HORNS
         {
             return GetCopy();
         }
-
-        #region Predefined variable types
-        public static Variable<bool> CreateBoolean(bool value)
-        {
-            return new Variable<bool, BooleanResult, BooleanSolver, BooleanPrecondition>(value);
-        }
-
-        //TODO: replace to template
-        public static Variable<int> CreateInteger(int value)
-        {
-            return new Variable<int, IntegerAddResult, IntegerSolver, IntegerPrecondition>(value);
-        }
-        #endregion
     }
 }
