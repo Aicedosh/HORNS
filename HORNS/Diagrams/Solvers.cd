@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1" GroupingSetting="Access" MembersFormat="FullSignature">
+  <Class Name="HORNS.BooleanSolver">
+    <Position X="6.75" Y="6" Width="5.5" />
+    <Members>
+      <Method Name="GetActions" Hidden="true" />
+    </Members>
+    <TypeIdentifier>
+      <HashCode>AACAAAAAIAAAAAAAAAAAAAAAAAARAAAAAAAAAAQgAAA=</HashCode>
+      <FileName>Implementations\Boolean\BooleanSolver.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="HORNS.IntegerSolver">
+    <Position X="0.5" Y="6" Width="5.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAgAAAAAAAAAgARAAAAAAAAAAAgAAA=</HashCode>
+      <FileName>Implementations\Integer\IntegerSolver.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="HORNS.VariableSolver&lt;T, RT, PT&gt;">
+    <Position X="3.25" Y="2.75" Width="6" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAARAAAAAAAAAAAgAAA=</HashCode>
+      <FileName>Solvers\VariableSolver.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="HORNS.VariableSolver&lt;T&gt;">
+    <Position X="3.25" Y="0.5" Width="6" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAQAAAAgAAA=</HashCode>
+      <FileName>Solvers\AbstractVariableSolver.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

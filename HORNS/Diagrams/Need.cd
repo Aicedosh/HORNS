@@ -1,0 +1,60 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1" GroupingSetting="Access" MembersFormat="FullSignature">
+  <Class Name="HORNS.Need&lt;T&gt;">
+    <Position X="2" Y="6" Width="4.75" />
+    <Members>
+      <Method Name="IIdentifiable.GetCopy" Hidden="true" />
+      <Property Name="IIdentifiable.Id" Hidden="true" />
+      <Method Name="INeedInternal.EvaluateFor" Hidden="true" />
+      <Method Name="INeedInternal.GetActionsTowards" Hidden="true" />
+      <Method Name="INeedInternal.GetVariable" Hidden="true" />
+      <Method Name="INeedInternal.IsSatisfied" Hidden="true" />
+      <Method Name="Need" Hidden="true" />
+    </Members>
+    <TypeIdentifier>
+      <HashCode>ADBAAAAAAABUAAAAAAAAAgAAAAAQAABAAAQgACAQQIE=</HashCode>
+      <FileName>Variables\Need.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Variable" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="HORNS.Variable&lt;T&gt;" Collapsed="true">
+    <Position X="8.25" Y="7.5" Width="3.5" />
+    <TypeIdentifier>
+      <HashCode>ADAIAAAAAAQAABgAAAAAAgAAAAAAAABAAAAgAAAAAAA=</HashCode>
+      <FileName>Variables\GenericVariable.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Interface Name="HORNS.IEvaluable&lt;T&gt;">
+    <Position X="3.5" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>IEvaluable.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="HORNS.IIdentifiable">
+    <Position X="10.75" Y="1.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>CAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>IIdentifiable.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="HORNS.INeedInternal">
+    <Position X="6.5" Y="3" Width="3.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAACAQQAA=</HashCode>
+      <FileName>Variables\INeedInternal.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="HORNS.INeed">
+    <Position X="7.5" Y="1" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAACAAAAA=</HashCode>
+      <FileName>Variables\INeed.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

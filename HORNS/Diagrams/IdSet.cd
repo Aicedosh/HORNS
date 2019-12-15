@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1" GroupingSetting="Access" MembersFormat="FullSignature">
+  <Class Name="HORNS.IdSet&lt;T&gt;">
+    <Position X="0.5" Y="0.75" Width="3.25" />
+    <NestedTypes>
+      <Class Name="HORNS.IdSet&lt;T&gt;.TComparer">
+        <TypeIdentifier>
+          <NewMemberFileName>IdSet.cs</NewMemberFileName>
+        </TypeIdentifier>
+        <Lollipop Position="0.2" />
+      </Class>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAIAAAAAAAAAABAACAAAEAAAAAAAAAAEAAABAAAQADA=</HashCode>
+      <FileName>IdSet.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="HORNS.PreconditionSet">
+    <Position X="1" Y="5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Preconditions\PreconditionSet.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
