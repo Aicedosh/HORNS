@@ -6,7 +6,7 @@ namespace HORNS
 {
     //TODO: Replace with interface?
     /// <summary>
-    /// Abstrakcyjna klasa bazowa dla zmiennych przechowujących dane określonego typu.
+    /// Abstrakcyjna klasa bazowa dla zmiennych przechowujących dane typu T.
     /// </summary>
     /// <typeparam name="T">Typ danych.</typeparam>
     public abstract class Variable<T> : Variable, IEvaluable<T>
@@ -25,7 +25,10 @@ namespace HORNS
             _value = value;
         }
 
-
+        /// <summary>
+        /// Tworzy nową zmienną będącą kopią innej zmiennej.
+        /// </summary>
+        /// <param name="variable">Zmienna do skopiowania.</param>
         protected Variable(Variable<T> variable) : base(variable)
         {
             _value = variable._value;
@@ -47,6 +50,9 @@ namespace HORNS
             }
         }
 
+        /// <summary>
+        /// Wartość zmiennej.
+        /// </summary>
         public T Value
         {
             get => _Value;
@@ -62,16 +68,29 @@ namespace HORNS
             base.Notify();
         }
 
+        /// <summary>
+        /// Dodaje obserwatora do listy obserwatorów zmiennej.
+        /// </summary>
+        /// <param name="observer">Obserwator.</param>
         public void Observe(IVariableObserver<T> observer)
         {
             observers.Add(observer);
         }
 
+        /// <summary>
+        /// Usuwa obserwatora z listy obserwatorów zmiennej.
+        /// </summary>
+        /// <param name="observer">Obserwator.</param>
         public void Unobserve(IVariableObserver<T> observer)
         {
             observers.Remove(observer);
         }
 
+        /// <summary>
+        /// Oblicza ocenę zmiennej dla danej wartości.
+        /// </summary>
+        /// <param name="value">Wartość do oceny.</param>
+        /// <returns>Ocena wartości.</returns>
         public virtual float Evaluate(T value)
         {
             return 0f;
@@ -80,11 +99,22 @@ namespace HORNS
     }
 
     //TODO: [!] Move me to new file
+    /// <summary>
+    /// Abstrakcyjna klasa bazowa dla zmiennych typu T powiązanych z typami rezultatu, solvera i wymagania.
+    /// </summary>
+    /// <typeparam name="T">Typ danych przechowywanych przez zmienną.</typeparam>
+    /// <typeparam name="RT">Typ rezultatu związany ze zmienną.</typeparam>
+    /// <typeparam name="ST">Typ solvera związany ze zmienną.</typeparam>
+    /// <typeparam name="PT">Typ wymagania związany ze zmienną.</typeparam>
     public class Variable<T, RT, ST, PT> : Variable<T>
             where ST : VariableSolver<T, RT, PT>, new()
             where RT : ActionResult<T, ST>
             where PT : Precondition<T, ST>
     {
+        /// <summary>
+        /// Tworzy nową zmienną o określonej wartości początkowej.
+        /// </summary>
+        /// <param name="value">Wartość początkowa zmiennej.</param>
         protected Variable(T value = default) : base(value)
         {
             Solver = new ST();
@@ -107,15 +137,29 @@ namespace HORNS
     }
 
     //TODO: [!] Not the best solution
+    /// <summary>
+    /// Klasa reprezentująca zmienne typu bool.
+    /// </summary>
     public class BoolVariable : Variable<bool, BooleanResult, BooleanSolver, BooleanPrecondition>
     {
+        /// <summary>
+        /// Tworzy nową zmienną typu bool o określonej wartości początkowej.
+        /// </summary>
+        /// <param name="value">Wartość początkowa zmiennej.</param>
         public BoolVariable(bool value = default) : base(value)
         {
         }
     }
 
+    /// <summary>
+    /// Klasa reprezentująca zmienne typu bool.
+    /// </summary>
     public class IntVariable : Variable<int, IntegerAddResult, IntegerSolver, IntegerPrecondition>
     {
+        /// <summary>
+        /// Tworzy nową zmienną typu int o określonej wartości początkowej.
+        /// </summary>
+        /// <param name="value">Wartość początkowa zmiennej.</param>
         public IntVariable(int value = default) : base(value)
         {
 

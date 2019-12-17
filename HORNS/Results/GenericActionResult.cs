@@ -21,7 +21,7 @@ namespace HORNS
         }
 
         /// <summary>
-        /// Zwraca wartość końcową rezultatu dla wartości początkowej reprezentowanej daną zmienną.
+        /// Zwraca wartość końcową rezultatu dla wartości początkowej równą wartości danej zmiennej.
         /// </summary>
         /// <param name="variable">Zmienna o wartości początkowej.</param>
         /// <returns>Wartość końcowa rezultatu.</returns>

@@ -116,11 +116,15 @@ namespace HORNS
         /// </summary>
         public abstract void Perform();
 
+        /// <summary>
+        /// \texttt{true}, jeżeli akcja może być wykonana w danym momencie.
+        /// </summary>
         public bool CanExecute => preconditions.All(p => p.IsFulfilledByWorld());
 
         /// <summary>
-        /// Wykonuje wszystkie rezultaty związane z akcją.
+        /// Wykonuje wszystkie rezultaty związane z akcją, jeżeli akcja może być wykonana.
         /// </summary>
+        /// <returns>\texttt{true}, jeżeli akcja została wykonana poprawnie.</returns>
         public bool Apply()
         {
             if(CanExecute == false)
