@@ -78,7 +78,7 @@
         </member>
         <member name="P:HORNS.Agent.PlannedActions">
             <summary>
-            Całkowita liczba akcji obecnego planu.
+            Zaplanowane akcje.
             </summary>
         </member>
         <member name="P:HORNS.Agent.PlannedActionsLeft">
@@ -175,6 +175,242 @@
             </summary>
             <param name="value">Wartość do oceny.</param>
             <returns>Ocena dla danej wartości.</returns>
+        </member>
+        <member name="T:HORNS.BooleanPrecondition">
+            <summary>
+            Klasa reprezentująca wymaganie związane ze zmienną typu \texttt{bool}, które jest spełnione dla wartości równej określonej wartości.
+            </summary>
+        </member>
+        <member name="M:HORNS.BooleanPrecondition.#ctor(System.Boolean)">
+            <summary>
+            Tworzy nowe wymaganie dla zmiennej typu \texttt{bool} o określonej wartości docelowej.
+            </summary>
+            <param name="value">Wartość docelowa wymagania.</param>
+        </member>
+        <member name="M:HORNS.BooleanPrecondition.#ctor(HORNS.BooleanPrecondition)">
+            <summary>
+            Tworzy nowe wymaganie typu \texttt{BooleanPrecondition} bedące kopią innego wymagania.
+            </summary>
+            <param name="precondition">Wymaganie do skopiowania.</param>
+        </member>
+        <member name="M:HORNS.BooleanPrecondition.Combine(HORNS.Precondition)">
+            <summary>
+            Łączy wymaganie z innym wymaganiem. Oba wymagania muszą być typu \texttt{BooleanPrecondition} i mieć tę samą wartość docelową.
+            </summary>
+            <param name="precondition">Wymaganie do połączenia.</param>
+            <returns>Nowe wymaganie o wartości docelowej równej wartościom docelowym obu wymagań lub \texttt{null} w przypadku, gdy wymagań nie można połączyć.</returns>
+        </member>
+        <member name="M:HORNS.BooleanPrecondition.IsEqualOrWorse(HORNS.Precondition)">
+            <summary>
+            Porównuje wymaganie z innym wymaganiem. Oba wymagania muszą być typu \texttt{BooleanPrecondition} i mieć tę samą wartość docelową.
+            </summary>
+            <param name="precondition">Wymaganie do porównania.</param>
+            <returns>\texttt{true}, jeżeli \texttt{other} jest w takim samym lub gorszym stanie; \texttt{false} w przeciwnym wypadku lub jeśli wymagań nie można porównać.</returns>
+        </member>
+        <member name="M:HORNS.BooleanPrecondition.Subtract(HORNS.ActionResult)">
+            <summary>
+            Odejmuje rezultat akcji od wymagania. Rezultat musi być typu \texttt{BooleanResult}.
+            </summary>
+            <param name="actionResult">Rezultat do odjęcia.</param>
+            <returns>Nowe wymaganie z wartością docelową będącą odwrotnością wartości końcowej rezultatu.</returns>
+        </member>
+        <member name="M:HORNS.BooleanPrecondition.IsFulfilled(System.Boolean)">
+            <summary>
+            Sprawdza, czy dana wartość spełnia wymaganie.
+            Wartość spełnia wymaganie, jeżeli jest równa wartości docelowej.
+            </summary>
+            <param name="value">Wartość do sprawdzenia.</param>
+            <returns>\texttt{true}, jeżeli wartość spełnia wymaganie.</returns>
+        </member>
+        <member name="M:HORNS.BooleanPrecondition.IsZeroed(System.Boolean)">
+            <summary>
+            Sprawdza, czy wymaganie dążące do danej wartości można uznać za spełnione.
+            Wymaganie można uznać za spełnione, jeżeli wartość pozostała do spełnienia jest przeciwna do docelowej.
+            </summary>
+            <param name="value">Wartość do sprawdzenia.</param>
+            <returns>\texttt{true}, jeżeli dla danej wartości docelowej wymaganie jest spełnione.</returns>
+        </member>
+        <member name="M:HORNS.BooleanPrecondition.Clone">
+            <summary>
+            Wykonuje kopię obiektu wymagania.
+            </summary>
+            <returns>Kopia wymagania.</returns>
+        </member>
+        <member name="T:HORNS.BooleanResult">
+            <summary>
+            Klasa reprezentująca rezultat związany ze zmienną typu \texttt{bool}, który powoduje przyjęcie przez zmienną określonej wartości.
+            </summary>
+        </member>
+        <member name="P:HORNS.BooleanResult.EndValue">
+            <summary>
+            Wartość, jaką ma przyjąć zmienna po wykonaniu rezultatu.
+            </summary>
+        </member>
+        <member name="M:HORNS.BooleanResult.#ctor(System.Boolean)">
+            <summary>
+            Tworzy nowy rezultat związany dla zmiennej typu \texttt{bool}, którego wynikiem jest zmiana wartości zmiennej na określoną wartość.
+            </summary>
+            <param name="endValue">Wartość końcowa rezultatu.</param>
+        </member>
+        <member name="M:HORNS.BooleanResult.GetResultValue(HORNS.Variable{System.Boolean})">
+            <summary>
+            Zwraca wartość końcową rezultatu dla wartości początkowej reprezentowanej daną zmienną.
+            Wartość końcowa jest równa \texttt{EndValue}.
+            </summary>
+            <param name="variable">Zmienna o wartości początkowej.</param>
+            <returns>Wartość końcowa rezultatu.</returns>
+        </member>
+        <member name="T:HORNS.BooleanSolver">
+            <summary>
+            Klasa reprezentująca solver dla zmiennych typu bool, rezultatów reprezentujących ustawienie określonej wartości i wymagań reprezentujących posiadanie określonej wartości.
+            </summary>
+        </member>
+        <member name="M:HORNS.BooleanSolver.GetActionsSatisfying(HORNS.BooleanPrecondition)">
+            <summary>
+            Wyznacza akcje mogące spełnić dane wymaganie.
+            Akcje mogące spełnić dane wymaganie to akcje ustawiające odpowiednią wartość końcową.
+            </summary>
+            <param name="precondition">Wymaganie do spełnienia.</param>
+            <returns>Kolekcja akcji.</returns>
+        </member>
+        <member name="M:HORNS.BooleanSolver.GetActionsTowards(HORNS.Variable{System.Boolean},System.Boolean)">
+            <summary>
+            Wyznacza akcje modyfikujące daną zmienną w kierunku określonej wartości docelowej.
+            Będą to akcje ustawiające wartość zmiennej na podaną wartość docelową.
+            </summary>
+            <param name="variable">Zmienna.</param>
+            <param name="desiredValue">Wartość docelowa.</param>
+            <returns>Kolekcja akcji.</returns>
+        </member>
+        <member name="M:HORNS.BooleanSolver.Register(HORNS.BooleanResult)">
+            <summary>
+            Dodaje rezultat do rezultatów rozważanych przez solver.
+            </summary>
+            <param name="result">Rezultat.</param>
+        </member>
+        <member name="T:HORNS.IntegerAddResult">
+            <summary>
+            Klasa reprezentująca rezultat związany ze zmienną typu \texttt{int}, który powoduje zwiększenie lub zmniejszenie wartości zmiennej o stałą wartość.
+            </summary>
+        </member>
+        <member name="P:HORNS.IntegerAddResult.Term">
+            <summary>
+            Składnik (dodatni lub ujemny) dodawany do wartości zmiennej w wyniku wykonania rezultatu.
+            </summary>
+        </member>
+        <member name="M:HORNS.IntegerAddResult.#ctor(System.Int32)">
+            <summary>
+            Tworzy nowy rezultat dla zmiennej typu \texttt{int}, którego wynikiem jest dodanie \texttt{term} do wartości zmiennej.
+            </summary>
+            <param name="term">Składnik (dodatni lub ujemny) dodawany do wartości zmiennej.</param>
+        </member>
+        <member name="M:HORNS.IntegerAddResult.GetResultValue(HORNS.Variable{System.Int32})">
+            <summary>
+            Zwraca wartość końcową rezultatu dla wartości początkowej reprezentowanej daną zmienną.
+            Wartość końcowa jest równa sumie wartości początkowej oraz \texttt{Term}.
+            </summary>
+            <param name="variable">Zmienna o wartości początkowej.</param>
+            <returns>Wartość końcowa rezultatu.</returns>
+        </member>
+        <member name="T:HORNS.IntegerPrecondition">
+            <summary>
+            Klasa reprezentująca wymaganie związane ze zmienną typu \texttt{int}, które jest spełnione dla wartości zmiennej nie większych/nie mniejszych od określonej stałej.
+            Wartość docelowa powinna być dodatnia.
+            </summary>
+        </member>
+        <member name="T:HORNS.IntegerPrecondition.Condition">
+            <summary>
+            Typ wyliczeniowy reprezentujący kierunek porównania.
+            </summary>
+        </member>
+        <member name="P:HORNS.IntegerPrecondition.Direction">
+            <summary>
+            Kierunek porównania obecnej wartości z wartością docelową.
+            </summary>
+        </member>
+        <member name="M:HORNS.IntegerPrecondition.#ctor(System.Int32,HORNS.IntegerPrecondition.Condition)">
+            <summary>
+            Tworzy nowe wymaganie dla zmiennej typu \texttt{int} o określonej wartości docelowej i warunku do spełnienia względem tej wartości.
+            </summary>
+            <param name="value">Wartość docelowa wymagania.</param>
+            <param name="direction">Warunek, który musi być spełniony względem wartości docelowej (nie większy/nie mniejszy).</param>
+        </member>
+        <member name="M:HORNS.IntegerPrecondition.#ctor(HORNS.IntegerPrecondition)">
+            <summary>
+            Tworzy nowe wymaganie typu \texttt{IntegerPrecondition} bedące kopią innego wymagania.
+            </summary>
+            <param name="precondition">Wymaganie do skopiowania.</param>
+        </member>
+        <member name="M:HORNS.IntegerPrecondition.Combine(HORNS.Precondition)">
+            <summary>
+            Łączy wymaganie z innym wymaganiem. Oba wymagania muszą być typu \texttt{IntegerPrecondition} i mieć ten sam kierunek porównania.
+            </summary>
+            <param name="precondition">Wymaganie do połączenia.</param>
+            <returns>Nowe wymaganie o kierunku porównania zgodnym z kierunkiem porównania wymagań składowych i wartości docelowej spełniającej oba wymagania lub \texttt{null} w przypadku, gdy wymagań nie można połączyć.</returns>
+        </member>
+        <member name="M:HORNS.IntegerPrecondition.IsEqualOrWorse(HORNS.Precondition)">
+            <summary>
+            Porównuje wymaganie z innym wymaganiem. Oba wymagania muszą być typu \texttt{IntegerPrecondition}, mieć ten sam kierunek porównania i tę samą wartość docelową.
+            </summary>
+            <param name="precondition">Wymaganie do porównania.</param>
+            <returns>\texttt{true}, jeżeli \texttt{other} jest w takim samym lub gorszym stanie; \texttt{false} w przeciwnym wypadku lub jeśli wymagań nie można porównać.</returns>
+        </member>
+        <member name="M:HORNS.IntegerPrecondition.Subtract(HORNS.ActionResult)">
+            <summary>
+            Odejmuje rezultat akcji od wymagania. Rezultat musi być typu \texttt{IntegerAddResult}.
+            </summary>
+            <param name="actionResult">Rezultat do odjęcia.</param>
+            <returns>Nowe wymaganie z wartością docelową zmienioną w zależności od wartości składnika rezultatu.</returns>
+        </member>
+        <member name="M:HORNS.IntegerPrecondition.IsFulfilled(System.Int32)">
+            <summary>
+            Sprawdza, czy dana wartość spełnia wymaganie.
+            Wartość spełnia wymaganie, jeżeli jest nie większa (dla kierunku AtMost) lub nie mniejsza (dla kierunku AtLeast) od wartości docelowej.
+            </summary>
+            <param name="value">Wartość do sprawdzenia.</param>
+            <returns>\texttt{true}, jeżeli wartość spełnia wymaganie.</returns>
+        </member>
+        <member name="M:HORNS.IntegerPrecondition.IsZeroed(System.Int32)">
+            <summary>
+            Sprawdza, czy wymaganie dążące do danej wartości można uznać za spełnione.
+            Wymaganie można uznać za spełnione, gdy wartość pozostała do spełnienia jest niedodatnia.
+            </summary>
+            <param name="value">Wartość do sprawdzenia.</param>
+            <returns>\texttt{true}, jeżeli dla danej wartości docelowej wymaganie jest spełnione.</returns>
+        </member>
+        <member name="M:HORNS.IntegerPrecondition.Clone">
+            <summary>
+            Wykonuje kopię obiektu wymagania.
+            </summary>
+            <returns>Kopia wymagania.</returns>
+        </member>
+        <member name="T:HORNS.IntegerSolver">
+            <summary>
+            Klasa reprezentująca solver dla zmiennych typu \texttt{int}, rezultatów reprezentujących zmianę wartości o określoną stałą i wymagań reprezentujących osiągnięcie wartości nie większej/nie mniejszej od określonej stałej.
+            </summary>
+        </member>
+        <member name="M:HORNS.IntegerSolver.GetActionsSatisfying(HORNS.IntegerPrecondition)">
+            <summary>
+            Wyznacza akcje mogące spełnić dane wymaganie.
+            Akcje mogące spełnić dane wymaganie to akcje zmniejszające wartość zmiennej dla kierunku AtMost lub zwiększające ją dla kierunku AtLeast.
+            </summary>
+            <param name="precondition">Wymaganie do spełnienia.</param>
+            <returns>Kolekcja akcji.</returns>
+        </member>
+        <member name="M:HORNS.IntegerSolver.GetActionsTowards(HORNS.Variable{System.Int32},System.Int32)">
+            <summary>
+            Wyznacza akcje modyfikujące daną zmienną w kierunku określonej wartości docelowej.
+            Jeżeli obecna wartość jest mniejsza od docelowej, będą to akcje zwiększające wartość; jeżeli jest większa, będą to akcje zmniejszające ją.
+            </summary>
+            <param name="variable">Zmienna.</param>
+            <param name="desiredValue">Wartość docelowa.</param>
+            <returns>Kolekcja akcji.</returns>
+        </member>
+        <member name="M:HORNS.IntegerSolver.Register(HORNS.IntegerAddResult)">
+            <summary>
+            Dodaje rezultat do rezultatów rozważanych przez solver.
+            </summary>
+            <param name="result">Rezultat.</param>
         </member>
         <member name="T:HORNS.Precondition">
             <summary>
@@ -315,7 +551,7 @@
         </member>
         <member name="M:HORNS.ActionResult`1.GetResultValue(HORNS.Variable{`0})">
             <summary>
-            Zwraca wartość końcową rezultatu dla wartości początkowej reprezentowanej daną zmienną.
+            Zwraca wartość końcową rezultatu dla wartości początkowej równą wartości danej zmiennej.
             </summary>
             <param name="variable">Zmienna o wartości początkowej.</param>
             <returns>Wartość końcowa rezultatu.</returns>

@@ -26,9 +26,9 @@ namespace HORNS
         /// </summary>
         public int CurrentAction { get; private set; } = 0;
         /// <summary>
-        /// Całkowita liczba akcji obecnego planu.
+        /// Akcje zaplanowane do wykonania w obecnej chwili.
         /// </summary>
-        public int PlannedActions => plannedActions.Count;
+        public IEnumerable<Action> PlannedActions => plannedActions;
         /// <summary>
         /// Pozostała liczba akcji obecnego planu.
         /// </summary>
