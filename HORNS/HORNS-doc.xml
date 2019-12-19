@@ -78,7 +78,7 @@
         </member>
         <member name="P:HORNS.Agent.PlannedActions">
             <summary>
-            Zaplanowane akcje.
+            Akcje zaplanowane do wykonania w obecnej chwili.
             </summary>
         </member>
         <member name="P:HORNS.Agent.PlannedActionsLeft">
