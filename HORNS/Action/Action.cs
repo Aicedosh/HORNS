@@ -121,6 +121,11 @@ namespace HORNS
         /// </summary>
         public bool CanExecute => preconditions.All(p => p.IsFulfilledByWorld());
 
+        internal bool CanExecuteIn(IdSet<Variable> variables)
+        {
+            return preconditions.All(p => p.IsFulfilledBy(variables));
+        }
+
         /// <summary>
         /// Wykonuje wszystkie rezultaty związane z akcją, jeżeli akcja może być wykonana.
         /// </summary>

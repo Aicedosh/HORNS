@@ -89,7 +89,7 @@ namespace HORNS
             }
         }
 
-        private List<Action> idleActions = new List<Action>();
+        internal List<Action> IdleActions = new List<Action>();
 
         /// <summary>
         /// Dodaje akcję do możliwych akcji bezczynności agenta.
@@ -97,7 +97,7 @@ namespace HORNS
         /// <param name="action">Dodawana akcja.</param>
         public void AddIdleAction(Action action)
         {
-            idleActions.Add(action);
+            IdleActions.Add(action);
             // TODO: should idles have requirements?
             foreach (Variable var in action.GetVariables())
             {
@@ -187,7 +187,7 @@ namespace HORNS
             var sw = new System.Diagnostics.Stopwatch();
             sw.Start();
 #endif
-            plannedActions = planner.Plan(this, idleActions);
+            plannedActions = planner.Plan(this);
             nextActionIdx = 0;
 #if MEASURE_TIME
             sw.Stop();
@@ -207,7 +207,7 @@ namespace HORNS
             var sw = new System.Diagnostics.Stopwatch();
             sw.Start();
 #endif
-            plannedActions = await Task.Run(() => planner.Plan(this, idleActions, true, token));
+            plannedActions = await Task.Run(() => planner.Plan(this, true, token));
             nextActionIdx = 0;
 #if MEASURE_TIME
             sw.Stop();

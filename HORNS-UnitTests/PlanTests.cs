@@ -322,15 +322,53 @@ namespace HORNS_UnitTests
             Assert.Equal(expectedTag, (actions[0] as BasicAction).Tag);
         }
 
-        // helper functions
-        List<Action> Plan(Agent agent, bool snapshot, IEnumerable<Action> idleActions = null)
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public void Plan_IdleWithUnfulfilledPreconditions_DiscardIdle(bool snapshot)
         {
-            if (idleActions == null)
-            {
-                idleActions = Enumerable.Empty<Action>();
-            }
+            Agent agent = new Agent();
+            var v = new IntVariable(0);
+
+            var a = new BasicAction("Unfulfilled");
+            a.AddPrecondition(v, new IntegerPrecondition(1, IntegerPrecondition.Condition.AtLeast));
+            agent.AddIdleAction(a);
+
+            var actions = Plan(agent, snapshot);
+            Assert.Empty(actions);
+        }
+
+        [Theory]
+        [InlineData(1, 5, true)]
+        [InlineData(1, 5, false)]
+        [InlineData(5, 1, true)]
+        [InlineData(5, 1, false)]
+        public void Plan_IdlesWithUnfulfilledAndFulfilledPreconditions_ChooseFulfilled(int cost1, int cost2, bool snapshot)
+        {
+            Agent agent = new Agent();
+            var v1 = new IntVariable(0);
+            var v2 = new IntVariable(5);
+
+            var a1 = new BasicAction("Unfulfilled");
+            a1.AddPrecondition(v1, new IntegerPrecondition(1, IntegerPrecondition.Condition.AtLeast));
+            a1.AddCost(cost1);
+
+            var a2 = new BasicAction("Fulfilled");
+            a2.AddPrecondition(v2, new IntegerPrecondition(5, IntegerPrecondition.Condition.AtLeast));
+            a2.AddCost(cost2);
+
+            agent.AddIdleActions(a1, a2);
+
+            var actions = Plan(agent, snapshot);
+            Assert.Single(actions);
+            Assert.Equal("Fulfilled", (actions[0] as BasicAction).Tag);
+        }
+
+        // helper functions
+        List<Action> Plan(Agent agent, bool snapshot)
+        {
             var planner = new ActionPlanner();
-            return planner.Plan(agent, idleActions, snapshot);
+            return planner.Plan(agent, snapshot);
         }
     }
 }

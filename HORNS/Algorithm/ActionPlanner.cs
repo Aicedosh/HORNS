@@ -22,8 +22,7 @@ namespace HORNS
         }
         
         // TODO: possibleGoals as param or field in agent?
-        internal List<Action> Plan(Agent agent, IEnumerable<Action> idleActions,
-                                   bool useSnapshot = false, CancellationToken? token = null, int possibleGoals = 5)
+        internal List<Action> Plan(Agent agent, bool useSnapshot = false, CancellationToken? token = null, int possibleGoals = 5)
         {
             IdSet<Variable> variableSet = null;
             if (useSnapshot)
@@ -216,9 +215,9 @@ namespace HORNS
                 }
             }    
             
-            foreach (var idle in idleActions)
+            foreach (var idle in agent.IdleActions)
             {
-                if (idle.GetCost(agent) < bestCost)
+                if (idle.GetCost(agent) < bestCost && idle.CanExecuteIn(variableSet))
                 {
                     bestPlan = new List<Action>() { idle };
                     bestCost = idle.CachedCost;
