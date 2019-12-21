@@ -20,19 +20,20 @@ namespace HORNS
         private List<Action> plannedActions = new List<Action>();
         private bool shouldRecalculate = false;
         private System.Action<Agent> recalculateCallback = null;
+        private int nextActionIdx = 0;
 
         /// <summary>
         /// Indeks obecnie wykonywanej akcji.
         /// </summary>
-        public int CurrentAction { get; private set; } = 0;
+        public int CurrentAction => nextActionIdx - 1;
         /// <summary>
-        /// Całkowita liczba akcji obecnego planu.
+        /// Akcje zaplanowane do wykonania w obecnej chwili.
         /// </summary>
-        public int PlannedActions => plannedActions.Count;
+        public IEnumerable<Action> PlannedActions => plannedActions;
         /// <summary>
         /// Pozostała liczba akcji obecnego planu.
         /// </summary>
-        public int PlannedActionsLeft => plannedActions.Count - CurrentAction;
+        public int PlannedActionsLeft => plannedActions.Count - nextActionIdx;
 #if MEASURE_TIME
         /// <summary>
         /// Czas trwania ostatniego planowania.
@@ -139,7 +140,7 @@ namespace HORNS
         /// <returns>Akcja do wykonania.</returns>
         public Action GetNextAction()
         {
-            if(shouldRecalculate || plannedActions.Count == CurrentAction)
+            if(shouldRecalculate || plannedActions.Count == nextActionIdx)
             {
                 shouldRecalculate = false;
                 RecalculateActions();
@@ -149,7 +150,7 @@ namespace HORNS
             {
                 return null;
             }
-            return plannedActions[CurrentAction++];
+            return plannedActions[nextActionIdx++];
         }
 
         /// <summary>
@@ -164,7 +165,7 @@ namespace HORNS
                 return null;
             }
 
-            if (shouldRecalculate || plannedActions.Count == CurrentAction)
+            if (shouldRecalculate || plannedActions.Count == nextActionIdx)
             {
                 shouldRecalculate = false;
                 await RecalculateActionsAsync(token);
@@ -174,7 +175,7 @@ namespace HORNS
             {
                 return null;
             }
-            return plannedActions[CurrentAction++];
+            return plannedActions[nextActionIdx++];
         }
 
         /// <summary>
@@ -187,7 +188,7 @@ namespace HORNS
             sw.Start();
 #endif
             plannedActions = planner.Plan(this, idleActions);
-            CurrentAction = 0;
+            nextActionIdx = 0;
 #if MEASURE_TIME
             sw.Stop();
             LastPlanTime = sw.Elapsed;
@@ -207,7 +208,7 @@ namespace HORNS
             sw.Start();
 #endif
             plannedActions = await Task.Run(() => planner.Plan(this, idleActions, true, token));
-            CurrentAction = 0;
+            nextActionIdx = 0;
 #if MEASURE_TIME
             sw.Stop();
             LastPlanTime = sw.Elapsed;
