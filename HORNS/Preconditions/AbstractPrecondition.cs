@@ -29,7 +29,7 @@ namespace HORNS
         /// Porównuje wymaganie z innym wymaganiem.
         /// </summary>
         /// <param name="precondition">Wymaganie do porównania.</param>
-        /// <returns>\texttt{true}, jeżeli \texttt{other} jest w takim samym lub gorszym stanie; \texttt{false} w przeciwnym wypadku.</returns>
+        /// <returns>\texttt{true}, jeżeli \texttt{precondition} jest w takim samym lub gorszym (trudniejszym do spełnienia) stanie; \texttt{false} w przeciwnym wypadku.</returns>
         protected internal abstract bool IsEqualOrWorse(Precondition precondition);
         /// <summary>
         /// Wyznacza akcje mogące spełnić wymaganie.

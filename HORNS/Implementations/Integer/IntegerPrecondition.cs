@@ -11,7 +11,7 @@ namespace HORNS
     public class IntegerPrecondition : Precondition<int, IntegerSolver>
     {
         /// <summary>
-        /// Typ wyliczeniowy reprezentujący kierunek porównania.
+        /// Typ wyliczeniowy reprezentujący kierunek porównania wartości zmiennej z wartością docelową (AtLeast lub AtMost).
         /// </summary>
         public enum Condition
         {
@@ -65,7 +65,7 @@ namespace HORNS
         /// Porównuje wymaganie z innym wymaganiem. Oba wymagania muszą być typu \texttt{IntegerPrecondition}, mieć ten sam kierunek porównania i tę samą wartość docelową.
         /// </summary>
         /// <param name="precondition">Wymaganie do porównania.</param>
-        /// <returns>\texttt{true}, jeżeli \texttt{other} jest w takim samym lub gorszym stanie; \texttt{false} w przeciwnym wypadku lub jeśli wymagań nie można porównać.</returns>
+        /// <returns>\texttt{true}, jeżeli \texttt{precondition} jest w takim samym lub gorszym (bardziej odległym od wartości docelowej) stanie; \texttt{false} w przeciwnym wypadku lub jeśli wymagań nie można porównać.</returns>
         protected internal override bool IsEqualOrWorse(Precondition precondition)
         {
             if (!(precondition is IntegerPrecondition intPre) || Direction != intPre.Direction || Value != intPre.Value)

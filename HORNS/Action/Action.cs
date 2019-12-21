@@ -6,7 +6,7 @@ using System.Linq;
 namespace HORNS
 {
     /// <summary>
-    /// Klasa bazowa dla akcji możliwych do wykonania przez agenta. Klasy bazowe muszą implementować metodę Perform.
+    /// Klasa bazowa dla akcji możliwych do wykonania przez agenta.
     /// </summary>
     public abstract class Action
     {

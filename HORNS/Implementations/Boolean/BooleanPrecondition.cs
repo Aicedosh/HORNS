@@ -47,7 +47,7 @@ namespace HORNS
         /// Porównuje wymaganie z innym wymaganiem. Oba wymagania muszą być typu \texttt{BooleanPrecondition} i mieć tę samą wartość docelową.
         /// </summary>
         /// <param name="precondition">Wymaganie do porównania.</param>
-        /// <returns>\texttt{true}, jeżeli \texttt{other} jest w takim samym lub gorszym stanie; \texttt{false} w przeciwnym wypadku lub jeśli wymagań nie można porównać.</returns>
+        /// <returns>\texttt{true}, jeżeli \texttt{precondition} jest w takim samym lub gorszym (niespełnionym) stanie; \texttt{false} w przeciwnym wypadku lub jeśli wymagań nie można porównać.</returns>
         protected internal override bool IsEqualOrWorse(Precondition precondition)
         {
             if (!(precondition is BooleanPrecondition boolPre) || Value != boolPre.Value)

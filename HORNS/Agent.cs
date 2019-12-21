@@ -48,12 +48,13 @@ namespace HORNS
         /// </summary>
         public IEnumerable<INeed> Needs => NeedsInternal;
 
+        //Necessary to ensure only this implementation can be added to the list
         /// <summary>
         /// Dodaje potrzebę do kolekcji potrzeb agenta.
         /// </summary>
         /// <typeparam name="T">Typ zmiennej związanej z dodawaną potrzebą.</typeparam>
         /// <param name="need">Dodawana potrzeba.</param>
-        public void AddNeed<T>(Need<T> need) //Necessary to ensure only this implementation of the interface can be added to the list
+        public void AddNeed<T>(Need<T> need)
         {
             NeedsInternal.Add(need);
             Variables.Add(need.Variable);
