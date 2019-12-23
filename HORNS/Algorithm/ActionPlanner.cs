@@ -22,7 +22,8 @@ namespace HORNS
         }
         
         // TODO: possibleGoals as param or field in agent?
-        internal List<Action> Plan(Agent agent, bool useSnapshot = false, CancellationToken? token = null, int possibleGoals = 5)
+        internal (List<Action> actions, INeed need) Plan(Agent agent, bool useSnapshot = false,
+                                                         CancellationToken? token = null, int possibleGoals = 5)
         {
             IdSet<Variable> variableSet = null;
             if (useSnapshot)
@@ -55,6 +56,7 @@ namespace HORNS
 
             List<Action> bestPlan = new List<Action>();
             float bestCost = float.MaxValue;
+            INeed bestNeed = null;
 
             foreach (var (need, priority) in needs)
             {
@@ -234,11 +236,12 @@ namespace HORNS
                     {
                         bestPlan = plan;
                         bestCost = cost;
+                        bestNeed = need;
                     }
                 }
             }
 
-            return bestPlan;
+            return (bestPlan, bestNeed);
         }
     }
 }

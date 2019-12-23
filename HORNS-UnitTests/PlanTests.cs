@@ -24,8 +24,9 @@ namespace HORNS_UnitTests
             agent.AddAction(action);
             agent.AddNeed(need);
 
-            var actions = Plan(agent, snapshot);
+            var (actions, curNeed) = Plan(agent, snapshot);
 
+            Assert.Equal(need, curNeed);
             Assert.Single(actions);
 
             actions[0].Perform();
@@ -60,7 +61,7 @@ namespace HORNS_UnitTests
             agent.AddNeed(need);
             agent.AddActions(a1, a2, a3);
 
-            var actions = Plan(agent, snapshot);
+            var (actions, curNeed) = Plan(agent, snapshot);
 
             Assert.Equal(3, actions.Count);
             Assert.Equal("1", (actions[0] as BasicAction).Tag);
@@ -91,7 +92,7 @@ namespace HORNS_UnitTests
             agent.AddActions(a1, a2);
             agent.AddNeed(need);
 
-            var actions = Plan(agent, snapshot);
+            var (actions, curNeed) = Plan(agent, snapshot);
 
             Assert.Equal(REQUIRED_NUMBER + 1, actions.Count);
             Assert.Equal("Last", (actions[REQUIRED_NUMBER] as BasicAction).Tag);
@@ -122,7 +123,7 @@ namespace HORNS_UnitTests
             agent.AddNeed(need);
             agent.AddActions(a1, a2);
 
-            var actions = Plan(agent, snapshot);
+            var (actions, curNeed) = Plan(agent, snapshot);
 
             Assert.Single(actions);
             Assert.Equal("Better", (actions[0] as BasicAction).Tag);
@@ -158,7 +159,7 @@ namespace HORNS_UnitTests
             agent.AddNeed(need);
             agent.AddActions(a1, a2, a3);
 
-            var actions = Plan(agent, snapshot);
+            var (actions, curNeed) = Plan(agent, snapshot);
 
             Assert.Equal(actionCount + 1, actions.Count);
             Assert.Equal("Last", (actions[actionCount] as BasicAction).Tag);
@@ -189,7 +190,7 @@ namespace HORNS_UnitTests
             agent.AddNeed(need);
             agent.AddActions(a1, a2);
 
-            var actions = Plan(agent, snapshot);
+            var (actions, curNeed) = Plan(agent, snapshot);
             Assert.Empty(actions);
         }
 
@@ -248,8 +249,9 @@ namespace HORNS_UnitTests
             agent.AddNeed(n1);
             agent.AddNeed(n2);
 
-            List<Action> actions = Plan(agent, snapshot);
+            var (actions, curNeed) = Plan(agent, snapshot);
 
+            Assert.Equal(n1, curNeed);
             Assert.Equal(2, actions.Count);
             Assert.Equal("3", (actions[0] as BasicAction).Tag);
             Assert.Equal("5", (actions[1] as BasicAction).Tag);
@@ -259,7 +261,8 @@ namespace HORNS_UnitTests
                 a.Perform();
             }
 
-            actions = Plan(agent, snapshot);
+            (actions, curNeed) = Plan(agent, snapshot);
+            Assert.Equal(n2, curNeed);
             Assert.Single(actions);
             Assert.Equal("1", (actions[0] as BasicAction).Tag);
 
@@ -268,7 +271,8 @@ namespace HORNS_UnitTests
                 a.Perform();
             }
 
-            actions = Plan(agent, snapshot);
+            (actions, curNeed) = Plan(agent, snapshot);
+            Assert.Equal(n1, curNeed);
             Assert.Equal(2, actions.Count);
             Assert.Equal("2", (actions[0] as BasicAction).Tag);
             Assert.Equal("4", (actions[1] as BasicAction).Tag);
@@ -292,7 +296,7 @@ namespace HORNS_UnitTests
             BoolNeed b1 = new BoolNeed(v1, true);
             agent1.AddNeed(b1);
 
-            var actions = Plan(agent1, snapshot);
+            var (actions, curNeed) = Plan(agent1, snapshot);
             Assert.Empty(actions);
         }
 
@@ -317,7 +321,7 @@ namespace HORNS_UnitTests
 
             agent.AddActions(a1, a2);
 
-            var actions = Plan(agent, snapshot);
+            var (actions, curNeed) = Plan(agent, snapshot);
             Assert.Single(actions);
             Assert.Equal(expectedTag, (actions[0] as BasicAction).Tag);
         }
@@ -334,7 +338,7 @@ namespace HORNS_UnitTests
             a.AddPrecondition(v, new IntegerPrecondition(1, IntegerPrecondition.Condition.AtLeast));
             agent.AddIdleAction(a);
 
-            var actions = Plan(agent, snapshot);
+            var (actions, curNeed) = Plan(agent, snapshot);
             Assert.Empty(actions);
         }
 
@@ -359,7 +363,7 @@ namespace HORNS_UnitTests
 
             agent.AddIdleActions(a1, a2);
 
-            var actions = Plan(agent, snapshot);
+            var (actions, curNeed) = Plan(agent, snapshot);
             Assert.Single(actions);
             Assert.Equal("Fulfilled", (actions[0] as BasicAction).Tag);
         }
@@ -380,13 +384,13 @@ namespace HORNS_UnitTests
             a2.AddResult(v, new BooleanResult(true));
             agent.AddAction(a2);
 
-            var actions = Plan(agent, snapshot);
+            var (actions, curNeed) = Plan(agent, snapshot);
             Assert.Equal(2, actions.Count);
             Assert.Equal("Required", (actions[0] as BasicAction).Tag);
             Assert.Equal("Idle", (actions[1] as BasicAction).Tag);
         }
 
-        private Agent NeedVersusIdle_Setup(float costIdle, float costReq, float costNeed)
+        private (Agent agent, INeed need) NeedVersusIdle_Setup(float costIdle, float costReq, float costNeed)
         {
             Agent agent = new Agent();
             var v1 = new BoolVariable();
@@ -409,7 +413,7 @@ namespace HORNS_UnitTests
             agent.AddIdleAction(a1);
             agent.AddActions(a2, a3);
 
-            return agent;
+            return (agent, n);
         }
 
         [Theory]
@@ -417,9 +421,10 @@ namespace HORNS_UnitTests
         [InlineData(false)]
         public void Plan_NeedVersusIdle_NeedMoreExpensive_ChooseIdlePath(bool snapshot)
         {
-            var agent = NeedVersusIdle_Setup(1, 1, 100);
+            var (agent, _) = NeedVersusIdle_Setup(1, 1, 100);
 
-            var actions = Plan(agent, snapshot);
+            var (actions, curNeed) = Plan(agent, snapshot);
+            Assert.Null(curNeed);
             Assert.Equal(2, actions.Count);
             Assert.Equal("Required", (actions[0] as BasicAction).Tag);
             Assert.Equal("Idle", (actions[1] as BasicAction).Tag);
@@ -430,15 +435,16 @@ namespace HORNS_UnitTests
         [InlineData(false)]
         public void Plan_NeedVersusIdle_IdleMoreExpensive_ChooseNeedPath(bool snapshot)
         {
-            var agent = NeedVersusIdle_Setup(100, 100, 1);
+            var (agent, need) = NeedVersusIdle_Setup(100, 100, 1);
 
-            var actions = Plan(agent, snapshot);
+            var (actions, curNeed) = Plan(agent, snapshot);
+            Assert.Equal(need, curNeed);
             Assert.Single(actions);
             Assert.Equal("Fulfill need", (actions[0] as BasicAction).Tag);
         }
 
         // helper functions
-        private List<Action> Plan(Agent agent, bool snapshot)
+        private (List<Action> actions, INeed need) Plan(Agent agent, bool snapshot)
         {
             var planner = new ActionPlanner();
             return planner.Plan(agent, snapshot);

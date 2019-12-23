@@ -23,7 +23,11 @@ namespace HORNS
         private int nextActionIdx = 0;
 
         /// <summary>
-        /// Indeks obecnie wykonywanej akcji.
+        /// Obecnie zaspokajana potrzeba.
+        /// </summary>
+        public INeed CurrentNeed { get; private set; }
+        /// <summary>
+        /// Indeks obecnie wykonywanej akcji na liście zaplanowanych akcji.
         /// </summary>
         public int CurrentAction => nextActionIdx - 1;
         /// <summary>
@@ -47,7 +51,7 @@ namespace HORNS
         /// <summary>
         /// Kolekcja potrzeb agenta.
         /// </summary>
-        public IEnumerable<INeed> Needs => NeedsInternal;
+        public IEnumerable<INeed> Needs => NeedsInternal; // TODO: why am I public?
 
         //Necessary to ensure only this implementation can be added to the list
         /// <summary>
@@ -187,7 +191,7 @@ namespace HORNS
             var sw = new System.Diagnostics.Stopwatch();
             sw.Start();
 #endif
-            plannedActions = planner.Plan(this);
+            (plannedActions, CurrentNeed) = planner.Plan(this);
             nextActionIdx = 0;
 #if MEASURE_TIME
             sw.Stop();
@@ -207,7 +211,7 @@ namespace HORNS
             var sw = new System.Diagnostics.Stopwatch();
             sw.Start();
 #endif
-            plannedActions = await Task.Run(() => planner.Plan(this, true, token));
+            (plannedActions, CurrentNeed) = await Task.Run(() => planner.Plan(this, true, token));
             nextActionIdx = 0;
 #if MEASURE_TIME
             sw.Stop();
