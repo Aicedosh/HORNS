@@ -51,6 +51,7 @@ namespace HORNS
             {
                 needs.RemoveRange(possibleGoals, needs.Count - possibleGoals);
             }
+            needs.Add((null, 0));   // represents idle actions
 
             List<Action> bestPlan = new List<Action>();
             float bestCost = float.MaxValue;
@@ -60,30 +61,46 @@ namespace HORNS
                 var open = new SimplePriorityQueue<ActionPlannerNode>();
                 // TODO: optimize close
                 var close = new List<PreconditionSet>();
-
-                var needState = need.GetVariable().GetCopy();
-                if (variableSet != null)
-                {
-                    variableSet.TryGet(ref needState);
-                }
-                var goal = new ActionPlannerNode(0)
-                {
-                    NeedState = needState
-                };
-
-                foreach (var action in need.GetActionsTowards(agent))
-                {
-                    var nodeFromGoal = new ActionPlannerNode(action.CachedCost)
-                    {
-                        Prev = goal,
-                        PrevAction = action,
-                        NeedState = goal.NeedState.GetCopy()
-                    };
-                    action.ApplyResults(nodeFromGoal.NeedState);
-                    open.Enqueue(nodeFromGoal, nodeFromGoal.Distance);
-                }
-
                 ActionPlannerNode last = null;
+
+                if (need != null)
+                {
+                    var needState = need.GetVariable().GetCopy();
+                    if (variableSet != null)
+                    {
+                        variableSet.TryGet(ref needState);
+                    }
+                    var goal = new ActionPlannerNode(0)
+                    {
+                        NeedState = needState
+                    };
+
+                    foreach (var action in need.GetActionsTowards(agent))
+                    {
+                        var nodeFromGoal = new ActionPlannerNode(action.CachedCost)
+                        {
+                            Prev = goal,
+                            PrevAction = action,
+                            NeedState = goal.NeedState.GetCopy()
+                        };
+                        action.ApplyResults(nodeFromGoal.NeedState);
+                        open.Enqueue(nodeFromGoal, nodeFromGoal.Distance);
+                    }
+                }
+                else // "null need" - idle
+                {
+                    var dummy = new ActionPlannerNode(0);
+                    foreach (var idle in agent.IdleActions)
+                    {
+                        var nodeIdle = new ActionPlannerNode(idle.CachedCost)
+                        {
+                            Prev = dummy,
+                            PrevAction = idle
+                        };
+                        open.Enqueue(nodeIdle, nodeIdle.Distance);
+                    }
+                }
+
                 while (open.Count > 0)
                 {
                     if (token.HasValue && token.Value.IsCancellationRequested)
@@ -92,7 +109,7 @@ namespace HORNS
                     }
 
                     var node = open.Dequeue();
-
+                    
                     // copy and update preconditions
                     var res = true;
                     foreach (var pre in node.Prev.Preconditions)
@@ -163,10 +180,16 @@ namespace HORNS
                         var actions = pre.GetActions(agent);
                         foreach (var action in actions)
                         {
-                            var newNeedState = node.NeedState.GetCopy();
-                            action.ApplyResults(newNeedState);
-                            var n1 = need.EvaluateFor(node.NeedState);
-                            var n2 = need.EvaluateFor(newNeedState);
+                            Variable newNeedState = null;
+                            float n1 = 0, n2 = 0;
+                            if (need != null)
+                            {
+                                newNeedState = node.NeedState?.GetCopy();
+                                action.ApplyResults(newNeedState);
+                                n1 = need.EvaluateFor(node.NeedState);
+                                n2 = need.EvaluateFor(newNeedState);
+                            }
+
                             if (n1 <= n2)
                             {
                                 // copy as little as possible at this stage; copy the rest when we visit it
@@ -212,15 +235,6 @@ namespace HORNS
                         bestPlan = plan;
                         bestCost = cost;
                     }
-                }
-            }    
-            
-            foreach (var idle in agent.IdleActions)
-            {
-                if (idle.GetCost(agent) < bestCost && idle.CanExecuteIn(variableSet))
-                {
-                    bestPlan = new List<Action>() { idle };
-                    bestCost = idle.CachedCost;
                 }
             }
 

@@ -364,8 +364,81 @@ namespace HORNS_UnitTests
             Assert.Equal("Fulfilled", (actions[0] as BasicAction).Tag);
         }
 
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public void Plan_IdleWithPreconditions_PlanEntirePath(bool snapshot)
+        {
+            Agent agent = new Agent();
+            var v = new BoolVariable();
+
+            var a1 = new BasicAction("Idle");
+            a1.AddPrecondition(v, new BooleanPrecondition(true));
+            agent.AddIdleAction(a1);
+
+            var a2 = new BasicAction("Required");
+            a2.AddResult(v, new BooleanResult(true));
+            agent.AddAction(a2);
+
+            var actions = Plan(agent, snapshot);
+            Assert.Equal(2, actions.Count);
+            Assert.Equal("Required", (actions[0] as BasicAction).Tag);
+            Assert.Equal("Idle", (actions[1] as BasicAction).Tag);
+        }
+
+        private Agent NeedVersusIdle_Setup(float costIdle, float costReq, float costNeed)
+        {
+            Agent agent = new Agent();
+            var v1 = new BoolVariable();
+            var v2 = new IntVariable();
+            var n = new LogNeed(v2, 5);
+
+            var a1 = new BasicAction("Idle");
+            a1.AddCost(costIdle);
+            a1.AddPrecondition(v1, new BooleanPrecondition(true));
+
+            var a2 = new BasicAction("Required");
+            a2.AddCost(costReq);
+            a2.AddResult(v1, new BooleanResult(true));
+
+            var a3 = new BasicAction("Fulfill need");
+            a3.AddCost(costNeed);
+            a3.AddResult(v2, new IntegerAddResult(5));
+
+            agent.AddNeed(n);
+            agent.AddIdleAction(a1);
+            agent.AddActions(a2, a3);
+
+            return agent;
+        }
+
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public void Plan_NeedVersusIdle_NeedMoreExpensive_ChooseIdlePath(bool snapshot)
+        {
+            var agent = NeedVersusIdle_Setup(1, 1, 100);
+
+            var actions = Plan(agent, snapshot);
+            Assert.Equal(2, actions.Count);
+            Assert.Equal("Required", (actions[0] as BasicAction).Tag);
+            Assert.Equal("Idle", (actions[1] as BasicAction).Tag);
+        }
+
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public void Plan_NeedVersusIdle_IdleMoreExpensive_ChooseNeedPath(bool snapshot)
+        {
+            var agent = NeedVersusIdle_Setup(100, 100, 1);
+
+            var actions = Plan(agent, snapshot);
+            Assert.Single(actions);
+            Assert.Equal("Fulfill need", (actions[0] as BasicAction).Tag);
+        }
+
         // helper functions
-        List<Action> Plan(Agent agent, bool snapshot)
+        private List<Action> Plan(Agent agent, bool snapshot)
         {
             var planner = new ActionPlanner();
             return planner.Plan(agent, snapshot);
