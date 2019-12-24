@@ -13,7 +13,7 @@ namespace HORNS_UnitTests
         [InlineData(false)]
         public void Combine_WithEqualValue_ShouldReturnSamePrecondition(bool value)
         {
-            var v = new BoolVariable();
+            var v = new BooleanVariable();
             var p = new BooleanPrecondition(value);
             p.SetSolver(v.Solver);
             p.Variable = v;
@@ -34,7 +34,7 @@ namespace HORNS_UnitTests
         [InlineData(false)]
         public void Combine_WithDifferentValue_ShouldReturnNull(bool value)
         {
-            var v = new BoolVariable();
+            var v = new BooleanVariable();
             var p = new BooleanPrecondition(value);
             p.SetSolver(v.Solver);
             p.Variable = v;

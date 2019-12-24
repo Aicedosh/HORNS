@@ -7,23 +7,23 @@ namespace HORNS
     /// <summary>
     /// Klasa reprezentująca solver dla zmiennych typu \texttt{int}, rezultatów reprezentujących zmianę wartości o określoną stałą i wymagań reprezentujących osiągnięcie wartości nie większej/nie mniejszej od określonej stałej.
     /// </summary>
-    public class IntegerSolver : VariableSolver<int, IntegerAddResult, IntegerPrecondition>
+    public class IntegerConsumeSolver : VariableSolver<int, IntegerAddResult, IntegerConsumePrecondition>
     {
         List<IntegerAddResult> positiveResults = new List<IntegerAddResult>();
         List<IntegerAddResult> negativeResults = new List<IntegerAddResult>();
 
         /// <summary>
         /// Wyznacza akcje mogące spełnić dane wymaganie.
-        /// Akcje mogące spełnić dane wymaganie to akcje zmniejszające wartość zmiennej dla kierunku AtMost lub zwiększające ją dla kierunku AtLeast.
+        /// Akcje mogące spełnić dane wymaganie to akcje zwiększające wartość zmiennej.
         /// </summary>
         /// <param name="precondition">Wymaganie do spełnienia.</param>
         /// <returns>Kolekcja akcji.</returns>
-        protected override IEnumerable<Action> GetActionsSatisfying(IntegerPrecondition precondition)
+        protected override IEnumerable<Action> GetActionsSatisfying(IntegerConsumePrecondition precondition)
         {
-            return (precondition.Direction == IntegerPrecondition.Condition.AtLeast ? positiveResults : negativeResults)
-                .Select(res => res.Action);
+            return positiveResults.Select(res => res.Action);
         }
 
+        // TODO: is this needed? maybe we need to rework needs a little bit?
         /// <summary>
         /// Wyznacza akcje modyfikujące daną zmienną w kierunku określonej wartości docelowej.
         /// Jeżeli obecna wartość jest mniejsza od docelowej, będą to akcje zwiększające wartość; jeżeli jest większa, będą to akcje zmniejszające ją.

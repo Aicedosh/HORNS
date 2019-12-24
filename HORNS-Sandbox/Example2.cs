@@ -43,16 +43,16 @@ namespace HORNS_Sandbox
 
         public static void Run()
         {
-            var hasAxe = new BoolVariable();
-            var hunger = new IntVariable(100);
-            var energy = new IntVariable(100);
-            var money = new IntVariable();
-            var wood = new IntVariable();
-            var chairs = new IntVariable();
-            var rzodkiews = new IntVariable();
-            var soups = new IntVariable();
+            var hasAxe = new BooleanVariable();
+            var hunger = new IntegerConsumeVariable(100);
+            var energy = new IntegerConsumeVariable(100);
+            var money = new IntegerConsumeVariable();
+            var wood = new IntegerConsumeVariable();
+            var chairs = new IntegerConsumeVariable();
+            var rzodkiews = new IntegerConsumeVariable();
+            var soups = new IntegerConsumeVariable();
 
-            var feelingSoupy = new BoolVariable();
+            var feelingSoupy = new BooleanVariable();
 
             var pickAxe = new MessageAction("Picked up an axe");
             //pickAxe.AddCost(10);
@@ -67,45 +67,45 @@ namespace HORNS_Sandbox
 
             var sellWood = new MessageAction("Sold a piece of wood");
             //sellWood.AddCost(30);
-            sellWood.AddPrecondition(wood, new IntegerPrecondition(1, IntegerPrecondition.Condition.AtLeast));
+            sellWood.AddPrecondition(wood, new IntegerConsumePrecondition(1));
             sellWood.AddResult(wood, new IntegerAddResult(-1));
             sellWood.AddResult(money, new IntegerAddResult(1));
 
             var makeChair = new MessageAction("Made a chair");
             //makeChair.AddCost(5);
-            makeChair.AddPrecondition(wood, new IntegerPrecondition(1, IntegerPrecondition.Condition.AtLeast));
+            makeChair.AddPrecondition(wood, new IntegerConsumePrecondition(1));
             makeChair.AddResult(wood, new IntegerAddResult(-1));
             makeChair.AddResult(chairs, new IntegerAddResult(1));
             makeChair.AddResult(energy, new IntegerAddResult(-3));
 
             var sellChair = new MessageAction("Sold a chair");
             //sellChair.AddCost(30);
-            sellChair.AddPrecondition(chairs, new IntegerPrecondition(1, IntegerPrecondition.Condition.AtLeast));
+            sellChair.AddPrecondition(chairs, new IntegerConsumePrecondition(1));
             sellChair.AddResult(chairs, new IntegerAddResult(-1));
             sellChair.AddResult(money, new IntegerAddResult(3));
 
             var buyRzodkiew = new MessageAction("Bought a rzodkiew");
             //buyRzodkiew.AddCost(30);
-            buyRzodkiew.AddPrecondition(money, new IntegerPrecondition(3, IntegerPrecondition.Condition.AtLeast));
+            buyRzodkiew.AddPrecondition(money, new IntegerConsumePrecondition(3));
             buyRzodkiew.AddResult(money, new IntegerAddResult(-3));
             buyRzodkiew.AddResult(rzodkiews, new IntegerAddResult(1));
 
             var eatRzodkiew = new MessageAction("Ate a rzodkiew");
             //eatRzodkiew.AddCost(20);
-            eatRzodkiew.AddPrecondition(rzodkiews, new IntegerPrecondition(1, IntegerPrecondition.Condition.AtLeast));
+            eatRzodkiew.AddPrecondition(rzodkiews, new IntegerConsumePrecondition(1));
             eatRzodkiew.AddResult(rzodkiews, new IntegerAddResult(-1));
             eatRzodkiew.AddResult(hunger, new IntegerAddResult(-5));
 
             var makeSoup = new MessageAction("Made some soup");
             //makeSoup.AddCost(5);
-            makeSoup.AddPrecondition(rzodkiews, new IntegerPrecondition(2, IntegerPrecondition.Condition.AtLeast));
+            makeSoup.AddPrecondition(rzodkiews, new IntegerConsumePrecondition(2));
             makeSoup.AddResult(rzodkiews, new IntegerAddResult(-2));
             makeSoup.AddResult(soups, new IntegerAddResult(1));
             makeSoup.AddResult(energy, new IntegerAddResult(-11));
 
             var eatSoup = new MessageAction("Ate some soup");
             //eatSoup.AddCost(1);
-            eatSoup.AddPrecondition(soups, new IntegerPrecondition(1, IntegerPrecondition.Condition.AtLeast));
+            eatSoup.AddPrecondition(soups, new IntegerConsumePrecondition(1));
             eatSoup.AddResult(soups, new IntegerAddResult(-1));
             eatSoup.AddResult(hunger, new IntegerAddResult(-20));
             eatSoup.AddResult(energy, new IntegerAddResult(1));

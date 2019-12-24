@@ -1,65 +1,43 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using System.Threading;
 
 namespace HORNS
 {
     /// <summary>
-    /// Klasa bazowa dla wszystkich zmiennych.
+    /// Abstrakcyjna klasa bazowa dla zmiennych typu T powiązanych z typami rezultatu, solvera i wymagania.
     /// </summary>
-    public abstract class Variable : IIdentifiable
+    /// <typeparam name="T">Typ danych przechowywanych przez zmienną.</typeparam>
+    /// <typeparam name="RT">Typ rezultatu związany ze zmienną.</typeparam>
+    /// <typeparam name="ST">Typ solvera związany ze zmienną.</typeparam>
+    /// <typeparam name="PT">Typ wymagania związany ze zmienną.</typeparam>
+    public class Variable<T, RT, ST, PT> : Variable<T>
+            where ST : VariableSolver<T, RT, PT>, new()
+            where RT : ActionResult<T, ST>
+            where PT : Precondition<T, ST>
     {
-        internal static ReaderWriterLockSlim VariableLock = new ReaderWriterLockSlim();
-
-        private static int MaxId = 0;
-        internal int Id { get; private set; }
-
-        int IIdentifiable.Id => Id;
-
-        private ICollection<IVariableObserver> observers = new HashSet<IVariableObserver>();
-
         /// <summary>
-        /// Dodaje obserwatora do listy obserwatorów zmiennej.
+        /// Tworzy nową zmienną o określonej wartości początkowej.
         /// </summary>
-        /// <param name="observer">Obserwator.</param>
-        public void Observe(IVariableObserver observer)
+        /// <param name="value">Wartość początkowa zmiennej.</param>
+        protected Variable(T value = default) : base(value)
         {
-            observers.Add(observer);
+            Solver = new ST();
+            Solver.Variable = this;
         }
 
-        /// <summary>
-        /// Usuwa obserwatora z listy obserwatorów zmiennej.
-        /// </summary>
-        /// <param name="observer">Obserwator.</param>
-        public void Unobserve(IVariableObserver observer)
+        internal Variable(Variable<T, RT, ST, PT> variable) : base(variable)
         {
-            observers.Remove(observer);
+            Solver = variable.Solver;
         }
 
-        private protected void Notify()
+        internal override Variable GetCopy()
         {
-            foreach(IVariableObserver observer in observers)
-            {
-                observer.ValueChanged();
-            }
+            return new Variable<T, RT, ST, PT>(this);
         }
 
-        private protected Variable()
-        {
-            Id = MaxId++;
-        }
+        internal ST Solver { get; }
 
-        private protected Variable(Variable other)
-        {
-            Id = other.Id;
-        }
-
-        internal abstract Variable GetCopy();
-
-        IIdentifiable IIdentifiable.GetCopy()
-        {
-            return GetCopy();
-        }
+        internal override VariableSolver<T> GenericSolver => Solver;
     }
 }
