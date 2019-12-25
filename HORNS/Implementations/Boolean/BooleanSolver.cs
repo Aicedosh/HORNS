@@ -20,7 +20,7 @@ namespace HORNS
         /// <returns>Kolekcja akcji.</returns>
         protected override IEnumerable<Action> GetActionsSatisfying(BooleanPrecondition precondition)
         {
-            return GetActions(precondition.Value);
+            return GetActions(precondition.Target);
         }
 
         /// <summary>

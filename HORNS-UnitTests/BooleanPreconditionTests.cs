@@ -26,7 +26,7 @@ namespace HORNS_UnitTests
             Assert.NotNull(pre);
             Assert.Equal(v.Id, pre.Id);
             Assert.IsType<BooleanPrecondition>(pre);
-            Assert.Equal(p.Value, (pre as BooleanPrecondition).Value);
+            Assert.Equal(p.Target, (pre as BooleanPrecondition).Target);
         }
 
         [Theory]

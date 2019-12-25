@@ -36,11 +36,11 @@ namespace HORNS
         /// <returns>Nowe wymaganie o wartości docelowej równej wartościom docelowym obu wymagań lub \texttt{null} w przypadku, gdy wymagań nie można połączyć.</returns>
         protected internal override Precondition Combine(Precondition precondition)
         {
-            if (!(precondition is BooleanPrecondition boolPre) || Value != boolPre.Value)
+            if (!(precondition is BooleanPrecondition boolPre) || Target != boolPre.Target)
             {
                 return null;
             }
-            return new BooleanPrecondition(Value, this);
+            return new BooleanPrecondition(Target, this);
         }
 
         /// <summary>
@@ -50,7 +50,7 @@ namespace HORNS
         /// <returns>\texttt{true}, jeżeli \texttt{precondition} jest w takim samym lub gorszym (niespełnionym) stanie; \texttt{false} w przeciwnym wypadku lub jeśli wymagań nie można porównać.</returns>
         protected internal override bool IsEqualOrWorse(Precondition precondition)
         {
-            if (!(precondition is BooleanPrecondition boolPre) || Value != boolPre.Value)
+            if (!(precondition is BooleanPrecondition boolPre) || Target != boolPre.Target)
             {
                 return false;
             }
@@ -76,7 +76,7 @@ namespace HORNS
         /// <returns>\texttt{true}, jeżeli wartość spełnia wymaganie.</returns>
         protected internal override bool IsFulfilled(bool value)
         {
-            return value == Value;
+            return value == Target;
         }
 
         // TODO: this is temporary
@@ -88,7 +88,7 @@ namespace HORNS
         /// <returns>\texttt{true}, jeżeli dla danej wartości docelowej wymaganie jest spełnione.</returns>
         protected internal override bool IsZeroed(bool value)
         {
-            return value != Value;
+            return value != Target;
         }
 
         /// <summary>

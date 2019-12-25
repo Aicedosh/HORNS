@@ -25,12 +25,12 @@ namespace HORNS
         }
 
         /// <summary>
-        /// Zwraca wartość końcową rezultatu dla wartości początkowej reprezentowanej daną zmienną.
+        /// Zwraca wartość końcową rezultatu dla danej wartości początkowej.
         /// Wartość końcowa jest równa \texttt{EndValue}.
         /// </summary>
-        /// <param name="variable">Zmienna o wartości początkowej.</param>
+        /// <param name="value">Wartość początkowa.</param>
         /// <returns>Wartość końcowa rezultatu.</returns>
-        protected internal override bool GetResultValue(Variable<bool> variable)
+        protected internal override bool GetResultValue(bool value)
         {
             return EndValue;
         }

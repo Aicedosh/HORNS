@@ -43,7 +43,7 @@ namespace HORNS
             {
                 return null;
             }
-            return new IntegerConsumePrecondition(Value + intPre.Value, this);
+            return new IntegerConsumePrecondition(Target + intPre.Target, this);
         }
 
         /// <summary>
@@ -53,7 +53,7 @@ namespace HORNS
         /// <returns>\texttt{true}, jeżeli \texttt{precondition} jest w takim samym lub gorszym (bardziej odległym od wartości wymaganej) stanie; \texttt{false} w przeciwnym wypadku lub jeśli wymagań nie można porównać.</returns>
         protected internal override bool IsEqualOrWorse(Precondition precondition)
         {
-            if (!(precondition is IntegerConsumePrecondition intPre) || Value != intPre.Value)
+            if (!(precondition is IntegerConsumePrecondition intPre) || Target != intPre.Target)
             {
                 return false;
             }
@@ -68,7 +68,7 @@ namespace HORNS
         protected internal override Precondition Subtract(ActionResult actionResult)
         {
             var addRes = actionResult as IntegerAddResult;
-            int newVal = Value - addRes.Term;
+            int newVal = Target - addRes.Term;
 
             return new IntegerConsumePrecondition(newVal, this);
         }
@@ -81,7 +81,7 @@ namespace HORNS
         /// <returns>\texttt{true}, jeżeli wartość spełnia wymaganie.</returns>
         protected internal override bool IsFulfilled(int value)
         {
-            return value >= Value;
+            return value >= Target;
         }
 
         /// <summary>

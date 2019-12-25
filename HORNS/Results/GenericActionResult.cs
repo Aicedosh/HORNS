@@ -21,11 +21,11 @@ namespace HORNS
         }
 
         /// <summary>
-        /// Zwraca wartość końcową rezultatu dla wartości początkowej równą wartości danej zmiennej.
+        /// Zwraca wartość końcową rezultatu dla danej wartości początkowej.
         /// </summary>
-        /// <param name="variable">Zmienna o wartości początkowej.</param>
+        /// <param name="value">Wartość początkowa.</param>
         /// <returns>Wartość końcowa rezultatu.</returns>
-        protected internal abstract T GetResultValue(Variable<T> variable);
+        protected internal abstract T GetResultValue(T value);
 
         internal override float GetCost(IdSet<Variable> variables, Agent agent)
         {
@@ -42,18 +42,18 @@ namespace HORNS
                 evaluator = agent.NeedsInternal[Variable.Id] as Need<T>;
             }
 
-            return evaluator.Evaluate(curr.Value) - evaluator.Evaluate(GetResultValue(curr));
+            return evaluator.Evaluate(curr.Value) - evaluator.Evaluate(GetResultValue(curr.Value));
         }
 
         internal override void Apply()
         {
-            Variable.Value = GetResultValue(Variable);
+            Variable.Value = GetResultValue(Variable.Value);
         }
 
         internal override void Apply(Variable variable)
         {
             Variable<T> typedVar = variable as Variable<T>;
-            typedVar.Value = GetResultValue(typedVar);
+            typedVar.Value = GetResultValue(typedVar.Value);
         }
 
         internal override void Apply(IdSet<Variable> variables)
@@ -63,7 +63,7 @@ namespace HORNS
                 variables.Add(Variable.GetCopy());
             }
             var variable = variables[Variable.Id] as Variable<T>;
-            variable.Value = GetResultValue(variable);
+            variable.Value = GetResultValue(variable.Value);
         }
 
         internal override void SubtractFrom(PreconditionSet preconditions)

@@ -17,7 +17,7 @@ namespace HORNS
         /// <summary>
         /// Wartość docelowa wymagania.
         /// </summary>
-        public T Value { get; }
+        public T Target { get; }
         // current state
         internal T State { get; set; }
 
@@ -25,10 +25,10 @@ namespace HORNS
         /// Tworzy nowe wymaganie o określonej wartości docelowej.
         /// </summary>
         /// <param name="value">Wartość docelowa wymagania.</param>
-        public Precondition(T value)
+        public Precondition(T target)
         {
-            Value = value;
-            State = value;
+            Target = target;
+            State = target;
         }
 
         /// <summary>
@@ -37,7 +37,7 @@ namespace HORNS
         /// <param name="precondition">Wymaganie do skopiowania.</param>
         public Precondition(Precondition<T> precondition)
         {
-            Value = precondition.Value;
+            Target = precondition.Target;
             State = precondition.State;
             Variable = precondition.Variable;
         }
