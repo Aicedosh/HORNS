@@ -78,5 +78,27 @@ namespace HORNS_UnitTests
             v.Value = 2;
             Assert.True(p.IsFulfilledByWorld());
         }
+
+        [Theory]
+        [InlineData(1, true)]
+        [InlineData(-1, false)]
+        public void IsBetterThan_ShouldReturnCorrectValue(int term, bool improve)
+        {
+            var v = new IntegerConsumeVariable();
+
+            var p1 = new IntegerConsumePrecondition(5);
+            p1.Variable = v;
+            p1.State = 2;
+            var p2 = new IntegerConsumePrecondition(p1);
+
+            var r = new IntegerAddResult(term);
+            r.Variable = v;
+
+            p2 = p2.Apply(r) as IntegerConsumePrecondition;
+            Assert.Equal(improve, p2.IsBetterThan(p1));
+            Assert.Equal(!improve, p1.IsBetterThan(p2));
+
+            Assert.False(p1.IsBetterThan(p1));
+        }
     }
 }
