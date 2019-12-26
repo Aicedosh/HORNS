@@ -11,11 +11,9 @@ namespace HORNS_UnitTests
             var v = new IntegerConsumeVariable();
 
             var p1 = new IntegerConsumePrecondition(3);
-            p1.SetSolver(v.Solver);
             p1.Variable = v;
 
             var p2 = new IntegerConsumePrecondition(5);
-            p2.SetSolver(v.Solver);
             p2.Variable = v;
 
             var p3 = p1.Combine(p2) as IntegerConsumePrecondition;
@@ -27,6 +25,58 @@ namespace HORNS_UnitTests
             Assert.NotNull(p4);
             Assert.Equal(v.Id, p4.Variable.Id);
             Assert.Equal(8, p4.Target);
+        }
+
+        [Fact]
+        public void IsFulfilled_ShouldBeCorrectlyFulfilled()
+        {
+            var v = new IntegerConsumeVariable();
+            var r = new IntegerAddResult(1);
+            r.Variable = v;
+            var p = new IntegerConsumePrecondition(2);
+            p.Variable = v;
+            Assert.False(p.IsFulfilled());
+
+            p = p.Apply(r) as IntegerConsumePrecondition;
+            Assert.False(p.IsFulfilled());
+
+            p = p.Apply(r) as IntegerConsumePrecondition;
+            Assert.True(p.IsFulfilled());
+        }
+
+        [Fact]
+        public void IsFulfilledByWorld_ShouldBeCorrectlyFulfilledByVariableValue()
+        {
+            var v = new IntegerConsumeVariable();
+            var p = new IntegerConsumePrecondition(3);
+            p.Variable = v;
+            Assert.False(p.IsFulfilledByWorld());
+
+            v.Value = 3;
+            Assert.True(p.IsFulfilledByWorld());
+
+            v.Value = 2;
+            Assert.False(p.IsFulfilledByWorld());
+
+            v.Value = 4;
+            Assert.True(p.IsFulfilledByWorld());
+        }
+
+        [Fact]
+        public void IsFulfilledByWorld_PartiallyFulfilled_ShouldBeCorrectlyFulfilledByVariableValue()
+        {
+            var v = new IntegerConsumeVariable();
+            var r = new IntegerAddResult(1);
+            r.Variable = v;
+            var p = new IntegerConsumePrecondition(3);
+            p.Variable = v;
+            Assert.False(p.IsFulfilledByWorld());
+
+            p = p.Apply(r) as IntegerConsumePrecondition;
+            Assert.False(p.IsFulfilled());
+
+            v.Value = 2;
+            Assert.True(p.IsFulfilledByWorld());
         }
     }
 }

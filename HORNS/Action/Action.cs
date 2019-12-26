@@ -168,13 +168,12 @@ namespace HORNS
         {
             return preconditions;
         }
-
-        //internal void SubtractResults(RequirementSet requirements)
-        internal void SubtractResults(PreconditionSet requirements)
+        
+        internal void ApplyResults(PreconditionSet requirements)
         {
             foreach (var result in results)
             {
-                result.SubtractFrom(requirements);
+                result.Apply(requirements);
             }
 
         }

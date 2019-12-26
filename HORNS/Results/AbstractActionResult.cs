@@ -17,6 +17,6 @@ namespace HORNS
         internal abstract void Apply(Variable variable);
         internal abstract void Apply(IdSet<Variable> variables);
         internal abstract float GetCost(IdSet<Variable> variables, Agent agent);
-        internal abstract void SubtractFrom(PreconditionSet requirement);
+        internal abstract void Apply(PreconditionSet requirement);
     }
 }

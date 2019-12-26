@@ -50,27 +50,14 @@ namespace HORNS
         /// Porównuje wymaganie z innym wymaganiem. Oba wymagania muszą być typu \texttt{IntegerConsumePrecondition} i tę samą wartość docelową.
         /// </summary>
         /// <param name="precondition">Wymaganie do porównania.</param>
-        /// <returns>\texttt{true}, jeżeli \texttt{precondition} jest w takim samym lub gorszym (bardziej odległym od wartości wymaganej) stanie; \texttt{false} w przeciwnym wypadku lub jeśli wymagań nie można porównać.</returns>
-        protected internal override bool IsEqualOrWorse(Precondition precondition)
+        /// <returns>\texttt{true}, jeżeli obecne wymaganie jest w lepszym (bliższym wartości wymaganej) stanie; \texttt{false} w przeciwnym wypadku lub jeśli wymagań nie można porównać.</returns>
+        protected internal override bool IsBetterThan(Precondition precondition)
         {
             if (!(precondition is IntegerConsumePrecondition intPre) || Target != intPre.Target)
             {
                 return false;
             }
-            return Variable.Value >= intPre.Variable.Value;
-        }
-
-        /// <summary>
-        /// Odejmuje rezultat akcji od wymagania. Rezultat musi być typu \texttt{IntegerAddResult}.
-        /// </summary>
-        /// <param name="actionResult">Rezultat do odjęcia.</param>
-        /// <returns>Nowe wymaganie z wartością wymaganą zmienioną w zależności od wartości składnika rezultatu.</returns>
-        protected internal override Precondition Subtract(ActionResult actionResult)
-        {
-            var addRes = actionResult as IntegerAddResult;
-            int newVal = Target - addRes.Term;
-
-            return new IntegerConsumePrecondition(newVal, this);
+            return State > intPre.State;
         }
 
         /// <summary>
@@ -78,21 +65,21 @@ namespace HORNS
         /// Wartość spełnia wymaganie, jeżeli jest nie mniejsza od wartości wymaganej.
         /// </summary>
         /// <param name="value">Wartość do sprawdzenia.</param>
+        /// <param name="target">Wartość docelowa wymagania.</param>
         /// <returns>\texttt{true}, jeżeli wartość spełnia wymaganie.</returns>
-        protected internal override bool IsFulfilled(int value)
+        protected internal override bool IsFulfilled(int value, int target)
         {
-            return value >= Target;
+            return value >= target;
         }
 
-        /// <summary>
-        /// Sprawdza, czy wymaganie dążące do danej wartości można uznać za spełnione.
-        /// Wymaganie można uznać za spełnione, gdy wartość pozostała do spełnienia jest niedodatnia.
-        /// </summary>
-        /// <param name="value">Wartość do sprawdzenia.</param>
-        /// <returns>\texttt{true}, jeżeli dla danej wartości wymaganej wymaganie jest spełnione.</returns>
-        protected internal override bool IsZeroed(int value)
+        protected internal override bool IsFulfilledInState(int value, int target, int state)
         {
-            return value <= 0;
+            return value + state >= target;
+        }
+
+        protected internal override int GetDefault(int target)
+        {
+            return 0;
         }
 
         /// <summary>

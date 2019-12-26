@@ -66,12 +66,11 @@ namespace HORNS
             variable.Value = GetResultValue(variable.Value);
         }
 
-        internal override void SubtractFrom(PreconditionSet preconditions)
+        internal override void Apply(PreconditionSet preconditions)
         {
             if (!preconditions.Contains(Variable.Id)) return;
-            Precondition pre = preconditions[Variable.Id];
-            Precondition newPre = pre.Subtract(this);
-            preconditions.Replace(newPre);
+            var pre = preconditions[Variable.Id];
+            preconditions.Replace(pre.Apply(this));
         }
     }
 }

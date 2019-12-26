@@ -28,7 +28,7 @@ namespace HORNS
         public Precondition(T target)
         {
             Target = target;
-            State = target;
+            State = GetDefault(target);
         }
 
         /// <summary>
@@ -51,23 +51,20 @@ namespace HORNS
         /// Sprawdza, czy dana wartość spełnia wymaganie.
         /// </summary>
         /// <param name="value">Wartość do sprawdzenia.</param>
+        /// <param name="target">Wartość docelowa wymagania.</param>
         /// <returns>\texttt{true}, jeżeli wartość spełnia wymaganie.</returns>
-        protected internal abstract bool IsFulfilled(T value);
-        /// <summary>
-        /// Sprawdza, czy wymaganie dążące do danej wartości można uznać za spełnione.
-        /// </summary>
-        /// <param name="value">Wartość do sprawdzenia.</param>
-        /// <returns>\texttt{true}, jeżeli dla danej wartości docelowej wymaganie jest spełnione.</returns>
-        protected internal abstract bool IsZeroed(T value);
+        protected internal abstract bool IsFulfilled(T value, T target);
+        protected internal abstract bool IsFulfilledInState(T value, T target, T state);
+        protected internal abstract T GetDefault(T target);
 
         internal override bool IsFulfilled()
         {
-            return IsZeroed(State);
+            return IsFulfilled(State, Target);
         }
 
         internal override bool IsFulfilledByWorld()
         {
-            return IsFulfilled(Variable.Value);
+            return IsFulfilledInState(Variable.Value, Target, State);
         }
 
         internal override bool IsFulfilledBy(IdSet<Variable> variables)
@@ -77,7 +74,14 @@ namespace HORNS
             {
                 variables.TryGet(ref variable);
             }
-            return IsFulfilled((variable as Variable<T>).Value);
+            return IsFulfilledInState((variable as Variable<T>).Value, Target, State);
+        }
+
+        internal override Precondition Apply(ActionResult actionResult)
+        {
+            var newPre = Clone() as Precondition<T>;
+            newPre.State = (actionResult as ActionResult<T>).GetResultValue(newPre.State);
+            return newPre;
         }
     }
 }

@@ -119,7 +119,7 @@ namespace HORNS
                         res = node.Preconditions.Add(pre.Clone());
                     }
 
-                    node.PrevAction.SubtractResults(node.Preconditions);
+                    node.PrevAction.ApplyResults(node.Preconditions);
                     node.Preconditions.RemoveWhere(x => x.IsFulfilled());
                     bool badPre = false;
                     foreach (var pre in node.PrevAction.GetPreconditions())
@@ -155,11 +155,11 @@ namespace HORNS
                     {
                         cut = true;
                         // if preSet has a pre that we don't have then we're not equal/worse
-                        // if we have a pre that's better than the same pre in preSet then we're not equal/worse
+                        // if we have a refPre that's better than the same pre in preSet then we're not equal/worse
                         foreach (var pre in preSet)
                         {
                             Precondition refPre = pre;
-                            if (!node.Preconditions.TryGet(ref refPre) || !refPre.IsEqualOrWorse(pre))
+                            if (!node.Preconditions.TryGet(ref refPre) || refPre.IsBetterThan(pre))
                             {
                                 cut = false;
                                 break;
