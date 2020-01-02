@@ -18,8 +18,27 @@ namespace HORNS
         /// Wartość docelowa wymagania.
         /// </summary>
         public T Target { get; }
+        // TODO: [?] something better than this that still allows derived classes to access their stuff
+        private bool _initialized = false;
+        private T _state;
         // current state
-        internal T State { get; set; }
+        internal T State
+        {
+            get
+            {
+                if (!_initialized)
+                {
+                    _initialized = true;
+                    _state = GetDefault();
+                }
+                return _state;
+            }
+            set
+            {
+                _initialized = true;
+                _state = value;
+            }
+        }
 
         /// <summary>
         /// Tworzy nowe wymaganie o określonej wartości docelowej.
@@ -28,7 +47,6 @@ namespace HORNS
         public Precondition(T target)
         {
             Target = target;
-            State = GetDefault(target);
         }
 
         /// <summary>
@@ -40,6 +58,12 @@ namespace HORNS
             Target = precondition.Target;
             State = precondition.State;
             Variable = precondition.Variable;
+        }
+        
+        protected Precondition(T value, T state, Precondition<T> precondition) : this(value)
+        {
+            Variable = precondition.Variable;
+            State = state;
         }
 
         internal override Variable GetVariable()
@@ -55,7 +79,7 @@ namespace HORNS
         /// <returns>\texttt{true}, jeżeli wartość spełnia wymaganie.</returns>
         protected internal abstract bool IsFulfilled(T value, T target);
         protected internal abstract bool IsFulfilledInState(T value, T target, T state);
-        protected internal abstract T GetDefault(T target);
+        protected internal abstract T GetDefault();
 
         internal override bool IsFulfilled()
         {
@@ -82,6 +106,16 @@ namespace HORNS
             var newPre = Clone() as Precondition<T>;
             newPre.State = (actionResult as ActionResult<T>).GetResultValue(newPre.State);
             return newPre;
+        }
+
+        /// <summary>
+        /// Wyznacza akcje mogące spełnić wymaganie.
+        /// </summary>
+        /// <param name="agent">Agent, którego akcje będą rozważane.</param>
+        /// <returns>Kolekcja akcji.</returns>
+        protected internal override IEnumerable<Action> GetActions(Agent agent)
+        {
+            return Variable.GenericSolver.GetActionsSatisfying(this, agent);
         }
     }
 }

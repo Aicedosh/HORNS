@@ -3,11 +3,15 @@ using Xunit;
 
 namespace HORNS_UnitTests
 {
-    // TODO: tests for combining partially fulfilled precs
-    public class IntegerConsumePreconditionTests
+    // TODO
+    public class IntegerSimplePreconditionTests
     {
-        [Fact]
-        public void Combine_ShouldReturnCorrectValue()
+        [Theory]
+        [InlineData(3, 5, 5, IntegerComparison.AtLeast)]
+        [InlineData(3, 3, 3, IntegerComparison.AtLeast)]
+        [InlineData(3, 5, 3, IntegerComparison.AtMost)]
+        [InlineData(3, 3, 3, IntegerComparison.AtMost)]
+        public void Combine_SameComparison_ShouldReturnCorrectValue(int first, int second, int result, IntegerComparison comparison)
         {
             var v = new IntegerConsumeVariable();
 

@@ -9,7 +9,7 @@ namespace HORNS
     /// Ten typ wymagania zakłada, że wymagana wartość zostanie zużyta w ramach rezultatu akcji.
     /// Wartość docelowa powinna być dodatnia.
     /// </summary>
-    public class IntegerConsumePrecondition : Precondition<int, IntegerConsumeSolver>
+    public class IntegerConsumePrecondition : Precondition<int>
     {
         /// <summary>
         /// Tworzy nowe wymaganie dla zmiennej typu \texttt{int} o określonej wartości wymaganej.
@@ -20,7 +20,7 @@ namespace HORNS
         {
         }
 
-        private IntegerConsumePrecondition(int value, IntegerConsumePrecondition other) : base(value, other)
+        private IntegerConsumePrecondition(int value, int state, IntegerConsumePrecondition other) : base(value, state, other)
         {
         }
 
@@ -43,7 +43,7 @@ namespace HORNS
             {
                 return null;
             }
-            return new IntegerConsumePrecondition(Target + intPre.Target, this);
+            return new IntegerConsumePrecondition(Target + intPre.Target, State + intPre.State, this);
         }
 
         /// <summary>
@@ -77,7 +77,7 @@ namespace HORNS
             return value + state >= target;
         }
 
-        protected internal override int GetDefault(int target)
+        protected internal override int GetDefault()
         {
             return 0;
         }

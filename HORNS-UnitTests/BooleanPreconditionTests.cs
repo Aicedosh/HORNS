@@ -15,11 +15,9 @@ namespace HORNS_UnitTests
         {
             var v = new BooleanVariable();
             var p = new BooleanPrecondition(value);
-            p.SetSolver(v.Solver);
             p.Variable = v;
 
             var p2 = new BooleanPrecondition(value);
-            p2.SetSolver(v.Solver);
             p2.Variable = v;
 
             var pre = p.Combine(p2);
@@ -36,11 +34,9 @@ namespace HORNS_UnitTests
         {
             var v = new BooleanVariable();
             var p = new BooleanPrecondition(value);
-            p.SetSolver(v.Solver);
             p.Variable = v;
 
             var p2 = new BooleanPrecondition(!value);
-            p2.SetSolver(v.Solver);
             p2.Variable = v;
 
             var pre = p.Combine(p2);

@@ -13,8 +13,8 @@ namespace HORNS
     /// <typeparam name="PT">Typ wymagania związany ze zmienną.</typeparam>
     public class Variable<T, RT, ST, PT> : Variable<T>
             where ST : VariableSolver<T, RT, PT>, new()
-            where RT : ActionResult<T, ST>
-            where PT : Precondition<T, ST>
+            where RT : ActionResult<T>
+            where PT : Precondition<T>
     {
         /// <summary>
         /// Tworzy nową zmienną o określonej wartości początkowej.

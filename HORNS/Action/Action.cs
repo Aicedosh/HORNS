@@ -32,8 +32,8 @@ namespace HORNS
         /// <param name="result">Nowy rezultat akcji.</param>
         public void AddResult<T, RT, ST, PT>(Variable<T, RT, ST, PT> variable, RT result)
             where ST : VariableSolver<T, RT, PT>, new()
-            where RT : ActionResult<T, ST>
-            where PT : Precondition<T, ST>
+            where RT : ActionResult<T>
+            where PT : Precondition<T>
         {
             //TODO: Clone beforehand
             variable.Solver.Register(result);
@@ -53,13 +53,12 @@ namespace HORNS
         /// <param name="precondition">Nowe wymaganie akcji.</param>
         public void AddPrecondition<T, RT, ST, PT>(Variable<T, RT, ST, PT> variable, PT precondition)
             where ST : VariableSolver<T, RT, PT>, new()
-            where RT : ActionResult<T, ST>
-            where PT : Precondition<T, ST>
+            where RT : ActionResult<T>
+            where PT : Precondition<T>
         {
             //TODO: Clone beforehand
             preconditions.Add(precondition);
-
-            precondition.SetSolver(variable.Solver);
+            
             precondition.Variable = variable;
         }
 

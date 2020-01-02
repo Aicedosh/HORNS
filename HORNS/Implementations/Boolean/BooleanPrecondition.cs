@@ -7,7 +7,7 @@ namespace HORNS
     /// <summary>
     /// Klasa reprezentująca wymaganie związane ze zmienną typu \texttt{bool}, które jest spełnione dla wartości równej określonej wartości.
     /// </summary>
-    public class BooleanPrecondition : Precondition<bool, BooleanSolver>
+    public class BooleanPrecondition : Precondition<bool>
     {
         /// <summary>
         /// Tworzy nowe wymaganie dla zmiennej typu \texttt{bool} o określonej wartości docelowej.
@@ -17,7 +17,7 @@ namespace HORNS
         {
         }
 
-        private BooleanPrecondition(bool value, BooleanPrecondition other) : base(value, other)
+        private BooleanPrecondition(bool value, bool state, BooleanPrecondition other) : base(value, state, other)
         {
         }
 
@@ -40,7 +40,8 @@ namespace HORNS
             {
                 return null;
             }
-            return new BooleanPrecondition(Target, this);
+            bool state = IsFulfilled() || boolPre.IsFulfilled() ? Target : !Target;
+            return new BooleanPrecondition(Target, state, this);
         }
 
         /// <summary>
@@ -75,9 +76,9 @@ namespace HORNS
             return state == target || value == target;
         }
 
-        protected internal override bool GetDefault(bool target)
+        protected internal override bool GetDefault()
         {
-            return !target;
+            return !Target;
         }
 
         /// <summary>

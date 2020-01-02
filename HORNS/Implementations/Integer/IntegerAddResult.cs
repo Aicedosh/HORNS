@@ -7,7 +7,7 @@ namespace HORNS
     /// <summary>
     /// Klasa reprezentująca rezultat związany ze zmienną typu \texttt{int}, który powoduje zwiększenie lub zmniejszenie wartości zmiennej o stałą wartość.
     /// </summary>
-    public class IntegerAddResult : ActionResult<int, IntegerConsumeSolver>
+    public class IntegerAddResult : ActionResult<int>
     {
         /// <summary>
         /// Składnik (dodatni lub ujemny) dodawany do wartości zmiennej w wyniku wykonania rezultatu.

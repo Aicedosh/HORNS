@@ -7,7 +7,7 @@ namespace HORNS
     /// <summary>
     /// Klasa reprezentująca rezultat związany ze zmienną typu \texttt{bool}, który powoduje przyjęcie przez zmienną określonej wartości.
     /// </summary>
-    public class BooleanResult : ActionResult<bool, BooleanSolver>
+    public class BooleanResult : ActionResult<bool>
     {
         /// <summary>
         /// Wartość, jaką ma przyjąć zmienna po wykonaniu rezultatu.
