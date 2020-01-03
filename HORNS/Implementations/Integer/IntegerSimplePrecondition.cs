@@ -9,19 +9,15 @@ namespace HORNS
     public class IntegerSimplePrecondition : Precondition<int>
     {
         public IntegerComparison Comparison { get; }
-        // TODO: move to SimpleVariable
-        public int WorstBound { get; }
 
         public IntegerSimplePrecondition(int value, IntegerComparison comparison, int worst = 0) : base(value)
         {
             Comparison = comparison;
-            WorstBound = worst;
         }
 
         public IntegerSimplePrecondition(IntegerSimplePrecondition precondition) : base(precondition)
         {
             Comparison = precondition.Comparison;
-            WorstBound = precondition.WorstBound;
         }
 
         private IntegerSimplePrecondition(int value, int state, IntegerSimplePrecondition other) : base(value, state, other)
@@ -40,7 +36,12 @@ namespace HORNS
 
         protected internal override int GetDefault()
         {
-            return WorstBound;
+            // TODO: don't really like this... we could create some sort of IBounded or assume that WorstBound is zero
+            if (Variable is IntegerSimpleVariable var)
+            {
+                return var.WorstBound;
+            }
+            return 0;
         }
 
         protected internal override Precondition Clone()
@@ -51,9 +52,9 @@ namespace HORNS
         protected internal override bool IsBetterThan(Precondition precondition)
         {
             if (!(precondition is IntegerSimplePrecondition intPre)
+                || Variable.Id != intPre.Variable.Id
                 || Comparison != intPre.Comparison
-                || Target != intPre.Target
-                || WorstBound != intPre.WorstBound)
+                || Target != intPre.Target)
             {
                 return false;
             }
@@ -63,14 +64,14 @@ namespace HORNS
         protected internal override Precondition Combine(Precondition precondition)
         {
             if (!(precondition is IntegerSimplePrecondition intPre)
-                || Comparison != intPre.Comparison
-                || WorstBound != intPre.WorstBound)
+                || Variable.Id != intPre.Variable.Id
+                || Comparison != intPre.Comparison)
             {
                 return null;
             }
             
             int target = Comparison == IntegerComparison.AtLeast ? Math.Max(Target, intPre.Target) : Math.Min(Target, intPre.Target);
-            int state = State + intPre.State - WorstBound;
+            int state = State + intPre.State - GetDefault();
             return new IntegerSimplePrecondition(target, state, this);
         }
     }

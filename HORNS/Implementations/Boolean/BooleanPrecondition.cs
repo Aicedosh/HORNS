@@ -30,13 +30,15 @@ namespace HORNS
         }
 
         /// <summary>
-        /// Łączy wymaganie z innym wymaganiem. Oba wymagania muszą być typu \texttt{BooleanPrecondition} i mieć tę samą wartość docelową.
+        /// Łączy wymaganie z innym wymaganiem. Oba wymagania muszą być typu \texttt{BooleanPrecondition}, dotyczyć tej samej zmiennej i mieć tę samą wartość docelową.
         /// </summary>
         /// <param name="precondition">Wymaganie do połączenia.</param>
         /// <returns>Nowe wymaganie o wartości docelowej równej wartościom docelowym obu wymagań lub \texttt{null} w przypadku, gdy wymagań nie można połączyć.</returns>
         protected internal override Precondition Combine(Precondition precondition)
         {
-            if (!(precondition is BooleanPrecondition boolPre) || Target != boolPre.Target)
+            if (!(precondition is BooleanPrecondition boolPre)
+                || Variable.Id != boolPre.Variable.Id
+                || Target != boolPre.Target)
             {
                 return null;
             }
@@ -45,13 +47,15 @@ namespace HORNS
         }
 
         /// <summary>
-        /// Porównuje wymaganie z innym wymaganiem. Oba wymagania muszą być typu \texttt{BooleanPrecondition} i mieć tę samą wartość docelową.
+        /// Porównuje wymaganie z innym wymaganiem. Oba wymagania muszą być typu \texttt{BooleanPrecondition}, dotyczyć tej samej zmiennej i mieć tę samą wartość docelową.
         /// </summary>
         /// <param name="precondition">Wymaganie do porównania.</param>
         /// <returns>\texttt{true}, jeżeli obecne wymaganie jest w lepszym (spełnionym) stanie; \texttt{false} w przeciwnym wypadku lub jeśli wymagań nie można porównać.</returns>
         protected internal override bool IsBetterThan(Precondition precondition)
         {
-            if (!(precondition is BooleanPrecondition boolPre) || Target != boolPre.Target)
+            if (!(precondition is BooleanPrecondition boolPre)
+                || Variable.Id != boolPre.Variable.Id
+                || Target != boolPre.Target)
             {
                 return false;
             }

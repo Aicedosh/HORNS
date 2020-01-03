@@ -33,13 +33,14 @@ namespace HORNS
         }
         
         /// <summary>
-        /// Łączy wymaganie z innym wymaganiem. Oba wymagania muszą być typu \texttt{IntegerConsumePrecondition}.
+        /// Łączy wymaganie z innym wymaganiem. Oba wymagania muszą być typu \texttt{IntegerConsumePrecondition} i dotyczyć tej samej zmiennej.
         /// </summary>
         /// <param name="precondition">Wymaganie do połączenia.</param>
         /// <returns>Nowe wymaganie wartości wymaganej będącej sumą wartości wymaganych przez oba wymagania lub \texttt{null} w przypadku, gdy wymagań nie można połączyć.</returns>
         protected internal override Precondition Combine(Precondition precondition)
         {
-            if (!(precondition is IntegerConsumePrecondition intPre))
+            if (!(precondition is IntegerConsumePrecondition intPre)
+                || Variable.Id != intPre.Variable.Id)
             {
                 return null;
             }
@@ -47,13 +48,15 @@ namespace HORNS
         }
 
         /// <summary>
-        /// Porównuje wymaganie z innym wymaganiem. Oba wymagania muszą być typu \texttt{IntegerConsumePrecondition} i tę samą wartość docelową.
+        /// Porównuje wymaganie z innym wymaganiem. Oba wymagania muszą być typu \texttt{IntegerConsumePrecondition}, dotyczyć tej samej zmiennej i mieć tę samą wartość docelową.
         /// </summary>
         /// <param name="precondition">Wymaganie do porównania.</param>
         /// <returns>\texttt{true}, jeżeli obecne wymaganie jest w lepszym (bliższym wartości wymaganej) stanie; \texttt{false} w przeciwnym wypadku lub jeśli wymagań nie można porównać.</returns>
         protected internal override bool IsBetterThan(Precondition precondition)
         {
-            if (!(precondition is IntegerConsumePrecondition intPre) || Target != intPre.Target)
+            if (!(precondition is IntegerConsumePrecondition intPre)
+                || Variable.Id != intPre.Variable.Id
+                || Target != intPre.Target)
             {
                 return false;
             }

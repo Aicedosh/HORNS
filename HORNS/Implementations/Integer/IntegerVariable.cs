@@ -19,12 +19,13 @@ namespace HORNS
         }
     }
 
-    //public class IntegerSimpleVariable : Variable<int, IntegerAddResult, IntegerSimpleSolver, IntegerSimplePrecondition>
-    //{
-    //    // WorstBound here perhaps?
-    //    public IntegerSimpleVariable(int value = default) : base(value)
-    //    {
+    public class IntegerSimpleVariable : Variable<int, IntegerAddResult, IntegerSimpleSolver, IntegerSimplePrecondition>
+    {
+        public int WorstBound { get; }
 
-    //    }
-    //}
+        public IntegerSimpleVariable(int value = default, int worst = default) : base(value)
+        {
+            WorstBound = worst;
+        }
+    }
 }
