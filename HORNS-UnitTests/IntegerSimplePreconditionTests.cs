@@ -7,11 +7,11 @@ namespace HORNS_UnitTests
     public class IntegerSimplePreconditionTests
     {
         [Theory]
-        [InlineData(3, 5, 5, IntegerComparison.AtLeast)]
-        [InlineData(3, 3, 3, IntegerComparison.AtLeast)]
-        [InlineData(3, 5, 3, IntegerComparison.AtMost)]
-        [InlineData(3, 3, 3, IntegerComparison.AtMost)]
-        public void Combine_SameComparison_ShouldReturnCorrectValue(int first, int second, int result, IntegerComparison comparison)
+        [InlineData(3, 5, 5, IntegerDirection.AtLeast)]
+        [InlineData(3, 3, 3, IntegerDirection.AtLeast)]
+        [InlineData(3, 5, 3, IntegerDirection.AtMost)]
+        [InlineData(3, 3, 3, IntegerDirection.AtMost)]
+        public void Combine_SameComparison_ShouldReturnCorrectValue(int first, int second, int result, IntegerDirection comparison)
         {
             var v = new IntegerConsumeVariable();
 
@@ -100,10 +100,13 @@ namespace HORNS_UnitTests
             r.Variable = v;
 
             p2 = p2.Apply(r) as IntegerConsumePrecondition;
-            Assert.Equal(improve, p2.IsBetterThan(p1));
-            Assert.Equal(!improve, p1.IsBetterThan(p2));
 
-            Assert.False(p1.IsBetterThan(p1));
+            ComparisonResult res = improve ? ComparisonResult.Better : ComparisonResult.EqualWorse;
+            ComparisonResult resInv = !improve ? ComparisonResult.Better : ComparisonResult.EqualWorse;
+            Assert.Equal(res, p2.IsBetterThan(p1));
+            Assert.Equal(resInv, p1.IsBetterThan(p2));
+
+            Assert.Equal(ComparisonResult.EqualWorse, p1.IsBetterThan(p1));
         }
     }
 }

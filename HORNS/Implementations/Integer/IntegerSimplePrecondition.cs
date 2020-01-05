@@ -4,20 +4,27 @@ using System.Text;
 
 namespace HORNS
 {
-    public enum IntegerComparison { AtLeast, AtMost }
-
+    public enum IntegerDirection { AtLeast, AtMost }
+    /// <summary>
+    /// DO NOT USE YET
+    /// </summary>
     public class IntegerSimplePrecondition : Precondition<int>
     {
-        public IntegerComparison Comparison { get; }
-
-        public IntegerSimplePrecondition(int value, IntegerComparison comparison, int worst = 0) : base(value)
+        public IntegerDirection Direction { get; }
+        /// <summary>
+        /// DO NOT USE YET
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="comparison"></param>
+        /// <param name="worst"></param>
+        public IntegerSimplePrecondition(int value, IntegerDirection comparison, int worst = 0) : base(value)
         {
-            Comparison = comparison;
+            Direction = comparison;
         }
 
         public IntegerSimplePrecondition(IntegerSimplePrecondition precondition) : base(precondition)
         {
-            Comparison = precondition.Comparison;
+            Direction = precondition.Direction;
         }
 
         private IntegerSimplePrecondition(int value, int state, IntegerSimplePrecondition other) : base(value, state, other)
@@ -26,12 +33,12 @@ namespace HORNS
 
         protected internal override bool IsFulfilled(int value, int target)
         {
-            return Comparison == IntegerComparison.AtLeast ? value >= target : value <= target;
+            return Direction == IntegerDirection.AtLeast ? value >= target : value <= target;
         }
 
         protected internal override bool IsFulfilledInState(int value, int target, int state)
         {
-            return Comparison == IntegerComparison.AtLeast ? value + state >= target : value - state <= target;
+            return Direction == IntegerDirection.AtLeast ? value + state >= target : value - state <= target;
         }
 
         protected internal override int GetDefault()
@@ -49,28 +56,36 @@ namespace HORNS
             return new IntegerSimplePrecondition(this);
         }
 
-        protected internal override bool IsBetterThan(Precondition precondition)
+        protected internal override ComparisonResult IsBetterThan(Precondition precondition)
         {
             if (!(precondition is IntegerSimplePrecondition intPre)
                 || Variable.Id != intPre.Variable.Id
-                || Comparison != intPre.Comparison
+                || Direction != intPre.Direction
                 || Target != intPre.Target)
             {
-                return false;
+                return ComparisonResult.NotComparable;
             }
-            return Comparison == IntegerComparison.AtLeast ? State > intPre.State : State < intPre.State;
+
+            if (Direction == IntegerDirection.AtLeast)
+            {
+                return State > intPre.State ? ComparisonResult.Better : ComparisonResult.EqualWorse;
+            }
+            else
+            {
+                return State < intPre.State ? ComparisonResult.Better : ComparisonResult.EqualWorse;
+            }
         }
 
         protected internal override Precondition Combine(Precondition precondition)
         {
             if (!(precondition is IntegerSimplePrecondition intPre)
                 || Variable.Id != intPre.Variable.Id
-                || Comparison != intPre.Comparison)
+                || Direction != intPre.Direction)
             {
                 return null;
             }
             
-            int target = Comparison == IntegerComparison.AtLeast ? Math.Max(Target, intPre.Target) : Math.Min(Target, intPre.Target);
+            int target = Direction == IntegerDirection.AtLeast ? Math.Max(Target, intPre.Target) : Math.Min(Target, intPre.Target);
             int state = State + intPre.State - GetDefault();
             return new IntegerSimplePrecondition(target, state, this);
         }

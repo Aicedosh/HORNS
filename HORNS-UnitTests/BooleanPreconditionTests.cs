@@ -90,9 +90,10 @@ namespace HORNS_UnitTests
             r.Variable = v;
 
             p2 = p2.Apply(r) as BooleanPrecondition;
-            Assert.Equal(improve, p2.IsBetterThan(p1));
+            ComparisonResult res = improve ? ComparisonResult.Better : ComparisonResult.EqualWorse;
+            Assert.Equal(res, p2.IsBetterThan(p1));
 
-            Assert.False(p1.IsBetterThan(p1));
+            Assert.Equal(ComparisonResult.EqualWorse, p1.IsBetterThan(p1));
         }
     }
 }

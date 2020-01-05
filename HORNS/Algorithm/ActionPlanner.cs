@@ -159,7 +159,7 @@ namespace HORNS
                         foreach (var pre in preSet)
                         {
                             Precondition refPre = pre;
-                            if (!node.Preconditions.TryGet(ref refPre) || refPre.IsBetterThan(pre))
+                            if (!node.Preconditions.TryGet(ref refPre) || refPre.IsBetterThan(pre) != ComparisonResult.EqualWorse)
                             {
                                 cut = false;
                                 break;

@@ -51,16 +51,16 @@ namespace HORNS
         /// </summary>
         /// <param name="precondition">Wymaganie do porównania.</param>
         /// <returns>\texttt{true}, jeżeli obecne wymaganie jest w lepszym (spełnionym) stanie; \texttt{false} w przeciwnym wypadku lub jeśli wymagań nie można porównać.</returns>
-        protected internal override bool IsBetterThan(Precondition precondition)
+        protected internal override ComparisonResult IsBetterThan(Precondition precondition)
         {
             if (!(precondition is BooleanPrecondition boolPre)
                 || Variable.Id != boolPre.Variable.Id
                 || Target != boolPre.Target)
             {
-                return false;
+                return ComparisonResult.NotComparable;
             }
             // we can only be better if we're fulfilled
-            return IsFulfilled();
+            return IsFulfilled() ? ComparisonResult.Better : ComparisonResult.EqualWorse;
         }
 
         /// <summary>

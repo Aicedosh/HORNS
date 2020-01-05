@@ -2,6 +2,10 @@
 
 namespace HORNS
 {
+    public enum ComparisonResult
+    {
+        NotComparable, Better, EqualWorse
+    }
     /// <summary>
     /// Abstrakcyjna klasa bazowa dla wszystkich wymagań.
     /// </summary>
@@ -29,7 +33,7 @@ namespace HORNS
         /// </summary>
         /// <param name="precondition">Wymaganie do porównania.</param>
         /// <returns>\texttt{true}, jeżeli obecne wymaganie jest w lepszym (łatwiejszym do spełnienia) stanie niż \texttt{precondition}; \texttt{false} w przeciwnym wypadku.</returns>
-        protected internal abstract bool IsBetterThan(Precondition precondition);
+        protected internal abstract ComparisonResult IsBetterThan(Precondition precondition);
         /// <summary>
         /// Wyznacza akcje mogące spełnić wymaganie.
         /// </summary>

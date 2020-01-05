@@ -52,15 +52,15 @@ namespace HORNS
         /// </summary>
         /// <param name="precondition">Wymaganie do porównania.</param>
         /// <returns>\texttt{true}, jeżeli obecne wymaganie jest w lepszym (bliższym wartości wymaganej) stanie; \texttt{false} w przeciwnym wypadku lub jeśli wymagań nie można porównać.</returns>
-        protected internal override bool IsBetterThan(Precondition precondition)
+        protected internal override ComparisonResult IsBetterThan(Precondition precondition)
         {
             if (!(precondition is IntegerConsumePrecondition intPre)
                 || Variable.Id != intPre.Variable.Id
                 || Target != intPre.Target)
             {
-                return false;
+                return ComparisonResult.NotComparable;
             }
-            return State > intPre.State;
+            return State > intPre.State ? ComparisonResult.Better : ComparisonResult.EqualWorse;
         }
 
         /// <summary>
