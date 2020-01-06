@@ -38,6 +38,11 @@ namespace HORNS
                 action.GetCost(agent, variableSet);      // cache costs
             }
 
+            foreach (var action in agent.IdleActions)
+            {
+                action.GetCost(agent, variableSet);
+            }
+
             List<(INeedInternal Need, float Priority)> needs = new List<(INeedInternal, float)>();
             foreach (var need in agent.NeedsInternal)
             {
