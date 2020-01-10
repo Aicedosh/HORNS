@@ -44,7 +44,8 @@ namespace HORNS
             {
                 return null;
             }
-            return new IntegerConsumePrecondition(Target + intPre.Target, State + intPre.State, this);
+            return new IntegerConsumePrecondition(Target, State + intPre.State, this);
+            //return new IntegerConsumePrecondition(Math.Max(Target, intPre.Target), State + intPre.State, this);
         }
 
         /// <summary>

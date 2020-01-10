@@ -443,6 +443,40 @@ namespace HORNS_UnitTests
             Assert.Equal("Fulfill need", (actions[0] as BasicAction).Tag);
         }
 
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public void Plan_CombiningPreconditions_FindCorrectPath(bool snapshot)
+        {
+            var vint = new IntegerConsumeVariable();
+            var vbool = new BooleanVariable();
+            var vneed = new BooleanVariable();
+            var n = new BooleanNeed(vneed, true);
+
+            var a1 = new BasicAction("Fulfills need");
+            a1.AddPrecondition(vbool, new BooleanPrecondition(true));
+            a1.AddPrecondition(vint, new IntegerConsumePrecondition(2));
+            a1.AddResult(vneed, new BooleanResult(true));
+
+            var a2 = new BasicAction("Fulfills bool precondition");
+            a2.AddPrecondition(vint, new IntegerConsumePrecondition(3));
+            a2.AddResult(vint, new IntegerAddResult(-3));
+            a2.AddResult(vbool, new BooleanResult(true));
+            
+            var a3 = new BasicAction("Partially fulfills integer precondition");
+            a3.AddPrecondition(vbool, new BooleanPrecondition(false));
+            a3.AddResult(vint, new IntegerAddResult(1));
+
+            var agent = new Agent();
+            agent.AddActions(a1, a2, a3);
+            agent.AddNeed(n);
+
+            var (actions, curNeed) = Plan(agent, snapshot);
+            Assert.Equal(7, actions.Count);
+            Assert.Equal("Fulfills need", (actions[actions.Count - 1] as BasicAction).Tag);
+            Assert.Equal("Fulfills bool precondition", (actions[actions.Count - 2] as BasicAction).Tag);
+        }
+
         // helper functions
         private (List<Action> actions, INeed need) Plan(Agent agent, bool snapshot)
         {

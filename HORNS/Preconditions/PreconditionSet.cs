@@ -10,7 +10,7 @@ namespace HORNS
         {
             if (elements.TryGetValue(r.Id, out Precondition existing))
             {
-                r = r.Combine(existing);
+                r = existing.Combine(r);
                 if (r == null)
                 {
                     return false;
