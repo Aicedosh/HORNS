@@ -23,6 +23,12 @@ namespace HORNS
         private int nextActionIdx = 0;
 
         /// <summary>
+        /// Liczba najbardziej pilnych potrzeb (o najgorszej ocenie) do rozważenia w trakcie planowania.
+        /// Wartość 0 oznacza, że będą rozważane tylko akcje idle.
+        /// Wartość ujemna oznacza, że będą rozważane wszystkie potrzeby.
+        /// </summary>
+        public int NeedsToCalculate { get; set; } = -1;
+        /// <summary>
         /// Obecnie zaspokajana potrzeba.
         /// </summary>
         public INeed CurrentNeed { get; private set; }

@@ -21,9 +21,8 @@ namespace HORNS
             }
         }
         
-        // TODO: possibleGoals as param or field in agent?
         internal (List<Action> actions, INeed need) Plan(Agent agent, bool useSnapshot = false,
-                                                         CancellationToken? token = null, int possibleGoals = 5)
+                                                         CancellationToken? token = null)
         {
             IdSet<Variable> variableSet = null;
             if (useSnapshot)
@@ -44,18 +43,21 @@ namespace HORNS
             }
 
             List<(INeedInternal Need, float Priority)> needs = new List<(INeedInternal, float)>();
-            foreach (var need in agent.NeedsInternal)
+            if (agent.NeedsToCalculate != 0)
             {
-                if (!need.IsSatisfied(variableSet))
+                foreach (var need in agent.NeedsInternal)
                 {
-                    needs.Add((need, need.EvaluateFor(variableSet)));
+                    if (!need.IsSatisfied(variableSet))
+                    {
+                        needs.Add((need, need.EvaluateFor(variableSet)));
+                    }
                 }
-            }
-            // lower "priority" => more important need
-            needs.Sort((x, y) => x.Priority.CompareTo(y.Priority));     // TODO: optimize
-            if (needs.Count > possibleGoals)
-            {
-                needs.RemoveRange(possibleGoals, needs.Count - possibleGoals);
+                // lower "priority" => more important need
+                needs.Sort((x, y) => x.Priority.CompareTo(y.Priority));     // TODO: optimize
+                if (agent.NeedsToCalculate > 0 && needs.Count > agent.NeedsToCalculate)
+                {
+                    needs.RemoveRange(agent.NeedsToCalculate, needs.Count - agent.NeedsToCalculate);
+                }
             }
             needs.Add((null, 0));   // represents idle actions
 
