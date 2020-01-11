@@ -23,22 +23,17 @@ namespace HORNS_Sandbox
 
         private class Hunger : Need<int>
         {
-            public Hunger(Variable<int> variable, int desired) : base(variable, desired, v =>
-            v > 100 ? -100 :
-            (float)(50 * Math.Log10(-v + 1 + 100)))
+            public Hunger(Variable<int> variable, int desired) : base(variable, desired,
+                v => v > 100 ? -100 : (float)(50 * Math.Log10(-v + 1 + 100)))
             { }
         }
 
         private class Energy : Need<int>
         {
-            public Energy(Variable<int> variable, int desired) : base(variable, desired, v =>
-            v < 0 ? 100 : (float)(50 * Math.Log10(v + 1)))
+            public Energy(Variable<int> variable, int desired) : base(variable, desired, 
+                v => v < 0 ? 100 : (float)(50 * Math.Log10(v + 1)),
+                v => v >= 100)
             { }
-
-            protected override bool IsSatisfied(int value)
-            {
-                return value >= 100;
-            }
         }
 
         public static void Run()

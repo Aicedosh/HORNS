@@ -6,27 +6,28 @@ namespace HORNS_UnitTests
     // TODO: tests for combining partially fulfilled precs
     public class IntegerConsumePreconditionTests
     {
-        [Fact]
-        public void Combine_ShouldReturnCorrectValue()
-        {
-            var v = new IntegerConsumeVariable();
+        // TODO: commenting this out till we figure out what to do with precs
+        //[Fact]
+        //public void Combine_ShouldReturnCorrectValue()
+        //{
+        //    var v = new IntegerConsumeVariable();
 
-            var p1 = new IntegerConsumePrecondition(3);
-            p1.Variable = v;
+        //    var p1 = new IntegerConsumePrecondition(3);
+        //    p1.Variable = v;
 
-            var p2 = new IntegerConsumePrecondition(5);
-            p2.Variable = v;
+        //    var p2 = new IntegerConsumePrecondition(5);
+        //    p2.Variable = v;
 
-            var p3 = p1.Combine(p2) as IntegerConsumePrecondition;
-            Assert.NotNull(p3);
-            Assert.Equal(v.Id, p3.Variable.Id);
-            Assert.Equal(8, p3.Target);
+        //    var p3 = p1.Combine(p2) as IntegerConsumePrecondition;
+        //    Assert.NotNull(p3);
+        //    Assert.Equal(v.Id, p3.Variable.Id);
+        //    Assert.Equal(8, p3.Target);
 
-            var p4 = p2.Combine(p1) as IntegerConsumePrecondition;
-            Assert.NotNull(p4);
-            Assert.Equal(v.Id, p4.Variable.Id);
-            Assert.Equal(8, p4.Target);
-        }
+        //    var p4 = p2.Combine(p1) as IntegerConsumePrecondition;
+        //    Assert.NotNull(p4);
+        //    Assert.Equal(v.Id, p4.Variable.Id);
+        //    Assert.Equal(8, p4.Target);
+        //}
 
         [Fact]
         public void IsFulfilled_ShouldBeCorrectlyFulfilled()

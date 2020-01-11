@@ -11,6 +11,7 @@ namespace HORNS
     public class Need<T> : INeedInternal, IIdentifiable, IEvaluable<T>
     {
         private readonly Func<T, float> evaluation;
+        private readonly Func<T, bool> isSatisfied;
 
         /// <summary>
         /// Wartość potrzeby.
@@ -28,6 +29,8 @@ namespace HORNS
         {
             Variable = other.Variable;
             Desired = other.Desired;
+            evaluation = other.evaluation;
+            isSatisfied = other.isSatisfied;
         }
 
         /// <summary>
@@ -36,11 +39,12 @@ namespace HORNS
         /// <param name="variable">Zmienna, której dotyczy potrzeba.</param>
         /// <param name="desired">Docelowa wartość zmiennej.</param>
         /// <param name="evaluation">Funkcja wyznaczająca ocenę potrzeby dla konkretnej wartości zmiennej.</param>
-        public Need(Variable<T> variable, T desired, Func<T, float> evaluation)
+        public Need(Variable<T> variable, T desired, Func<T, float> evaluation, Func<T, bool> isSatisfied = null)
         {
             Variable = variable;
             Desired = desired;
             this.evaluation = evaluation;
+            this.isSatisfied = isSatisfied ?? (v => v.Equals(Desired));
         }
 
         /// <summary>
@@ -88,7 +92,7 @@ namespace HORNS
         /// <returns>\texttt{true}, jeżeli potrzeba jest zaspokojona.</returns>
         public bool IsSatisfied()
         {
-            return IsSatisfied(Value);
+            return isSatisfied(Value);
         }
 
         internal bool IsSatisfied(IdSet<Variable> variables)
@@ -98,17 +102,7 @@ namespace HORNS
             {
                 variables.TryGet(ref variable);
             }
-            return IsSatisfied((variable as Variable<T>).Value);
-        }
-
-        /// <summary>
-        /// Sprawdza, czy dana wartość zaspokaja potrzebę.
-        /// </summary>
-        /// <param name="value">Wartość do sprawdzenia.</param>
-        /// <returns>\texttt{true}, jeżeli wartość zaspokaja potrzebę.</returns>
-        protected virtual bool IsSatisfied(T value)
-        {
-            return value.Equals(Desired);
+            return isSatisfied((variable as Variable<T>).Value);
         }
 
         Variable GetVariable()
