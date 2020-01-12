@@ -22,7 +22,7 @@ namespace HORNS
         private bool _initialized = false;
         private T _state;
         // current state
-        internal T State
+        protected internal T State
         {
             get
             {
