@@ -12,7 +12,7 @@
     </Members>
     <TypeIdentifier>
       <HashCode>CABKAAAAAAQCAAgAAAAAAAAAAAAAAQBAAAAAAAAAAAE=</HashCode>
-      <FileName>Variables\Variable.cs</FileName>
+      <FileName>Variables\AbstractVariable.cs</FileName>
     </TypeIdentifier>
     <ShowAsCollectionAssociation>
       <Field Name="observers" />
@@ -26,6 +26,21 @@
       <Property Name="_Value" Hidden="true" />
       <Method Name="Variable" Hidden="true" />
     </Members>
+    <InheritanceLine Type="HORNS.Variable" ManuallyRouted="true" FixedFromPoint="true">
+      <Path>
+        <Point X="4.5" Y="2.699" />
+        <Point X="4.5" Y="2.84" />
+        <Point X="4.5" Y="2.84" />
+        <Point X="4.5" Y="3.5" />
+      </Path>
+    </InheritanceLine>
+    <AssociationLine Name="observers" Type="HORNS.IVariableObserver&lt;T&gt;" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="6.25" Y="5.044" />
+        <Point X="8.438" Y="5.044" />
+        <Point X="8.438" Y="6.75" />
+      </Path>
+    </AssociationLine>
     <TypeIdentifier>
       <HashCode>ADAIAAAAAAQAABgAAAAAAgAAAAAAAABAAAAgAAAAAAA=</HashCode>
       <FileName>Variables\GenericVariable.cs</FileName>
@@ -36,7 +51,7 @@
     <Lollipop Orientation="Left" Position="0.1" />
   </Class>
   <Class Name="HORNS.Variable&lt;T, RT, ST, PT&gt;">
-    <Position X="3.5" Y="7" Width="2.25" />
+    <Position X="3.5" Y="6.75" Width="2" />
     <Members>
       <Property Name="GenericSolver" Hidden="true" />
       <Method Name="GetCopy" Hidden="true" />
@@ -44,32 +59,32 @@
     </Members>
     <TypeIdentifier>
       <HashCode>CCAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>Variables\GenericVariable.cs</FileName>
+      <FileName>Variables\Variable.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="HORNS.BoolVariable" Collapsed="true">
-    <Position X="0.5" Y="9" Width="3.75" />
+  <Class Name="HORNS.BooleanVariable" Collapsed="true">
+    <Position X="0.75" Y="8.5" Width="3.75" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>Variables\GenericVariable.cs</FileName>
+      <FileName>Implementations\Boolean\BooleanVariable.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="HORNS.IntVariable" Collapsed="true">
-    <Position X="5" Y="9" Width="3.75" />
+  <Class Name="HORNS.IntegerConsumeVariable" Collapsed="true">
+    <Position X="5" Y="8.5" Width="4.75" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>Variables\GenericVariable.cs</FileName>
+      <FileName>Implementations\Integer\IntegerVariable.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Interface Name="HORNS.IVariableObserver&lt;T&gt;" Collapsed="true">
-    <Position X="8.75" Y="6" Width="1.75" />
+    <Position X="7.5" Y="6.75" Width="1.75" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Variables\IGenericVariableObserver.cs</FileName>
     </TypeIdentifier>
   </Interface>
   <Interface Name="HORNS.IVariableObserver" Collapsed="true">
-    <Position X="8.75" Y="2.5" Width="1.5" />
+    <Position X="7.75" Y="3.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Variables\IVariableObserver.cs</FileName>
