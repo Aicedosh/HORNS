@@ -34,7 +34,7 @@ namespace HORNS
             {
                 variables.TryGet(ref currentVariable);
             }
-            Variable<T> curr = currentVariable as Variable<T>; //TODO: Can we remove this cast?
+            Variable<T> curr = currentVariable as Variable<T>;
 
             IEvaluable<T> evaluator = curr;
             if(agent.NeedsInternal.Contains(Variable.Id))

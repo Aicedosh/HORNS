@@ -23,7 +23,6 @@ namespace HORNS
             return positiveResults.Select(res => res.Action);
         }
 
-        // TODO: is this needed? maybe we need to rework needs a little bit?
         /// <summary>
         /// Wyznacza akcje modyfikujące daną zmienną w kierunku określonej wartości docelowej.
         /// Jeżeli obecna wartość jest mniejsza od docelowej, będą to akcje zwiększające wartość; jeżeli jest większa, będą to akcje zmniejszające ją.

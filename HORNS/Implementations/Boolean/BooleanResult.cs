@@ -14,7 +14,6 @@ namespace HORNS
         /// </summary>
         public bool EndValue { get; }
 
-        //TODO: [!] Replace with static factory methods?
         /// <summary>
         /// Tworzy nowy rezultat związany dla zmiennej typu \texttt{bool}, którego wynikiem jest zmiana wartości zmiennej na określoną wartość.
         /// </summary>

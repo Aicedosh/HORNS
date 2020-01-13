@@ -14,8 +14,6 @@ namespace HORNS
     /// </summary>
     public class Agent
     {
-        //TODO: Should this be a field in Agent, an interface (with possibility to change by the developer) or
-        //      should the Agent be simple object and planning actions should be responsibility of application's wrapper class
         private ActionPlanner planner = new ActionPlanner();
         private List<Action> plannedActions = new List<Action>();
         private bool shouldRecalculate = false;
@@ -57,7 +55,7 @@ namespace HORNS
         /// <summary>
         /// Kolekcja potrzeb agenta.
         /// </summary>
-        public IEnumerable<INeed> Needs => NeedsInternal; // TODO: why am I public?
+        public IEnumerable<INeed> Needs => NeedsInternal;
 
         //Necessary to ensure only this implementation can be added to the list
         /// <summary>
@@ -108,7 +106,6 @@ namespace HORNS
         public void AddIdleAction(Action action)
         {
             IdleActions.Add(action);
-            // TODO: should idles have requirements?
             foreach (Variable var in action.GetVariables())
             {
                 Variables.Add(var);

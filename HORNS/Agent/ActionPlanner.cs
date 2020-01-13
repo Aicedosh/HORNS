@@ -200,7 +200,7 @@ namespace HORNS
                 foreach (var pre in preSet)
                 {
                     Precondition refPre = pre;
-                    if (!node.Preconditions.TryGet(ref refPre) || refPre.IsBetterThan(pre) != ComparisonResult.EqualWorse)
+                    if (!node.Preconditions.TryGet(ref refPre) || refPre.IsBetterThan(pre) != Precondition.ComparisonResult.EqualWorse)
                     {
                         cut = false;
                         break;

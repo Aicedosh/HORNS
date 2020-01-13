@@ -18,9 +18,7 @@ namespace HORNS
         private ICollection<ActionResult> results = new List<ActionResult>();
         private ICollection<Precondition> preconditions = new List<Precondition>();
         private ICollection<IActionCostEvaluator> costEvaluators = new List<IActionCostEvaluator>();
-
-        //TODO: Implement builder pattern to ensure all results, costs and precondidtions are added before adding to agent's possible actions
-        //      This may also make it possible to ommit passing same solver in every call (first calling setup for solver and then adding results/preconditions)
+       
         /// <summary>
         /// Dodaje rezultat do zbioru rezultatów akcji.
         /// </summary>

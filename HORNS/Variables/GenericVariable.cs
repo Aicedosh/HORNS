@@ -38,7 +38,6 @@ namespace HORNS
         {
             get
             {
-                // TODO: add read lock here as well?
                 return _value;
             }
             set

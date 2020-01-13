@@ -39,7 +39,7 @@ namespace HORNS
 
         internal override IEnumerable<Action> GetActionsSatisfying(Precondition<T> precondition, Agent agent)
         {
-            return GetActionsSatisfying(precondition as PT).Where(a=>agent.PossibleActions.Contains(a)); //TODO: Don't really like the cast
+            return GetActionsSatisfying(precondition as PT).Where(a=>agent.PossibleActions.Contains(a));
         }
     }
 }

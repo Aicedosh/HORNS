@@ -2,15 +2,16 @@
 
 namespace HORNS
 {
-    public enum ComparisonResult
-    {
-        NotComparable, Better, EqualWorse
-    }
     /// <summary>
     /// Abstrakcyjna klasa bazowa dla wszystkich wymagań.
     /// </summary>
     public abstract class Precondition : IIdentifiable
     {
+        public enum ComparisonResult
+        {
+            NotComparable, Better, EqualWorse
+        }
+
         internal int Id => GetVariable().Id;
         int IIdentifiable.Id => Id;
 

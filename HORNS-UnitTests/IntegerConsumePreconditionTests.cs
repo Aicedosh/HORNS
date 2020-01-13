@@ -98,12 +98,12 @@ namespace HORNS_UnitTests
 
             p2 = p2.Apply(r) as IntegerConsumePrecondition;
 
-            ComparisonResult res = improve ? ComparisonResult.Better : ComparisonResult.EqualWorse;
-            ComparisonResult resInv = !improve ? ComparisonResult.Better : ComparisonResult.EqualWorse;
+            Precondition.ComparisonResult res = improve ? Precondition.ComparisonResult.Better : Precondition.ComparisonResult.EqualWorse;
+            Precondition.ComparisonResult resInv = !improve ? Precondition.ComparisonResult.Better : Precondition.ComparisonResult.EqualWorse;
             Assert.Equal(res, p2.IsBetterThan(p1));
             Assert.Equal(resInv, p1.IsBetterThan(p2));
 
-            Assert.Equal(ComparisonResult.EqualWorse, p1.IsBetterThan(p1));
+            Assert.Equal(Precondition.ComparisonResult.EqualWorse, p1.IsBetterThan(p1));
         }
     }
 }
