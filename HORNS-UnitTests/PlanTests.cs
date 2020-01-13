@@ -10,6 +10,65 @@ namespace HORNS_UnitTests
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
+        public void Plan_CarpenterTest(bool snapshot)
+        {
+            var agent = new Agent();
+            var hasWood = new BooleanVariable(false);
+            var isShopOpen = new BooleanVariable(true);
+            var hasCrate = new BooleanVariable(false);
+            var workshopHasWood = new BooleanVariable(false);
+            var workshopHasCrate = new BooleanVariable(false);
+            var woodCount = new IntegerConsumeVariable(1);
+            var money = new IntegerConsumeVariable(0);
+
+            var buyWood = new BasicAction("BuyWood");
+            buyWood.AddPrecondition(isShopOpen, new BooleanPrecondition(true));
+            buyWood.AddPrecondition(hasWood, new BooleanPrecondition(false));
+            buyWood.AddPrecondition(woodCount, new IntegerConsumePrecondition(1));
+            buyWood.AddResult(woodCount, new IntegerAddResult(-1));
+            buyWood.AddResult(hasWood, new BooleanResult(true));
+
+            var carryWood = new BasicAction("CarryWood");
+            carryWood.AddPrecondition(hasWood, new BooleanPrecondition(true));
+            carryWood.AddPrecondition(workshopHasWood, new BooleanPrecondition(false));
+            carryWood.AddResult(hasWood, new BooleanResult(false));
+            carryWood.AddResult(workshopHasWood, new BooleanResult(true));
+
+            var create = new BasicAction("Create");
+            create.AddPrecondition(workshopHasWood, new BooleanPrecondition(true));
+            create.AddPrecondition(workshopHasCrate, new BooleanPrecondition(false));
+            create.AddResult(workshopHasWood, new BooleanResult(false));
+            create.AddResult(workshopHasCrate, new BooleanResult(true));
+
+            var pickupCrate = new BasicAction("PickupCrate");
+            pickupCrate.AddPrecondition(workshopHasCrate, new BooleanPrecondition(true));
+            pickupCrate.AddPrecondition(hasCrate, new BooleanPrecondition(false));
+            pickupCrate.AddResult(workshopHasCrate, new BooleanResult(false));
+            pickupCrate.AddResult(hasCrate, new BooleanResult(true));
+
+            var sellCrate = new BasicAction("SellCrate");
+            sellCrate.AddPrecondition(hasCrate, new BooleanPrecondition(true));
+            sellCrate.AddPrecondition(isShopOpen, new BooleanPrecondition(true));
+            sellCrate.AddResult(hasCrate, new BooleanResult(false));
+            sellCrate.AddResult(money, new IntegerAddResult(5));
+
+            var need = new Need<int>(money, 100, v => v);
+            agent.AddActions(buyWood, carryWood, create, pickupCrate, sellCrate);
+            agent.AddNeed(need);
+
+            var (actions, curNeed) = Plan(agent, snapshot);
+            Assert.NotNull(actions);
+            Assert.Equal(5, actions.Count);
+            Assert.Equal("BuyWood", (actions[0] as BasicAction).Tag);
+            Assert.Equal("CarryWood", (actions[1] as BasicAction).Tag);
+            Assert.Equal("Create", (actions[2] as BasicAction).Tag);
+            Assert.Equal("PickupCrate", (actions[3] as BasicAction).Tag);
+            Assert.Equal("SellCrate", (actions[4] as BasicAction).Tag);
+        }
+
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
         public void Plan_OneAction_NoPreconditions(bool snapshot)
         {
             var agent = new Agent();
