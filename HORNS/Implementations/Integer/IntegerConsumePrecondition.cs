@@ -14,13 +14,13 @@ namespace HORNS
         /// <summary>
         /// Tworzy nowe wymaganie dla zmiennej typu \texttt{int} o określonej wartości wymaganej.
         /// </summary>
-        /// <param name="value">Wartość wymagana.</param>
-        public IntegerConsumePrecondition(int value)
-            : base(value)
+        /// <param name="target">Wartość wymagana.</param>
+        public IntegerConsumePrecondition(int target)
+            : base(target)
         {
         }
 
-        private IntegerConsumePrecondition(int value, int state, IntegerConsumePrecondition other) : base(value, state, other)
+        private IntegerConsumePrecondition(int target, int state, IntegerConsumePrecondition other) : base(target, state, other)
         {
         }
 

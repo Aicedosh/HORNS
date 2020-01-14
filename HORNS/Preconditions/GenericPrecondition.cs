@@ -43,7 +43,7 @@ namespace HORNS
         /// <summary>
         /// Tworzy nowe wymaganie o określonej wartości docelowej.
         /// </summary>
-        /// <param name="value">Wartość docelowa wymagania.</param>
+        /// <param name="target">Wartość docelowa wymagania.</param>
         public Precondition(T target)
         {
             Target = target;
@@ -60,7 +60,7 @@ namespace HORNS
             Variable = precondition.Variable;
         }
         
-        protected Precondition(T value, T state, Precondition<T> precondition) : this(value)
+        protected Precondition(T target, T state, Precondition<T> precondition) : this(target)
         {
             Variable = precondition.Variable;
             State = state;
@@ -74,10 +74,10 @@ namespace HORNS
         /// <summary>
         /// Sprawdza, czy dana wartość spełnia wymaganie.
         /// </summary>
-        /// <param name="value">Wartość do sprawdzenia.</param>
+        /// <param name="state">Wartość do sprawdzenia.</param>
         /// <param name="target">Wartość docelowa wymagania.</param>
         /// <returns>\texttt{true}, jeżeli wartość spełnia wymaganie.</returns>
-        protected internal abstract bool IsFulfilled(T value, T target);
+        protected internal abstract bool IsFulfilled(T state, T target);
         protected internal abstract bool IsFulfilledInState(T value, T target, T state);
         protected internal abstract T GetDefault();
 

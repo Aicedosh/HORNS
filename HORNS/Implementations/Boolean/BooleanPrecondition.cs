@@ -12,12 +12,12 @@ namespace HORNS
         /// <summary>
         /// Tworzy nowe wymaganie dla zmiennej typu \texttt{bool} o określonej wartości docelowej.
         /// </summary>
-        /// <param name="value">Wartość docelowa wymagania.</param>
-        public BooleanPrecondition(bool value) : base(value)
+        /// <param name="target">Wartość docelowa wymagania.</param>
+        public BooleanPrecondition(bool target) : base(target)
         {
         }
 
-        private BooleanPrecondition(bool value, bool state, BooleanPrecondition other) : base(value, state, other)
+        private BooleanPrecondition(bool target, bool state, BooleanPrecondition other) : base(target, state, other)
         {
         }
 
