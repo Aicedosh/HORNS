@@ -12,6 +12,13 @@ namespace HORNS
     {
         internal Action Action { get; set; }
 
+        protected ActionResult(ActionResult other)
+        {
+            Action = other.Action;
+        }
+
+        private protected ActionResult() { }
+
         internal abstract Variable AbstractVariable { get; }
         internal abstract void Apply();
         internal abstract void Apply(Variable variable);

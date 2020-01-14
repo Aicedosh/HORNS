@@ -23,6 +23,11 @@ namespace HORNS
             EndValue = endValue;
         }
 
+        private BooleanResult(BooleanResult other) : base(other)
+        {
+            EndValue = other.EndValue;
+        }
+
         /// <summary>
         /// Zwraca wartość końcową rezultatu dla danej wartości początkowej.
         /// Wartość końcowa jest równa \texttt{EndValue}.
@@ -32,6 +37,11 @@ namespace HORNS
         protected internal override bool GetResultValue(bool value)
         {
             return EndValue;
+        }
+
+        protected internal override ActionResult<bool> Clone()
+        {
+            return new BooleanResult(this);
         }
     }
 }

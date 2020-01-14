@@ -23,6 +23,11 @@ namespace HORNS
             Term = term;
         }
 
+        private IntegerAddResult(IntegerAddResult other) : base(other)
+        {
+            Term = other.Term;
+        }
+
         /// <summary>
         /// Zwraca wartość końcową rezultatu dla danej wartości początkowej.
         /// Wartość końcowa jest równa sumie wartości początkowej oraz \texttt{Term}.
@@ -32,6 +37,11 @@ namespace HORNS
         protected internal override int GetResultValue(int value)
         {
             return value + Term;
+        }
+
+        protected internal override ActionResult<int> Clone()
+        {
+            return new IntegerAddResult(this);
         }
     }
 }

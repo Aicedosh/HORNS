@@ -20,6 +20,11 @@ namespace HORNS
         {
         }
 
+        protected ActionResult(ActionResult<T> other) : base(other)
+        {
+            Variable = other.Variable;
+        }
+
         /// <summary>
         /// Zwraca wartość końcową rezultatu dla danej wartości początkowej.
         /// </summary>
@@ -72,5 +77,7 @@ namespace HORNS
             var pre = preconditions[Variable.Id];
             preconditions.Replace(pre.Apply(this));
         }
+
+        protected internal abstract ActionResult<T> Clone();
     }
 }

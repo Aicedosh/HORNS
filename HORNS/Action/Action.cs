@@ -33,11 +33,11 @@ namespace HORNS
             where RT : ActionResult<T>
             where PT : Precondition<T>
         {
-            //TODO: Clone beforehand
-            variable.Solver.Register(result);
-            result.Variable = variable;
-            result.Action = this;
-            results.Add(result);
+            RT res = result.Clone() as RT;
+            variable.Solver.Register(res);
+            res.Variable = variable;
+            res.Action = this;
+            results.Add(res);
         }
 
         /// <summary>
@@ -54,10 +54,9 @@ namespace HORNS
             where RT : ActionResult<T>
             where PT : Precondition<T>
         {
-            //TODO: Clone beforehand
-            preconditions.Add(precondition);
-            
-            precondition.Variable = variable;
+            PT pre = precondition.Clone() as PT;
+            preconditions.Add(pre);
+            pre.Variable = variable;
         }
 
         /// <summary>
