@@ -95,5 +95,41 @@ namespace HORNS_UnitTests
 
             Assert.Equal(Precondition.ComparisonResult.EqualWorse, p1.IsBetterThan(p1));
         }
+
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public void CanBeReused(bool snapshot)
+        {
+            BooleanPrecondition pre = new BooleanPrecondition(true);
+
+            var v1 = new BooleanVariable(false);
+            var v2 = new BooleanVariable(false);
+            var v3 = new BooleanVariable(false);
+
+            var a1 = new BasicAction("1");
+            a1.AddResult(v1, new BooleanResult(true));
+
+            var a2 = new BasicAction("2");
+            a2.AddPrecondition(v1, pre);
+            a2.AddResult(v2, new BooleanResult(true));
+
+            var a3 = new BasicAction("3");
+            a3.AddPrecondition(v2, pre);
+            a3.AddResult(v3, new BooleanResult(true));
+
+            Need<bool> n = new Need<bool>(v3, true, v => v ? 100 : 0);
+            Agent a = new Agent();
+            a.AddNeed(n);
+            a.AddActions(a1, a2, a3);
+
+            var planner = new ActionPlanner();
+            (var actions, var need) = planner.Plan(a, snapshot);
+
+            Assert.Equal(3, actions.Count);
+            Assert.Equal("1", (actions[0] as BasicAction).Tag);
+            Assert.Equal("2", (actions[1] as BasicAction).Tag);
+            Assert.Equal("3", (actions[2] as BasicAction).Tag);
+        }
     }
 }
