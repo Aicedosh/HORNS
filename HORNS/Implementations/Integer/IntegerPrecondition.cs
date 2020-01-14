@@ -11,17 +11,22 @@ namespace HORNS
     /// </summary>
     public class IntegerPrecondition : Precondition<int>
     {
+        public bool Consumed { get; }
+
         /// <summary>
         /// Tworzy nowe wymaganie dla zmiennej typu \texttt{int} o określonej wartości wymaganej.
         /// </summary>
         /// <param name="target">Wartość wymagana.</param>
-        public IntegerPrecondition(int target)
+        /// <param name="consumed">Informacja, czy wymaganiu będzie towarzyszyć rezultat IntegerAddResult o wartości -target. </param>
+        public IntegerPrecondition(int target, bool consumed)
             : base(target)
         {
+            Consumed = consumed;
         }
 
         private IntegerPrecondition(int target, int state, IntegerPrecondition other) : base(target, state, other)
         {
+            Consumed = other.Consumed;
         }
 
         /// <summary>
@@ -30,6 +35,7 @@ namespace HORNS
         /// <param name="precondition">Wymaganie do skopiowania.</param>
         public IntegerPrecondition(IntegerPrecondition precondition) : base(precondition)
         {
+            Consumed = precondition.Consumed;
         }
         
         /// <summary>
@@ -44,8 +50,8 @@ namespace HORNS
             {
                 return null;
             }
-            return new IntegerPrecondition(Target, State + intPre.State, this);
-            //return new IntegerConsumePrecondition(Math.Max(Target, intPre.Target), State + intPre.State, this);
+            int target = intPre.Consumed ? Target : Math.Max(Target, intPre.Target);
+            return new IntegerPrecondition(target, State + intPre.State, this);
         }
 
         /// <summary>

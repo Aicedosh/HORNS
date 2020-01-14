@@ -60,16 +60,15 @@ class Example_doc
         Need<int> need = new Need<int>(n, 10, x => x);
 
         Action a1 = new SimpleAction("1");
-        a1.AddPrecondition(v, new IntegerPrecondition(4));
+        a1.AddPrecondition(v, new IntegerPrecondition(4, false));
         a1.AddPrecondition(b, new BooleanPrecondition(true));
         a1.AddResult(n, new IntegerAddResult(1));
-        a1.AddResult(v, new IntegerAddResult(-3));
 
         Action a2 = new SimpleAction("2");
         a2.AddResult(v, new IntegerAddResult(1));
 
         Action a3 = new SimpleAction("3");
-        a3.AddPrecondition(v, new IntegerPrecondition(20));
+        a3.AddPrecondition(v, new IntegerPrecondition(20, true));
         a3.AddResult(v, new IntegerAddResult(-20));
         a3.AddResult(b, new BooleanResult(true));
 

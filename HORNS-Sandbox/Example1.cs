@@ -123,14 +123,14 @@ namespace HORNS_Sandbox
             chop.AddCost(5);
             chop.AddPrecondition(hasAxe, new BooleanPrecondition(true));
             chop.AddPrecondition(hasEnergy, new BooleanPrecondition(true));
-            chop.AddPrecondition(rzodkiews, new IntegerPrecondition(1));
+            chop.AddPrecondition(rzodkiews, new IntegerPrecondition(1, false));
             chop.AddResult(hasTree, new BooleanResult(true));
 
             HORNS.Action chop2 = new ChopAction(hasEnergy, rzodkiews, 3, "without axe");
             chop2.AddCost(2);
             chop2.AddCost(rzodkiews, rz => rz);
             chop2.AddPrecondition(hasEnergy, new BooleanPrecondition(true));
-            chop2.AddPrecondition(rzodkiews, new IntegerPrecondition(1));
+            chop2.AddPrecondition(rzodkiews, new IntegerPrecondition(1, false));
             chop2.AddResult(hasTree, new BooleanResult(true));
 
             HORNS.Action pick = new PickAction();

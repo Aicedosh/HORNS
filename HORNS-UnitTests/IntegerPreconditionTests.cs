@@ -3,31 +3,42 @@ using Xunit;
 
 namespace HORNS_UnitTests
 {
-    // TODO: tests for combining partially fulfilled precs
     public class IntegerPreconditionTests
     {
-        // TODO: commenting this out till we figure out what to do with precs
-        //[Fact]
-        //public void Combine_ShouldReturnCorrectValue()
-        //{
-        //    var v = new IntegerConsumeVariable();
+        [Fact]
+        public void Combine_ShouldReturnCorrectValue()
+        {
+            var v = new IntegerVariable();
 
-        //    var p1 = new IntegerConsumePrecondition(3);
-        //    p1.Variable = v;
+            var p1 = new IntegerPrecondition(3, false);
+            p1.Variable = v;
 
-        //    var p2 = new IntegerConsumePrecondition(5);
-        //    p2.Variable = v;
+            var p2 = new IntegerPrecondition(5, true);
+            p2.Variable = v;
 
-        //    var p3 = p1.Combine(p2) as IntegerConsumePrecondition;
-        //    Assert.NotNull(p3);
-        //    Assert.Equal(v.Id, p3.Variable.Id);
-        //    Assert.Equal(8, p3.Target);
+            var p3 = new IntegerPrecondition(5, false);
+            p3.Variable = v;
 
-        //    var p4 = p2.Combine(p1) as IntegerConsumePrecondition;
-        //    Assert.NotNull(p4);
-        //    Assert.Equal(v.Id, p4.Variable.Id);
-        //    Assert.Equal(8, p4.Target);
-        //}
+            var p4 = p1.Combine(p2) as IntegerPrecondition;
+            Assert.NotNull(p4);
+            Assert.Equal(v.Id, p4.Variable.Id);
+            Assert.Equal(3, p4.Target);
+
+            var p5 = p2.Combine(p1) as IntegerPrecondition;
+            Assert.NotNull(p5);
+            Assert.Equal(v.Id, p5.Variable.Id);
+            Assert.Equal(5, p5.Target);
+
+            var p6 = p1.Combine(p3) as IntegerPrecondition;
+            Assert.NotNull(p6);
+            Assert.Equal(v.Id, p6.Variable.Id);
+            Assert.Equal(5, p6.Target);
+
+            var p7 = p3.Combine(p1) as IntegerPrecondition;
+            Assert.NotNull(p7);
+            Assert.Equal(v.Id, p7.Variable.Id);
+            Assert.Equal(5, p7.Target);
+        }
 
         [Fact]
         public void IsFulfilled_ShouldBeCorrectlyFulfilled()
@@ -35,7 +46,7 @@ namespace HORNS_UnitTests
             var v = new IntegerVariable();
             var r = new IntegerAddResult(1);
             r.Variable = v;
-            var p = new IntegerPrecondition(2);
+            var p = new IntegerPrecondition(2, false);
             p.Variable = v;
             Assert.False(p.IsFulfilled());
 
@@ -50,7 +61,7 @@ namespace HORNS_UnitTests
         public void IsFulfilledByWorld_ShouldBeCorrectlyFulfilledByVariableValue()
         {
             var v = new IntegerVariable();
-            var p = new IntegerPrecondition(3);
+            var p = new IntegerPrecondition(3, false);
             p.Variable = v;
             Assert.False(p.IsFulfilledByWorld());
 
@@ -70,7 +81,7 @@ namespace HORNS_UnitTests
             var v = new IntegerVariable();
             var r = new IntegerAddResult(1);
             r.Variable = v;
-            var p = new IntegerPrecondition(3);
+            var p = new IntegerPrecondition(3, false);
             p.Variable = v;
             Assert.False(p.IsFulfilledByWorld());
 
@@ -88,7 +99,7 @@ namespace HORNS_UnitTests
         {
             var v = new IntegerVariable();
 
-            var p1 = new IntegerPrecondition(5);
+            var p1 = new IntegerPrecondition(5, false);
             p1.Variable = v;
             p1.State = 2;
             var p2 = new IntegerPrecondition(p1);
@@ -111,7 +122,7 @@ namespace HORNS_UnitTests
         [InlineData(false)]
         public void CanBeReused(bool snapshot)
         {
-            IntegerPrecondition pre = new IntegerPrecondition(1);
+            IntegerPrecondition pre = new IntegerPrecondition(1, false);
 
             var v1 = new IntegerVariable(0);
             var v2 = new IntegerVariable(0);

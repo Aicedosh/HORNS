@@ -20,11 +20,11 @@ namespace HORNS_UnitTests
             a1.AddResult(v1, res);
 
             var a2 = new BasicAction("2");
-            a2.AddPrecondition(v1, new IntegerPrecondition(1));
+            a2.AddPrecondition(v1, new IntegerPrecondition(1, false));
             a2.AddResult(v2, res);
 
             var a3 = new BasicAction("3");
-            a3.AddPrecondition(v2, new IntegerPrecondition(1));
+            a3.AddPrecondition(v2, new IntegerPrecondition(1, false));
             a3.AddResult(v3, res);
 
             Need<int> n = new Need<int>(v3, 1, v => v);
