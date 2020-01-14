@@ -7,25 +7,15 @@ namespace HORNS
     /// <summary>
     /// Klasa reprezentująca zmienne typu bool.
     /// </summary>
-    public class IntegerConsumeVariable : Variable<int, IntegerAddResult, IntegerConsumeSolver, IntegerConsumePrecondition>
+    public class IntegerVariable : Variable<int, IntegerAddResult, IntegerSolver, IntegerPrecondition>
     {
         /// <summary>
         /// Tworzy nową zmienną typu int o określonej wartości początkowej.
         /// </summary>
         /// <param name="value">Wartość początkowa zmiennej.</param>
-        public IntegerConsumeVariable(int value = default) : base(value)
+        public IntegerVariable(int value = default) : base(value)
         {
 
-        }
-    }
-
-    public class IntegerSimpleVariable : Variable<int, IntegerAddResult, IntegerSimpleSolver, IntegerSimplePrecondition>
-    {
-        public int WorstBound { get; }
-
-        public IntegerSimpleVariable(int value = default, int worst = default) : base(value)
-        {
-            WorstBound = worst;
         }
     }
 }

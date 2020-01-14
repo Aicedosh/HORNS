@@ -7,7 +7,7 @@ namespace HORNS
     /// <summary>
     /// Klasa reprezentująca solver dla zmiennych typu \texttt{int}, rezultatów reprezentujących zmianę wartości o określoną stałą i wymagań reprezentujących osiągnięcie wartości nie większej/nie mniejszej od określonej stałej.
     /// </summary>
-    public class IntegerConsumeSolver : VariableSolver<int, IntegerAddResult, IntegerConsumePrecondition>
+    public class IntegerSolver : VariableSolver<int, IntegerAddResult, IntegerPrecondition>
     {
         List<IntegerAddResult> positiveResults = new List<IntegerAddResult>();
         List<IntegerAddResult> negativeResults = new List<IntegerAddResult>();
@@ -18,7 +18,7 @@ namespace HORNS
         /// </summary>
         /// <param name="precondition">Wymaganie do spełnienia.</param>
         /// <returns>Kolekcja akcji.</returns>
-        protected override IEnumerable<Action> GetActionsSatisfying(IntegerConsumePrecondition precondition)
+        protected override IEnumerable<Action> GetActionsSatisfying(IntegerPrecondition precondition)
         {
             return positiveResults.Select(res => res.Action);
         }

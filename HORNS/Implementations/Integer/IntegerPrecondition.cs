@@ -9,18 +9,18 @@ namespace HORNS
     /// Ten typ wymagania zakłada, że wymagana wartość zostanie zużyta w ramach rezultatu akcji.
     /// Wartość docelowa powinna być dodatnia.
     /// </summary>
-    public class IntegerConsumePrecondition : Precondition<int>
+    public class IntegerPrecondition : Precondition<int>
     {
         /// <summary>
         /// Tworzy nowe wymaganie dla zmiennej typu \texttt{int} o określonej wartości wymaganej.
         /// </summary>
         /// <param name="target">Wartość wymagana.</param>
-        public IntegerConsumePrecondition(int target)
+        public IntegerPrecondition(int target)
             : base(target)
         {
         }
 
-        private IntegerConsumePrecondition(int target, int state, IntegerConsumePrecondition other) : base(target, state, other)
+        private IntegerPrecondition(int target, int state, IntegerPrecondition other) : base(target, state, other)
         {
         }
 
@@ -28,7 +28,7 @@ namespace HORNS
         /// Tworzy nowe wymaganie typu \texttt{IntegerConsumePrecondition} bedące kopią innego wymagania.
         /// </summary>
         /// <param name="precondition">Wymaganie do skopiowania.</param>
-        public IntegerConsumePrecondition(IntegerConsumePrecondition precondition) : base(precondition)
+        public IntegerPrecondition(IntegerPrecondition precondition) : base(precondition)
         {
         }
         
@@ -39,12 +39,12 @@ namespace HORNS
         /// <returns>Nowe wymaganie wartości wymaganej będącej sumą wartości wymaganych przez oba wymagania lub \texttt{null} w przypadku, gdy wymagań nie można połączyć.</returns>
         protected internal override Precondition Combine(Precondition precondition)
         {
-            if (!(precondition is IntegerConsumePrecondition intPre)
+            if (!(precondition is IntegerPrecondition intPre)
                 || Variable.Id != intPre.Variable.Id)
             {
                 return null;
             }
-            return new IntegerConsumePrecondition(Target, State + intPre.State, this);
+            return new IntegerPrecondition(Target, State + intPre.State, this);
             //return new IntegerConsumePrecondition(Math.Max(Target, intPre.Target), State + intPre.State, this);
         }
 
@@ -55,7 +55,7 @@ namespace HORNS
         /// <returns>\texttt{true}, jeżeli obecne wymaganie jest w lepszym (bliższym wartości wymaganej) stanie; \texttt{false} w przeciwnym wypadku lub jeśli wymagań nie można porównać.</returns>
         protected internal override ComparisonResult IsBetterThan(Precondition precondition)
         {
-            if (!(precondition is IntegerConsumePrecondition intPre)
+            if (!(precondition is IntegerPrecondition intPre)
                 || Variable.Id != intPre.Variable.Id
                 || Target != intPre.Target)
             {
@@ -92,7 +92,7 @@ namespace HORNS
         /// <returns>Kopia wymagania.</returns>
         protected internal override Precondition Clone()
         {
-            return new IntegerConsumePrecondition(this);
+            return new IntegerPrecondition(this);
         }
     }
 }

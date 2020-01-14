@@ -18,13 +18,13 @@ namespace HORNS_UnitTests
             var hasCrate = new BooleanVariable(false);
             var workshopHasWood = new BooleanVariable(false);
             var workshopHasCrate = new BooleanVariable(false);
-            var woodCount = new IntegerConsumeVariable(1);
-            var money = new IntegerConsumeVariable(0);
+            var woodCount = new IntegerVariable(1);
+            var money = new IntegerVariable(0);
 
             var buyWood = new BasicAction("BuyWood");
             buyWood.AddPrecondition(isShopOpen, new BooleanPrecondition(true));
             buyWood.AddPrecondition(hasWood, new BooleanPrecondition(false));
-            buyWood.AddPrecondition(woodCount, new IntegerConsumePrecondition(1));
+            buyWood.AddPrecondition(woodCount, new IntegerPrecondition(1));
             buyWood.AddResult(woodCount, new IntegerAddResult(-1));
             buyWood.AddResult(hasWood, new BooleanResult(true));
 
@@ -136,13 +136,13 @@ namespace HORNS_UnitTests
             const int REQUIRED_NUMBER = 5;
             var agent = new Agent();
 
-            var v1 = new IntegerConsumeVariable();
+            var v1 = new IntegerVariable();
             var v2 = new BooleanVariable();
 
             var need = new BooleanNeed(v2, true);
 
             var a1 = new BasicAction("Last");
-            a1.AddPrecondition(v1, new IntegerConsumePrecondition(REQUIRED_NUMBER));
+            a1.AddPrecondition(v1, new IntegerPrecondition(REQUIRED_NUMBER));
             a1.AddResult(v2, new BooleanResult(true));
 
             var a2 = new BasicAction("Add one");
@@ -198,8 +198,8 @@ namespace HORNS_UnitTests
             const int REQUIRED = 4;
 
             var agent = new Agent();
-            var v1 = new IntegerConsumeVariable();
-            var v2 = new IntegerConsumeVariable(1);
+            var v1 = new IntegerVariable();
+            var v2 = new IntegerVariable(1);
 
             var a1 = new BasicAction("Cheap");
             a1.AddResult(v1, new IntegerAddResult(1));
@@ -211,7 +211,7 @@ namespace HORNS_UnitTests
 
             var a3 = new BasicAction("Last");
             a3.AddResult(v2, new IntegerAddResult(-1));
-            a3.AddPrecondition(v1, new IntegerConsumePrecondition(REQUIRED));
+            a3.AddPrecondition(v1, new IntegerPrecondition(REQUIRED));
 
             var need = new LinearIntegerNeed(v2, 0);
 
@@ -234,12 +234,12 @@ namespace HORNS_UnitTests
         public void Plan_PathMakesNeedWorse_DiscardPath(bool snapshot)
         {
             var agent = new Agent();
-            var v1 = new IntegerConsumeVariable(3);
-            var v2 = new IntegerConsumeVariable();
+            var v1 = new IntegerVariable(3);
+            var v2 = new IntegerVariable();
             var need = new LinearIntegerNeed(v1, 10);
 
             var a1 = new BasicAction("Fulfills need");
-            a1.AddPrecondition(v2, new IntegerConsumePrecondition(1));
+            a1.AddPrecondition(v2, new IntegerPrecondition(1));
             a1.AddResult(v1, new IntegerAddResult(1));
 
             var a2 = new BasicAction("Makes need worse");
@@ -279,7 +279,7 @@ namespace HORNS_UnitTests
             var a4 = new BasicAction("4");
             var a5 = new BasicAction("5");
 
-            var v1 = new IntegerConsumeVariable(0);
+            var v1 = new IntegerVariable(0);
             var v2 = new BooleanVariable(false);
             var v3 = new BooleanVariable(false);
             var v4 = new BooleanVariable(false);
@@ -368,7 +368,7 @@ namespace HORNS_UnitTests
         {
             Agent agent = new Agent();
 
-            var v = new IntegerConsumeVariable(0);
+            var v = new IntegerVariable(0);
             var n = new LogNeed(v, 10);
             agent.AddNeed(n);
 
@@ -391,10 +391,10 @@ namespace HORNS_UnitTests
         public void Plan_IdleWithUnfulfilledPreconditions_DiscardIdle(bool snapshot)
         {
             Agent agent = new Agent();
-            var v = new IntegerConsumeVariable(0);
+            var v = new IntegerVariable(0);
 
             var a = new BasicAction("Unfulfilled");
-            a.AddPrecondition(v, new IntegerConsumePrecondition(1));
+            a.AddPrecondition(v, new IntegerPrecondition(1));
             agent.AddIdleAction(a);
 
             var (actions, curNeed) = Plan(agent, snapshot);
@@ -409,15 +409,15 @@ namespace HORNS_UnitTests
         public void Plan_IdlesWithUnfulfilledAndFulfilledPreconditions_ChooseFulfilled(int cost1, int cost2, bool snapshot)
         {
             Agent agent = new Agent();
-            var v1 = new IntegerConsumeVariable(0);
-            var v2 = new IntegerConsumeVariable(5);
+            var v1 = new IntegerVariable(0);
+            var v2 = new IntegerVariable(5);
 
             var a1 = new BasicAction("Unfulfilled");
-            a1.AddPrecondition(v1, new IntegerConsumePrecondition(1));
+            a1.AddPrecondition(v1, new IntegerPrecondition(1));
             a1.AddCost(cost1);
 
             var a2 = new BasicAction("Fulfilled");
-            a2.AddPrecondition(v2, new IntegerConsumePrecondition(5));
+            a2.AddPrecondition(v2, new IntegerPrecondition(5));
             a2.AddCost(cost2);
 
             agent.AddIdleActions(a1, a2);
@@ -453,7 +453,7 @@ namespace HORNS_UnitTests
         {
             Agent agent = new Agent();
             var v1 = new BooleanVariable();
-            var v2 = new IntegerConsumeVariable();
+            var v2 = new IntegerVariable();
             var n = new LogNeed(v2, 5);
 
             var a1 = new BasicAction("Idle");
@@ -507,18 +507,18 @@ namespace HORNS_UnitTests
         [InlineData(false)]
         public void Plan_CombiningPreconditions_FindCorrectPath(bool snapshot)
         {
-            var vint = new IntegerConsumeVariable();
+            var vint = new IntegerVariable();
             var vbool = new BooleanVariable();
             var vneed = new BooleanVariable();
             var n = new BooleanNeed(vneed, true);
 
             var a1 = new BasicAction("Fulfills need");
             a1.AddPrecondition(vbool, new BooleanPrecondition(true));
-            a1.AddPrecondition(vint, new IntegerConsumePrecondition(2));
+            a1.AddPrecondition(vint, new IntegerPrecondition(2));
             a1.AddResult(vneed, new BooleanResult(true));
 
             var a2 = new BasicAction("Fulfills bool precondition");
-            a2.AddPrecondition(vint, new IntegerConsumePrecondition(3));
+            a2.AddPrecondition(vint, new IntegerPrecondition(3));
             a2.AddResult(vint, new IntegerAddResult(-3));
             a2.AddResult(vbool, new BooleanResult(true));
             

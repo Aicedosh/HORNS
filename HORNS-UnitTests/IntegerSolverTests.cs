@@ -14,7 +14,7 @@ namespace HORNS_UnitTests
         //[InlineData(-3, -2, "increase")]      // only positive values for consume, aight?
         public void ConsumeSolver_GetActionsTowards_ShouldReturnMatchingAction(int value, int goalValue, string pickedActionTag)
         {
-            var v = new IntegerConsumeVariable(value);
+            var v = new IntegerVariable(value);
 
             var a1 = new BasicAction("increase");
             a1.AddResult(v, new IntegerAddResult(1));
@@ -35,7 +35,7 @@ namespace HORNS_UnitTests
         [Fact]
         public void ConsumeSolver_GetActionsSatisfying_ShouldReturnMatchingActions()
         {
-            var v = new IntegerConsumeVariable(5);
+            var v = new IntegerVariable(5);
 
             var a1 = new BasicAction("increase");
             a1.AddResult(v, new IntegerAddResult(1));
@@ -48,7 +48,7 @@ namespace HORNS_UnitTests
             Agent agent = new Agent();
             agent.AddActions(a1, a2, a3);
 
-            List<Action> actions = new List<Action>(v.Solver.GetActionsSatisfying(new IntegerConsumePrecondition(10), agent));
+            List<Action> actions = new List<Action>(v.Solver.GetActionsSatisfying(new IntegerPrecondition(10), agent));
             Assert.Single(actions);
             Assert.Equal("increase", (actions[0] as BasicAction).Tag);
         }

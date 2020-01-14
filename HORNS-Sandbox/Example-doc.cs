@@ -24,7 +24,7 @@ class Example_doc
         BooleanVariable required = new BooleanVariable(false);
 
         //Potrzeba dotycząca zimennej 'variable' do zaspokojenia wymaga, by zmienna miała wartość 10
-        IntegerConsumeVariable variable = new IntegerConsumeVariable(0);
+        IntegerVariable variable = new IntegerVariable(0);
         Need<int> need = new Need<int>(variable, 10, v => v);
 
         //Akcja zwiększenia zmiennej wymaga, by zmienna 'required' miała wartość 'true'
@@ -53,14 +53,14 @@ class Example_doc
 
     public static void Run()
     {
-        IntegerConsumeVariable v = new IntegerConsumeVariable(0);
-        IntegerConsumeVariable n = new IntegerConsumeVariable(0);
+        IntegerVariable v = new IntegerVariable(0);
+        IntegerVariable n = new IntegerVariable(0);
         BooleanVariable b = new BooleanVariable(false);
 
         Need<int> need = new Need<int>(n, 10, x => x);
 
         Action a1 = new SimpleAction("1");
-        a1.AddPrecondition(v, new IntegerConsumePrecondition(4));
+        a1.AddPrecondition(v, new IntegerPrecondition(4));
         a1.AddPrecondition(b, new BooleanPrecondition(true));
         a1.AddResult(n, new IntegerAddResult(1));
         a1.AddResult(v, new IntegerAddResult(-3));
@@ -69,7 +69,7 @@ class Example_doc
         a2.AddResult(v, new IntegerAddResult(1));
 
         Action a3 = new SimpleAction("3");
-        a3.AddPrecondition(v, new IntegerConsumePrecondition(20));
+        a3.AddPrecondition(v, new IntegerPrecondition(20));
         a3.AddResult(v, new IntegerAddResult(-20));
         a3.AddResult(b, new BooleanResult(true));
 

@@ -4,7 +4,7 @@ using Xunit;
 namespace HORNS_UnitTests
 {
     // TODO: tests for combining partially fulfilled precs
-    public class IntegerConsumePreconditionTests
+    public class IntegerPreconditionTests
     {
         // TODO: commenting this out till we figure out what to do with precs
         //[Fact]
@@ -32,25 +32,25 @@ namespace HORNS_UnitTests
         [Fact]
         public void IsFulfilled_ShouldBeCorrectlyFulfilled()
         {
-            var v = new IntegerConsumeVariable();
+            var v = new IntegerVariable();
             var r = new IntegerAddResult(1);
             r.Variable = v;
-            var p = new IntegerConsumePrecondition(2);
+            var p = new IntegerPrecondition(2);
             p.Variable = v;
             Assert.False(p.IsFulfilled());
 
-            p = p.Apply(r) as IntegerConsumePrecondition;
+            p = p.Apply(r) as IntegerPrecondition;
             Assert.False(p.IsFulfilled());
 
-            p = p.Apply(r) as IntegerConsumePrecondition;
+            p = p.Apply(r) as IntegerPrecondition;
             Assert.True(p.IsFulfilled());
         }
 
         [Fact]
         public void IsFulfilledByWorld_ShouldBeCorrectlyFulfilledByVariableValue()
         {
-            var v = new IntegerConsumeVariable();
-            var p = new IntegerConsumePrecondition(3);
+            var v = new IntegerVariable();
+            var p = new IntegerPrecondition(3);
             p.Variable = v;
             Assert.False(p.IsFulfilledByWorld());
 
@@ -67,14 +67,14 @@ namespace HORNS_UnitTests
         [Fact]
         public void IsFulfilledByWorld_PartiallyFulfilled_ShouldBeCorrectlyFulfilledByVariableValue()
         {
-            var v = new IntegerConsumeVariable();
+            var v = new IntegerVariable();
             var r = new IntegerAddResult(1);
             r.Variable = v;
-            var p = new IntegerConsumePrecondition(3);
+            var p = new IntegerPrecondition(3);
             p.Variable = v;
             Assert.False(p.IsFulfilledByWorld());
 
-            p = p.Apply(r) as IntegerConsumePrecondition;
+            p = p.Apply(r) as IntegerPrecondition;
             Assert.False(p.IsFulfilled());
 
             v.Value = 2;
@@ -86,17 +86,17 @@ namespace HORNS_UnitTests
         [InlineData(-1, false)]
         public void IsBetterThan_ShouldReturnCorrectValue(int term, bool improve)
         {
-            var v = new IntegerConsumeVariable();
+            var v = new IntegerVariable();
 
-            var p1 = new IntegerConsumePrecondition(5);
+            var p1 = new IntegerPrecondition(5);
             p1.Variable = v;
             p1.State = 2;
-            var p2 = new IntegerConsumePrecondition(p1);
+            var p2 = new IntegerPrecondition(p1);
 
             var r = new IntegerAddResult(term);
             r.Variable = v;
 
-            p2 = p2.Apply(r) as IntegerConsumePrecondition;
+            p2 = p2.Apply(r) as IntegerPrecondition;
 
             Precondition.ComparisonResult res = improve ? Precondition.ComparisonResult.Better : Precondition.ComparisonResult.EqualWorse;
             Precondition.ComparisonResult resInv = !improve ? Precondition.ComparisonResult.Better : Precondition.ComparisonResult.EqualWorse;
@@ -111,11 +111,11 @@ namespace HORNS_UnitTests
         [InlineData(false)]
         public void CanBeReused(bool snapshot)
         {
-            IntegerConsumePrecondition pre = new IntegerConsumePrecondition(1);
+            IntegerPrecondition pre = new IntegerPrecondition(1);
 
-            var v1 = new IntegerConsumeVariable(0);
-            var v2 = new IntegerConsumeVariable(0);
-            var v3 = new IntegerConsumeVariable(0);
+            var v1 = new IntegerVariable(0);
+            var v2 = new IntegerVariable(0);
+            var v3 = new IntegerVariable(0);
 
             var a1 = new BasicAction("1");
             a1.AddResult(v1, new IntegerAddResult(1));
