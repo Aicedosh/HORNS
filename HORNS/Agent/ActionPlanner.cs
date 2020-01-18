@@ -233,7 +233,10 @@ namespace HORNS
                     res = node.Preconditions.Add(pre.Clone());
                 }
 
-                node.PrevAction.ApplyResults(node.Preconditions);
+                if (!node.PrevAction.ApplyResults(node.Preconditions))
+                {
+                    continue;
+                }
                 node.Preconditions.RemoveWhere(x => x.IsFulfilled());
 
                 if (!AddActionPreconditions(node))

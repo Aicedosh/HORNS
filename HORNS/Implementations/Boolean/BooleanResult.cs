@@ -43,5 +43,14 @@ namespace HORNS
         {
             return new BooleanResult(this);
         }
+
+        protected internal override bool CanApply(Precondition<bool> precondition)
+        {
+            if (EndValue != precondition.Target)
+            {
+                return false;
+            }
+            return true;
+        }
     }
 }

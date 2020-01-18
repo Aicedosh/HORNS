@@ -532,8 +532,8 @@ namespace HORNS_UnitTests
 
             var (actions, curNeed) = Plan(agent, snapshot);
             Assert.Equal(7, actions.Count);
-            Assert.Equal("Fulfills need", (actions[actions.Count - 1] as BasicAction).Tag);
-            Assert.Equal("Fulfills bool precondition", (actions[actions.Count - 2] as BasicAction).Tag);
+            Assert.Equal("Fulfills need", (actions[6] as BasicAction).Tag);
+            Assert.Equal("Fulfills bool precondition", (actions[5] as BasicAction).Tag);
         }
 
         [Theory]
@@ -550,7 +550,7 @@ namespace HORNS_UnitTests
             a1.AddPrecondition(vint, new IntegerPrecondition(2, false));
             a1.AddResult(vneed, new BooleanResult(true));
 
-            var a2 = new BasicAction("Consumes bool and adds int");
+            var a2 = new BasicAction("Consumes bool");
             a2.AddPrecondition(vbool, new BooleanPrecondition(true));
             a2.AddResult(vbool, new BooleanResult(false));
             a2.AddResult(vint, new IntegerAddResult(1));
@@ -564,6 +564,11 @@ namespace HORNS_UnitTests
 
             var (actions, curNeed) = Plan(agent, snapshot);
             Assert.Equal(5, actions.Count);
+            Assert.Equal("Toggles bool", (actions[0] as BasicAction).Tag);
+            Assert.Equal("Consumes bool", (actions[1] as BasicAction).Tag);
+            Assert.Equal("Toggles bool", (actions[2] as BasicAction).Tag);
+            Assert.Equal("Consumes bool", (actions[3] as BasicAction).Tag);
+            Assert.Equal("Fulfills need", (actions[4] as BasicAction).Tag);
         }
 
         // helper functions

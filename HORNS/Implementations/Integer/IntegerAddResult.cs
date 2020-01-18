@@ -43,5 +43,10 @@ namespace HORNS
         {
             return new IntegerAddResult(this);
         }
+
+        protected internal override bool CanApply(Precondition<int> precondition)
+        {
+            return true;
+        }
     }
 }

@@ -32,6 +32,8 @@ namespace HORNS
         /// <returns>Wartość końcowa rezultatu.</returns>
         protected internal abstract T GetResultValue(T value);
 
+        protected internal abstract bool CanApply(Precondition<T> precondition);
+
         internal override float GetCost(IdSet<Variable> variables, Agent agent)
         {
             Variable currentVariable = Variable;
@@ -71,11 +73,19 @@ namespace HORNS
             variable.Value = GetResultValue(variable.Value);
         }
 
-        internal override void Apply(PreconditionSet preconditions)
+        internal override bool Apply(PreconditionSet preconditions)
         {
-            if (!preconditions.Contains(Variable.Id)) return;
-            var pre = preconditions[Variable.Id];
+            if (!preconditions.Contains(Variable.Id))
+            {
+                return true;
+            }
+            var pre = preconditions[Variable.Id] as Precondition<T>;
+            if (!CanApply(pre))
+            {
+                return false;
+            }
             preconditions.Replace(pre.Apply(this));
+            return true;
         }
 
         protected internal abstract ActionResult<T> Clone();

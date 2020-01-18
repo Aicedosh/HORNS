@@ -165,13 +165,16 @@ namespace HORNS
             return preconditions;
         }
         
-        internal void ApplyResults(PreconditionSet requirements)
+        internal bool ApplyResults(PreconditionSet requirements)
         {
             foreach (var result in results)
             {
-                result.Apply(requirements);
+                if (!result.Apply(requirements))
+                {
+                    return false;
+                }
             }
-
+            return true;
         }
     }
 }
