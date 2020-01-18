@@ -505,7 +505,7 @@ namespace HORNS_UnitTests
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
-        public void Plan_CombiningPreconditions_FindCorrectPath(bool snapshot)
+        public void Plan_CombiningIntegerPreconditions_FindCorrectPath(bool snapshot)
         {
             var vint = new IntegerVariable();
             var vbool = new BooleanVariable();
@@ -534,6 +534,36 @@ namespace HORNS_UnitTests
             Assert.Equal(7, actions.Count);
             Assert.Equal("Fulfills need", (actions[actions.Count - 1] as BasicAction).Tag);
             Assert.Equal("Fulfills bool precondition", (actions[actions.Count - 2] as BasicAction).Tag);
+        }
+
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public void Plan_CombiningBooleanPreconditions_FindCorrectPath(bool snapshot)
+        {
+            var vint = new IntegerVariable();
+            var vbool = new BooleanVariable();
+            var vneed = new BooleanVariable();
+            var n = new BooleanNeed(vneed, true);
+
+            var a1 = new BasicAction("Fulfills need");
+            a1.AddPrecondition(vint, new IntegerPrecondition(2, false));
+            a1.AddResult(vneed, new BooleanResult(true));
+
+            var a2 = new BasicAction("Consumes bool and adds int");
+            a2.AddPrecondition(vbool, new BooleanPrecondition(true));
+            a2.AddResult(vbool, new BooleanResult(false));
+            a2.AddResult(vint, new IntegerAddResult(1));
+
+            var a3 = new BasicAction("Toggles bool");
+            a3.AddResult(vbool, new BooleanResult(true));
+
+            var agent = new Agent();
+            agent.AddActions(a1, a2, a3);
+            agent.AddNeed(n);
+
+            var (actions, curNeed) = Plan(agent, snapshot);
+            Assert.Equal(5, actions.Count);
         }
 
         // helper functions
