@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1" GroupingSetting="Access" MembersFormat="FullSignature">
+  <Class Name="HORNS.Agent">
+    <Position X="0.5" Y="0.5" Width="4.75" />
+    <Members>
+      <Method Name="AddIdleAction" Hidden="true" />
+      <Method Name="AddIdleActions" Hidden="true" />
+      <Property Name="CurrentAction" Hidden="true" />
+      <Property Name="CurrentNeed" Hidden="true" />
+      <Field Name="IdleActions" Hidden="true" />
+      <Property Name="Needs" Hidden="true" />
+      <Property Name="NeedsInternal" Hidden="true" />
+      <Property Name="PlannedActions" Hidden="true" />
+      <Property Name="PlannedActionsLeft" Hidden="true" />
+      <Field Name="possibleActions" Hidden="true" />
+      <Property Name="PossibleActions" Hidden="true" />
+      <Field Name="recalculateCallback" Hidden="true" />
+      <Method Name="SetRecalculateCallback" Hidden="true" />
+      <Property Name="Variables" Hidden="true" />
+    </Members>
+    <TypeIdentifier>
+      <HashCode>gAAAAAQACABAhAAIANAAIAFIAIABCBABBERIAAAgAMA=</HashCode>
+      <FileName>Agent\Agent.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="planner" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="HORNS.ActionPlanner" Collapsed="true">
+    <Position X="2.25" Y="5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AACAAAAAAAAAAAQAAAQAAAAAAAAAAAADAAIAEAAAAgA=</HashCode>
+      <FileName>Agent\ActionPlanner.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

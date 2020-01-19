@@ -40,7 +40,7 @@ namespace HORNS
         /// </summary>
         /// <param name="agent">Agent, którego akcje będą rozważane.</param>
         /// <returns>Kolekcja akcji.</returns>
-        protected internal abstract IEnumerable<Action> GetActions(Agent agent);
+        internal abstract IEnumerable<Action> GetActions(Agent agent);
         /// <summary>
         /// Łączy wymaganie z innym wymaganiem.
         /// </summary>

@@ -1,40 +1,40 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1" GroupingSetting="Access" MembersFormat="FullSignature">
   <Class Name="HORNS.IntegerAddResult">
-    <Position X="0.5" Y="7" Width="3" />
-    <Members>
-      <Method Name="IntegerAddResult" Hidden="true" />
-    </Members>
+    <Position X="0.5" Y="6.25" Width="3.75" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAEAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAAAAAAAAQAgAAAAAAAAAAEAAAAAAAABA=</HashCode>
       <FileName>Implementations\Integer\IntegerAddResult.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="HORNS.ActionResult&lt;T&gt;">
-    <Position X="2" Y="3.5" Width="3.75" />
+    <Position X="3" Y="3.25" Width="3.5" />
     <Members>
       <Property Name="AbstractVariable" Hidden="true" />
-      <Method Name="ActionResult" Hidden="true" />
+      <Method Name="Apply" Hidden="true" />
+      <Method Name="GetCost" Hidden="true" />
     </Members>
     <TypeIdentifier>
-      <HashCode>AQAAAAAAABAAAAAAAAAAAgAAAAAAAAAAAAQAAAAAIAA=</HashCode>
+      <HashCode>AQAAAAAAABAAAAAAAAAQAgAAAAAAAAAAAAQAAAAAIBA=</HashCode>
       <FileName>Results\GenericActionResult.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="HORNS.ActionResult">
-    <Position X="2" Y="0.5" Width="3.75" />
+    <Position X="3.5" Y="0.5" Width="2.5" />
+    <Members>
+      <Property Name="AbstractVariable" Hidden="true" />
+      <Method Name="Apply" Hidden="true" />
+      <Method Name="GetCost" Hidden="true" />
+    </Members>
     <TypeIdentifier>
       <HashCode>AQAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAQ=</HashCode>
       <FileName>Results\AbstractActionResult.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="HORNS.BooleanResult">
-    <Position X="4.25" Y="7" Width="3.25" />
-    <Members>
-      <Method Name="BooleanResult" Hidden="true" />
-    </Members>
+    <Position X="5" Y="6.25" Width="4" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAQAAAAAAAAgAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAQAAAAAAQAgAAAAAAAAAAAAAAAAAAABA=</HashCode>
       <FileName>Implementations\Boolean\BooleanResult.cs</FileName>
     </TypeIdentifier>
   </Class>

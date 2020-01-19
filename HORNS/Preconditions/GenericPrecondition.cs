@@ -113,7 +113,7 @@ namespace HORNS
         /// </summary>
         /// <param name="agent">Agent, którego akcje będą rozważane.</param>
         /// <returns>Kolekcja akcji.</returns>
-        protected internal override IEnumerable<Action> GetActions(Agent agent)
+        internal override IEnumerable<Action> GetActions(Agent agent)
         {
             return Variable.GenericSolver.GetActionsSatisfying(this, agent);
         }

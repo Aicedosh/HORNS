@@ -46,8 +46,8 @@ namespace HORNS
         /// <summary>
         /// Czas trwania ostatniego planowania.
         /// </summary>
-        public TimeSpan LastPlanTime { get; private set; }
 #endif
+        public TimeSpan LastPlanTime { get; private set; }
 
         internal IdSet<Variable> Variables { get; } = new IdSet<Variable>();
 
