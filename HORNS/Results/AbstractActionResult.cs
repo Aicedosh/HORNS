@@ -10,7 +10,7 @@ namespace HORNS
     /// </summary>
     public abstract class ActionResult
     {
-        internal Action Action { get; set; }
+        public Action Action { get; internal set; }
 
         protected ActionResult(ActionResult other)
         {
