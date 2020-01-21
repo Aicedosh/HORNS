@@ -16,7 +16,7 @@ namespace HORNS_Sandbox
 
             public override void Perform()
             {
-                Console.WriteLine(Message);
+                Console.Write(Message);
                 Apply();
             }
         }
@@ -46,8 +46,6 @@ namespace HORNS_Sandbox
             var chairs = new IntegerVariable();
             var rzodkiews = new IntegerVariable();
             var soups = new IntegerVariable();
-
-            var feelingSoupy = new BooleanVariable();
 
             var pickAxe = new MessageAction("Picked up an axe");
             //pickAxe.AddCost(10);
@@ -123,12 +121,13 @@ namespace HORNS_Sandbox
 
             // main loop
             Random random = new Random(42);
+
+            Console.WriteLine("Press Enter to perform next action.");
             while (true)
             {
-                //energy.Value -= 1;
                 hunger.Value += random.Next(3);
 
-                Console.WriteLine($"    Energy: {energy.Value} Hunger: {hunger.Value}");
+                //Console.WriteLine($"    Energy: {energy.Value} Hunger: {hunger.Value}");
 
                 var nextAction = agent.GetNextAction();
                 if (nextAction == null)

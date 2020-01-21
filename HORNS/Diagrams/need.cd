@@ -1,9 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1" GroupingSetting="Access" MembersFormat="FullSignature">
   <Class Name="HORNS.Need&lt;T&gt;">
-    <Position X="0.5" Y="0.5" Width="6.25" />
+    <Position X="0.5" Y="1" Width="4.75" />
     <Members>
-      <Method Name="Evaluate" Hidden="true" />
       <Method Name="GetActionsTowards" Hidden="true" />
       <Method Name="GetVariable" Hidden="true" />
       <Method Name="IIdentifiable.GetCopy" Hidden="true" />
@@ -14,27 +13,22 @@
       <Method Name="INeedInternal.IsSatisfied" Hidden="true" />
       <Method Name="Need" Hidden="true" />
     </Members>
-    <AssociationLine Name="Variable" Type="HORNS.Variable&lt;T&gt;">
-      <MemberNameLabel ManuallyPlaced="true">
-        <Position X="0.052" Y="0.427" />
-      </MemberNameLabel>
-    </AssociationLine>
     <TypeIdentifier>
       <HashCode>ADBAAAAAAABUAAAAAAAAAgAAAAAQAABAIAQgACAQQIE=</HashCode>
-      <FileName>Needs\Need.cs</FileName>
+      <FileName>Variables\Need.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
       <Property Name="Variable" />
     </ShowAsAssociation>
-    <Lollipop Position="0.2" Collapsed="true" />
+    <Lollipop Position="0.2" />
   </Class>
   <Class Name="HORNS.Variable&lt;T&gt;" Collapsed="true">
-    <Position X="3" Y="4.75" Width="1.5" />
+    <Position X="6.75" Y="2.5" Width="3.5" />
     <TypeIdentifier>
       <HashCode>ADAIAAAAAAQAABgAAAAAAgAAAAAAAABAAAAgAAAAAAA=</HashCode>
       <FileName>Variables\GenericVariable.cs</FileName>
     </TypeIdentifier>
-    <Lollipop Position="0.2" Collapsed="true" />
+    <Lollipop Position="0.2" />
   </Class>
   <Font Name="Segoe UI" Size="9" />
 </ClassDiagram>
