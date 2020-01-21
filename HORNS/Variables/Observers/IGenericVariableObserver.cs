@@ -13,7 +13,8 @@ namespace HORNS
         /// <summary>
         /// Metoda wywoływana w reakcji na zmianę obserwowanej zmiennej.
         /// </summary>
-        /// <param name="value">Wartość zmiennej po zmianie.</param>
-        void ValueChanged(T value);
+        /// <param name="oldValue">Poprzednia wartość zmiennej.</param>
+        /// <param name="newValue">Wartość zmiennej po zmianie.</param>
+        void ValueChanged(T oldValue, T newValue);
     }
 }

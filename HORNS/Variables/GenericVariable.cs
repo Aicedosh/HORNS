@@ -42,10 +42,11 @@ namespace HORNS
             }
             set
             {
+                T old = _value;
                 VariableLock.EnterWriteLock();
                 _value = value;
                 VariableLock.ExitWriteLock();
-                Notify(value);
+                Notify(old, value);
             }
         }
 
@@ -58,11 +59,11 @@ namespace HORNS
             set => _Value = value;
         }
 
-        private void Notify(T value)
+        private void Notify(T oldValue, T newValue)
         {
             foreach (IVariableObserver<T> observer in observers)
             {
-                observer.ValueChanged(value);
+                observer.ValueChanged(oldValue, newValue);
             }
             base.Notify();
         }
