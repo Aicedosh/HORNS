@@ -41,7 +41,7 @@
     <Lollipop Orientation="Left" Position="0.1" Collapsed="true" />
   </Class>
   <Interface Name="HORNS.IVariableObserver&lt;T&gt;">
-    <Position X="5.25" Y="4" Width="2.25" />
+    <Position X="5.25" Y="4" Width="3.25" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Variables\Observers\IGenericVariableObserver.cs</FileName>

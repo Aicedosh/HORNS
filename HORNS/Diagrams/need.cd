@@ -15,7 +15,7 @@
     </Members>
     <TypeIdentifier>
       <HashCode>ADBAAAAAAABUAAAAAAAAAgAAAAAQAABAIAQgACAQQIE=</HashCode>
-      <FileName>Variables\Need.cs</FileName>
+      <FileName>Needs\Need.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
       <Property Name="Variable" />
@@ -23,12 +23,33 @@
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="HORNS.Variable&lt;T&gt;" Collapsed="true">
-    <Position X="6.75" Y="2.5" Width="3.5" />
+    <Position X="6.75" Y="1" Width="3.5" />
     <TypeIdentifier>
       <HashCode>ADAIAAAAAAQAABgAAAAAAgAAAAAAAABAAAAgAAAAAAA=</HashCode>
       <FileName>Variables\GenericVariable.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
+  <Interface Name="HORNS.INeedInternal" Collapsed="true">
+    <Position X="5.75" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAACAQQAA=</HashCode>
+      <FileName>Needs\INeedInternal.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="HORNS.INeed">
+    <Position X="7.75" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAACAAAAA=</HashCode>
+      <FileName>Needs\INeed.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="HORNS.IIdentifiable" Collapsed="true">
+    <Position X="5.5" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>CAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>IIdentifiable.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
   <Font Name="Segoe UI" Size="9" />
 </ClassDiagram>
