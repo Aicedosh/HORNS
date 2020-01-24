@@ -6,7 +6,7 @@ namespace HORNS_Sandbox
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Press 1 to run Example 1: \"Woodcutters and rzodkiews\".");
+            Console.WriteLine("Press 1 to run Example 1: \"Woodcutter and rzodkiews\".");
             Console.WriteLine("Press 2 to run Example 2: \"Feeling soupy\".");
             Console.WriteLine("Press 3 to run Example 3: \"Chair collectors\".");
 
