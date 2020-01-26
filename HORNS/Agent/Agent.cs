@@ -1,6 +1,4 @@
-﻿#if DEBUG
-#define MEASURE_TIME
-#endif
+﻿#define MEASURE_TIME
 
 using System;
 using System.Collections.Generic;
