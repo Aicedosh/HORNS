@@ -163,8 +163,6 @@ namespace HORNS_Sandbox
             var rzodkiews = new IntegerVariable();
             var soups = new IntegerVariable();
 
-            var feelingSoupy = new BooleanVariable();
-
             var pickAxe = new MessageAction(agentName, color, "Picked up an axe");
             pickAxe.AddPrecondition(hasAxe, new BooleanPrecondition(false));
             pickAxe.AddResult(hasAxe, new BooleanResult(true));
