@@ -1,67 +1,24 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1" GroupingSetting="Access" MembersFormat="FullSignature">
   <Class Name="HORNS.Action">
-    <Position X="1.5" Y="2" Width="5.5" />
+    <Position X="0.5" Y="0.5" Width="5.5" />
     <Members>
+      <Method Name="ApplyResults" Hidden="true" />
       <Property Name="CachedCost" Hidden="true" />
+      <Property Name="CanExecute" Hidden="true" />
+      <Method Name="CanExecuteIn" Hidden="true" />
+      <Field Name="costEvaluators" Hidden="true" />
+      <Method Name="GetCost" Hidden="true" />
+      <Method Name="GetPreconditions" Hidden="true" />
+      <Method Name="GetVariables" Hidden="true" />
     </Members>
-    <AssociationLine Name="costEvaluators" Type="HORNS.IActionCostEvaluator" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
-      <Path>
-        <Point X="7" Y="3.125" />
-        <Point X="8.562" Y="3.125" />
-        <Point X="8.562" Y="1.796" />
-      </Path>
-      <MemberNameLabel ManuallyPlaced="true" ManuallySized="true">
-        <Position X="-1.736" Y="1.399" Height="0.182" Width="3.173" />
-      </MemberNameLabel>
-    </AssociationLine>
     <TypeIdentifier>
       <HashCode>AQAAAAABAJAAAgAAIEAAQJAMAAAAABgAAAAAAAAAQAA=</HashCode>
       <FileName>Action\Action.cs</FileName>
     </TypeIdentifier>
-    <ShowAsCollectionAssociation>
-      <Field Name="results" />
-      <Field Name="preconditions" />
+    <ShowAsAssociation>
       <Field Name="costEvaluators" />
-    </ShowAsCollectionAssociation>
+    </ShowAsAssociation>
   </Class>
-  <Class Name="HORNS.Precondition" Collapsed="true">
-    <Position X="4.75" Y="0.5" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AABCAACAIBAACAAAAAAAAAAAAABAAAAAAAABAAAAQBM=</HashCode>
-      <FileName>Preconditions\AbstractPrecondition.cs</FileName>
-    </TypeIdentifier>
-    <Lollipop Orientation="Left" Position="0.1" />
-  </Class>
-  <Class Name="HORNS.ActionResult" Collapsed="true">
-    <Position X="1.75" Y="0.5" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AQAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAQ=</HashCode>
-      <FileName>Results\AbstractActionResult.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="HORNS.ConstantCostEvaluator">
-    <Position X="6.5" Y="6.25" Width="2.5" />
-    <TypeIdentifier>
-      <HashCode>AQAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAQAA=</HashCode>
-      <FileName>Action\ConstantCostEvaluator.cs</FileName>
-    </TypeIdentifier>
-    <Lollipop Position="0.2" />
-  </Class>
-  <Class Name="HORNS.VariableCostEvaluator&lt;T&gt;">
-    <Position X="0.5" Y="6.25" Width="5.25" />
-    <TypeIdentifier>
-      <HashCode>AQAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAEQAA=</HashCode>
-      <FileName>Action\VariableCostEvaluator.cs</FileName>
-    </TypeIdentifier>
-    <Lollipop Position="0.2" />
-  </Class>
-  <Interface Name="HORNS.IActionCostEvaluator">
-    <Position X="7.5" Y="0.5" Width="2" />
-    <TypeIdentifier>
-      <HashCode>AQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA=</HashCode>
-      <FileName>Action\IActionCostEvaluator.cs</FileName>
-    </TypeIdentifier>
-  </Interface>
   <Font Name="Segoe UI" Size="9" />
 </ClassDiagram>
