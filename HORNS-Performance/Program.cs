@@ -31,7 +31,7 @@ namespace HORNS_Performance
                 }
             }
 
-            Logger.NewLog();
+            Logger.Close();
 
             for (int depth = depthStepFull; depth <= maxDepthFull; depth += depthStepFull)
             {
@@ -40,6 +40,8 @@ namespace HORNS_Performance
                     Tester.TestUniformTree(branches, depth, 1);
                 }
             }
+
+            Logger.Close();
         }
     }
 }

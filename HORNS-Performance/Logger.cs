@@ -22,9 +22,13 @@ namespace HORNS_Performance
             Console.WriteLine(message);
         }
 
-        public static void NewLog()
+        public static void Close()
         {
-            writer = null;
+            if (writer != null)
+            {
+                writer.Close();
+                writer = null;
+            }
         }
     }
 }
