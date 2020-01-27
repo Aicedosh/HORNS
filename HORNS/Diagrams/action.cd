@@ -5,8 +5,10 @@
     <Members>
       <Method Name="ApplyResults" Hidden="true" />
       <Property Name="CachedCost" Hidden="true" />
+      <Property Name="CanExecute" Hidden="true" />
       <Method Name="CanExecuteIn" Hidden="true" />
       <Field Name="costEvaluators" Hidden="true" />
+      <Method Name="GetCost" Hidden="true" />
       <Method Name="GetPreconditions" Hidden="true" />
       <Method Name="GetVariables" Hidden="true" />
     </Members>
@@ -14,25 +16,9 @@
       <HashCode>AQAAAAABAJAAAgAAIEAAQJAMAAAAABgAAAAAAAAAQAA=</HashCode>
       <FileName>Action\Action.cs</FileName>
     </TypeIdentifier>
-    <ShowAsCollectionAssociation>
-      <Field Name="results" />
-      <Field Name="preconditions" />
-    </ShowAsCollectionAssociation>
-  </Class>
-  <Class Name="HORNS.Precondition" Collapsed="true">
-    <Position X="9" Y="2.25" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AABCAACAIBAACAAAAAAAAAAAAABAAAAAAAABAAAAQBM=</HashCode>
-      <FileName>Preconditions\AbstractPrecondition.cs</FileName>
-    </TypeIdentifier>
-    <Lollipop Orientation="Left" Position="0.1" Collapsed="true" />
-  </Class>
-  <Class Name="HORNS.ActionResult" Collapsed="true">
-    <Position X="9" Y="0.75" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AQAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAQ=</HashCode>
-      <FileName>Results\AbstractActionResult.cs</FileName>
-    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="costEvaluators" />
+    </ShowAsAssociation>
   </Class>
   <Font Name="Segoe UI" Size="9" />
 </ClassDiagram>
