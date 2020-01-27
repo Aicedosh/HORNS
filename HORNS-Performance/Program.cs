@@ -31,6 +31,8 @@ namespace HORNS_Performance
                 }
             }
 
+            Logger.NewLog();
+
             for (int depth = depthStepFull; depth <= maxDepthFull; depth += depthStepFull)
             {
                 for (int branches = stepsForDepth[depth - 1]; branches <= branchesForDepth[depth - 1]; branches += stepsForDepth[depth - 1])
