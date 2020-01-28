@@ -8,8 +8,9 @@ namespace HORNS_Performance
         public static bool WriteToFile { get; set; } = true;
         static StreamWriter writer;
         
-        public static void Log(string message)
+        public static void Log(int branches, int depth, int needCount, TimeSpan planTime)
         {
+            string message = $"{branches}, {depth}, {needCount}, {planTime.TotalMilliseconds.ToString(System.Globalization.CultureInfo.InvariantCulture)}";
             if (WriteToFile)
             {
                 if (writer == null)
@@ -19,6 +20,15 @@ namespace HORNS_Performance
                 writer.WriteLine(message);
             }
             Console.WriteLine(message);
+        }
+
+        public static void Close()
+        {
+            if (writer != null)
+            {
+                writer.Close();
+                writer = null;
+            }
         }
     }
 }

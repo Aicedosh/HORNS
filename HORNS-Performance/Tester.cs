@@ -30,17 +30,17 @@ namespace HORNS_Performance
         }
 
         // branches options at every node, but picks only one and discards the rest
-        public static void TestTreeWithCuts(int branches, int depth, int needCount)
+        public static void TestTreeWithCuts(int branches, int depth, int needCount, bool print = true)
         {
-            TestTree(branches, depth, needCount, false);
+            TestTree(branches, depth, needCount, false, print);
         }
 
-        public static void TestUniformTree(int branches, int depth, int needCount)
+        public static void TestUniformTree(int branches, int depth, int needCount, bool print = true)
         {
-            TestTree(branches, depth, needCount, true);
+            TestTree(branches, depth, needCount, true, print);
         }
 
-        private static void TestTree(int branches, int depth, int needCount, bool nocut)
+        private static void TestTree(int branches, int depth, int needCount, bool nocut, bool print)
         {
             var agent = new Agent();
 
@@ -86,7 +86,10 @@ namespace HORNS_Performance
             }
 
             agent.RecalculateActions();
-            Logger.Log($"TEST: branches {branches}, depth {depth}, needCount {needCount}: time {agent.LastPlanTime}, plan length {agent.PlannedActionsLeft}");
+            if (print)
+            {
+                Logger.Log(branches, depth, needCount, agent.LastPlanTime);
+            }
         }
     }
 }
