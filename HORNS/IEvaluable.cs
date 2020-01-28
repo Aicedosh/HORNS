@@ -9,7 +9,7 @@
         /// <summary>
         /// Oblicza ocenę potrzeby dla danej wartości.
         /// </summary>
-        /// <param name="value">Wartość do oceny.</param>
+        /// <param name="value">Wartość, dla której należy wyznaczyć ocenę.</param>
         /// <returns>Ocena dla danej wartości.</returns>
         float Evaluate(T value);
     }

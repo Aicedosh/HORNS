@@ -20,6 +20,10 @@ namespace HORNS
         {
         }
 
+        /// <summary>
+        /// Tworzy nowy rezultat dla zmiennej typu T będący kopią innego rezultatu.
+        /// </summary>
+        /// <param name="other">Rezultat do skopiowania.</param>
         protected ActionResult(ActionResult<T> other) : base(other)
         {
             Variable = other.Variable;
@@ -29,9 +33,14 @@ namespace HORNS
         /// Zwraca wartość końcową rezultatu dla danej wartości początkowej.
         /// </summary>
         /// <param name="value">Wartość początkowa.</param>
-        /// <returns>Wartość końcowa rezultatu.</returns>
+        /// <returns>Wartość końcowa po zastosowaniu rezultatu.</returns>
         protected internal abstract T GetResultValue(T value);
 
+        /// <summary>
+        /// Sprawdza, czy możliwe jest zastosowanie rezultatu do stanu danego wymagania.
+        /// </summary>
+        /// <param name="precondition">Wymaganie do sprawdzenia.</param>
+        /// <returns>true, jeżeli rezultat można zastosować; false w przeciwnym wypadku.</returns>
         protected internal abstract bool CanApply(Precondition<T> precondition);
 
         internal override float GetCost(IdSet<Variable> variables, Agent agent)
@@ -88,6 +97,10 @@ namespace HORNS
             return true;
         }
 
+        /// <summary>
+        /// Wykonuje kopię danego rezultatu.
+        /// </summary>
+        /// <returns>Nowy rezultat będący kopią obecnego.</returns>
         protected internal abstract ActionResult<T> Clone();
     }
 }

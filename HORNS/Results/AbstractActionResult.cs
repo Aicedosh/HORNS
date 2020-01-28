@@ -10,8 +10,15 @@ namespace HORNS
     /// </summary>
     public abstract class ActionResult
     {
+        /// <summary>
+        /// Akcja, której dotyczy rezultat.
+        /// </summary>
         public Action Action { get; internal set; }
 
+        /// <summary>
+        /// Tworzy nowy rezultat będący kopią innego rezultatu.
+        /// </summary>
+        /// <param name="other">Rezultat do skopiowania.</param>
         protected ActionResult(ActionResult other)
         {
             Action = other.Action;

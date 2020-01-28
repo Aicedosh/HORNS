@@ -4,7 +4,6 @@ using System.Text;
 
 namespace HORNS
 {
-    //TODO: Replace with interface?
     /// <summary>
     /// Abstrakcyjna klasa bazowa dla zmiennych przechowujących dane typu T.
     /// </summary>
@@ -51,7 +50,7 @@ namespace HORNS
         }
 
         /// <summary>
-        /// Wartość zmiennej.
+        /// Obecna wartość zmiennej.
         /// </summary>
         public T Value
         {
@@ -71,7 +70,7 @@ namespace HORNS
         /// <summary>
         /// Dodaje obserwatora do listy obserwatorów zmiennej.
         /// </summary>
-        /// <param name="observer">Obserwator.</param>
+        /// <param name="observer">Obserwator, który będzie otrzymywał informacje o zmianach danej zmiennej.</param>
         public void Observe(IVariableObserver<T> observer)
         {
             observers.Add(observer);
@@ -80,7 +79,7 @@ namespace HORNS
         /// <summary>
         /// Usuwa obserwatora z listy obserwatorów zmiennej.
         /// </summary>
-        /// <param name="observer">Obserwator.</param>
+        /// <param name="observer">Obserwator, który powinien przestać otrzymywać informacje o zmianach danej zmiennej.</param>
         public void Unobserve(IVariableObserver<T> observer)
         {
             observers.Remove(observer);
@@ -89,8 +88,8 @@ namespace HORNS
         /// <summary>
         /// Oblicza ocenę zmiennej dla danej wartości.
         /// </summary>
-        /// <param name="value">Wartość do oceny.</param>
-        /// <returns>Ocena wartości.</returns>
+        /// <param name="value">Wartość, dla której należy wyznaczyć ocenę.</param>
+        /// <returns>Ocena wartości, domyślnie zawsze 0.</returns>
         public virtual float Evaluate(T value)
         {
             return 0f;

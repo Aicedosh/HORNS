@@ -18,10 +18,12 @@ namespace HORNS
         /// Wartość docelowa wymagania.
         /// </summary>
         public T Target { get; }
-        // TODO: [?] something better than this that still allows derived classes to access their stuff
+
         private bool _initialized = false;
         private T _state;
-        // current state
+        /// <summary>
+        /// Aktualny stan wymagania.
+        /// </summary>
         protected internal T State
         {
             get
@@ -60,6 +62,12 @@ namespace HORNS
             Variable = precondition.Variable;
         }
         
+        /// <summary>
+        /// Tworzy nowe wymaganie na podstawie innego wymagania, o podanej wartości docelowej i stanie.
+        /// </summary>
+        /// <param name="target">Wartość docelowa nowego wymagania.</param>
+        /// <param name="state">Początkowy stan nowego wymagania.</param>
+        /// <param name="precondition">Wymaganie, na podstawie którego tworzone jest nowe wymaganie.</param>
         protected Precondition(T target, T state, Precondition<T> precondition) : this(target)
         {
             Variable = precondition.Variable;
@@ -72,13 +80,26 @@ namespace HORNS
         }
 
         /// <summary>
-        /// Sprawdza, czy dana wartość spełnia wymaganie.
+        /// Sprawdza, czy wymaganie o danym stanie jest spełnione.
         /// </summary>
-        /// <param name="state">Wartość do sprawdzenia.</param>
+        /// <param name="state">Stan wymagania.</param>
         /// <param name="target">Wartość docelowa wymagania.</param>
-        /// <returns>\texttt{true}, jeżeli wartość spełnia wymaganie.</returns>
+        /// <returns>true, jeżeli wymaganie jest spełnione; false w przeciwnym wypadku.</returns>
         protected internal abstract bool IsFulfilled(T state, T target);
+
+        /// <summary>
+        /// Sprawdza, czy wymaganie o danym stanie jest spełnione dla danej wartości powiązanej zmiennej. 
+        /// </summary>
+        /// <param name="value">Wartość powiązanej zmiennej.</param>
+        /// <param name="target">Stan wymagania.</param>
+        /// <param name="state">Wartość docelowa wymagania.</param>
+        /// <returns>true, jeżeli wymaganie jest spełnione; false w przeciwnym wypadku.</returns>
         protected internal abstract bool IsFulfilledInState(T value, T target, T state);
+
+        /// <summary>
+        /// Zwraca wartość stanu, z jaką wymaganie powinno rozpoczynać obliczenia.
+        /// </summary>
+        /// <returns>Początkowa wartość stanu wymagania.</returns>
         protected internal abstract T GetDefault();
 
         internal override bool IsFulfilled()

@@ -5,12 +5,12 @@ using System.Text;
 namespace HORNS
 {
     /// <summary>
-    /// Klasa reprezentująca wymaganie związane ze zmienną typu \texttt{bool}, które jest spełnione dla wartości równej określonej wartości.
+    /// Klasa reprezentująca wymaganie związane ze zmienną typu bool, które jest spełnione dla wartości równej określonej wartości.
     /// </summary>
     public class BooleanPrecondition : Precondition<bool>
     {
         /// <summary>
-        /// Tworzy nowe wymaganie dla zmiennej typu \texttt{bool} o określonej wartości docelowej.
+        /// Tworzy nowe wymaganie dla zmiennej typu bool o określonej wartości docelowej.
         /// </summary>
         /// <param name="target">Wartość docelowa wymagania.</param>
         public BooleanPrecondition(bool target) : base(target)
@@ -22,7 +22,7 @@ namespace HORNS
         }
 
         /// <summary>
-        /// Tworzy nowe wymaganie typu \texttt{BooleanPrecondition} bedące kopią innego wymagania.
+        /// Tworzy nowe wymaganie typu BooleanPrecondition bedące kopią innego wymagania.
         /// </summary>
         /// <param name="precondition">Wymaganie do skopiowania.</param>
         public BooleanPrecondition(BooleanPrecondition precondition) : base(precondition)
@@ -30,10 +30,10 @@ namespace HORNS
         }
 
         /// <summary>
-        /// Łączy wymaganie z innym wymaganiem. Oba wymagania muszą być typu \texttt{BooleanPrecondition}, dotyczyć tej samej zmiennej i mieć tę samą wartość docelową.
+        /// Łączy wymaganie z innym wymaganiem. Oba wymagania muszą być typu BooleanPrecondition i mieć tę samą wartość docelową.
         /// </summary>
         /// <param name="precondition">Wymaganie do połączenia.</param>
-        /// <returns>Nowe wymaganie o wartości docelowej równej wartościom docelowym obu wymagań lub \texttt{null} w przypadku, gdy wymagań nie można połączyć.</returns>
+        /// <returns>Nowe wymaganie o wartości docelowej równej wartości docelowej obu wymagań lub null w przypadku, gdy wymagań nie można połączyć.</returns>
         protected internal override Precondition Combine(Precondition precondition)
         {
             if (!(precondition is BooleanPrecondition boolPre)
@@ -47,10 +47,10 @@ namespace HORNS
         }
 
         /// <summary>
-        /// Porównuje wymaganie z innym wymaganiem. Oba wymagania muszą być typu \texttt{BooleanPrecondition}, dotyczyć tej samej zmiennej i mieć tę samą wartość docelową.
+        /// Porównuje wymaganie z innym wymaganiem. Oba wymagania muszą być typu BooleanPrecondition.
         /// </summary>
         /// <param name="precondition">Wymaganie do porównania.</param>
-        /// <returns>\texttt{true}, jeżeli obecne wymaganie jest w lepszym (spełnionym) stanie; \texttt{false} w przeciwnym wypadku lub jeśli wymagań nie można porównać.</returns>
+        /// <returns>ComparisonResult.Better, jeżeli obecne wymaganie jest w lepszym (spełnionym) stanie niż precondition; ComparisonResult.EqualWorse, jeżeli jest w takim samym bądź gorszym stanie niż precondition; ComparisonResult.NotComparable, jeżeli nie jest możliwe porównanie wymagań.</returns>
         protected internal override ComparisonResult IsBetterThan(Precondition precondition)
         {
             if (!(precondition is BooleanPrecondition boolPre)
@@ -64,22 +64,34 @@ namespace HORNS
         }
 
         /// <summary>
-        /// Sprawdza, czy dana wartość spełnia wymaganie.
-        /// Wartość spełnia wymaganie, jeżeli jest równa wartości docelowej.
+        /// Sprawdza, czy wymaganie o danym stanie jest spełnione.
+        /// Wymaganie jest spełnione, gdy jego stan jest równy wartości docelowej.
         /// </summary>
-        /// <param name="value">Wartość do sprawdzenia.</param>
+        /// <param name="state">Stan wymagania.</param>
         /// <param name="target">Wartość docelowa wymagania.</param>
-        /// <returns>\texttt{true}, jeżeli wartość spełnia wymaganie.</returns>
-        protected internal override bool IsFulfilled(bool value, bool target)
+        /// <returns>true, jeżeli wymaganie jest spełnione; false w przeciwnym wypadku.</returns>
+        protected internal override bool IsFulfilled(bool state, bool target)
         {
-            return value == target;
+            return state == target;
         }
 
+        /// <summary>
+        /// Sprawdza, czy wymaganie o danym stanie jest spełnione dla danej wartości powiązanej zmiennej.
+        /// Wymaganie jest spełnione, gdy jego stan bądź wartość powiązanej zmiennej jest równa wartości docelowej.
+        /// </summary>
+        /// <param name="value">Wartość powiązanej zmiennej.</param>
+        /// <param name="target">Stan wymagania.</param>
+        /// <param name="state">Wartość docelowa wymagania.</param>
+        /// <returns>true, jeżeli wymaganie jest spełnione; false w przeciwnym wypadku.</returns>
         protected internal override bool IsFulfilledInState(bool value, bool target, bool state)
         {
             return state == target || value == target;
         }
 
+        /// <summary>
+        /// Zwraca wartość stanu, z jaką wymaganie powinno rozpoczynać obliczenia. Wartość ta jest odwrotnością wartości docelowej.
+        /// </summary>
+        /// <returns>Początkowa wartość stanu wymagania.</returns>
         protected internal override bool GetDefault()
         {
             return !Target;

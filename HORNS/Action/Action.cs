@@ -22,7 +22,7 @@ namespace HORNS
         /// <summary>
         /// Dodaje rezultat do zbioru rezultatów akcji.
         /// </summary>
-        /// <typeparam name="T">Typ danych przechowywanych w zmiennej \texttt{variable}.</typeparam>
+        /// <typeparam name="T">Typ danych przechowywanych w zmiennej.</typeparam>
         /// <typeparam name="RT">Typ dodawanego rezultatu.</typeparam>
         /// <typeparam name="ST">Typ solvera skojarzony z daną zmienną.</typeparam>
         /// <typeparam name="PT">Typ wymagania skojarzony z daną zmienną.</typeparam>
@@ -43,7 +43,7 @@ namespace HORNS
         /// <summary>
         /// Dodaje wymaganie do zbioru wymagań akcji.
         /// </summary>
-        /// <typeparam name="T">Typ danych przechowywanych w zmiennej \texttt{variable}.</typeparam>
+        /// <typeparam name="T">Typ danych przechowywanych w zmiennej.</typeparam>
         /// <typeparam name="RT">Typ rezultatu skojarzony z daną zmienną.</typeparam>
         /// <typeparam name="ST">Typ solvera skojarzony z daną zmienną.</typeparam>
         /// <typeparam name="PT">Typ dodawanego wymagania.</typeparam>
@@ -62,7 +62,7 @@ namespace HORNS
         /// <summary>
         /// Dodaje koszt zależny od wartości zmiennej do kosztu akcji.
         /// </summary>
-        /// <typeparam name="T">Typ danych przechowywanych w zmiennej \texttt{variable}.</typeparam>
+        /// <typeparam name="T">Typ danych przechowywanych w zmiennej.</typeparam>
         /// <param name="variable">Zmienna, od której zależy koszt.</param>
         /// <param name="evaluationFunction">Funkcja wyznaczająca koszt dla danej wartości zmiennej.</param>
         public void AddCost<T>(Variable<T> variable, Func<T, float> evaluationFunction)
@@ -101,7 +101,6 @@ namespace HORNS
         {
             List<Variable> variables = new List<Variable>();
             variables.AddRange(results.Select(r => r.AbstractVariable));
-            //TODO: making this not null check seems unnecessary, maybe separate cost evaluators (the interface is probably unnecessary as well)
             variables.AddRange(costEvaluators.Select(e => e.GetVariable()).Where(v => v != null));
             variables.AddRange(preconditions.Select(p => p.GetVariable()));
             return variables;
@@ -113,7 +112,7 @@ namespace HORNS
         public abstract void Perform();
 
         /// <summary>
-        /// \texttt{true}, jeżeli akcja może być wykonana w danym momencie.
+        /// Zwraca wartość informującą, czy akcja może być wykonana w danym momencie.
         /// </summary>
         public bool CanExecute => preconditions.All(p => p.IsFulfilledByWorld());
 
@@ -125,7 +124,7 @@ namespace HORNS
         /// <summary>
         /// Wykonuje wszystkie rezultaty związane z akcją, jeżeli akcja może być wykonana.
         /// </summary>
-        /// <returns>\texttt{true}, jeżeli akcja została wykonana poprawnie.</returns>
+        /// <returns> true, jeżeli akcja została wykonana poprawnie; false w przeciwnym wypadku.</returns>
         public bool Apply()
         {
             if(CanExecute == false)

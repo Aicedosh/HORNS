@@ -11,13 +11,13 @@ namespace HORNS
     {
         List<BooleanResult> trueResults = new List<BooleanResult>();
         List<BooleanResult> falseResults = new List<BooleanResult>();
-        
+
         /// <summary>
         /// Wyznacza akcje mogące spełnić dane wymaganie.
         /// Akcje mogące spełnić dane wymaganie to akcje ustawiające odpowiednią wartość końcową.
         /// </summary>
         /// <param name="precondition">Wymaganie do spełnienia.</param>
-        /// <returns>Kolekcja akcji.</returns>
+        /// <returns>Kolekcja akcji posiadających odpowiednie rezultaty.</returns>
         protected override IEnumerable<Action> GetActionsSatisfying(BooleanPrecondition precondition)
         {
             return GetActions(precondition.Target);
@@ -27,9 +27,9 @@ namespace HORNS
         /// Wyznacza akcje modyfikujące daną zmienną w kierunku określonej wartości docelowej.
         /// Będą to akcje ustawiające wartość zmiennej na podaną wartość docelową.
         /// </summary>
-        /// <param name="variable">Zmienna.</param>
+        /// <param name="variable">Zmienna, dla której należy wyznaczyć akcje.</param>
         /// <param name="desiredValue">Wartość docelowa.</param>
-        /// <returns>Kolekcja akcji.</returns>
+        /// <returns>Kolekcja akcji posiadających odpowiednie rezultaty.</returns>
         protected override IEnumerable<Action> GetActionsTowards(Variable<bool> variable, bool desiredValue)
         {
             return GetActions(desiredValue);
@@ -43,7 +43,7 @@ namespace HORNS
         /// <summary>
         /// Dodaje rezultat do rezultatów rozważanych przez solver.
         /// </summary>
-        /// <param name="result">Rezultat.</param>
+        /// <param name="result">Rezultat do zarejestrowania.</param>
         protected internal override void Register(BooleanResult result)
         {
             var destList = result.EndValue ? trueResults : falseResults;

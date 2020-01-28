@@ -7,9 +7,23 @@ namespace HORNS
     /// </summary>
     public abstract class Precondition : IIdentifiable
     {
+        /// <summary>
+        /// Typ wyliczeniowy służący do opisu wyniku porównania dwóch wymagań.
+        /// </summary>
         public enum ComparisonResult
         {
-            NotComparable, Better, EqualWorse
+            /// <summary>
+            /// Wartość oznaczająca, że wymagań nie można porównać.
+            /// </summary>
+            NotComparable,
+            /// <summary>
+            /// Wartość oznaczająca, że dane wymaganie jest lepsze od wymagania, z którym jest ono porównywane.
+            /// </summary>
+            Better,
+            /// <summary>
+            /// Wartość oznaczająca, że dane wymaganie jest gorsze lub takie samo jak wymaganie, z którym jest ono porównywane.
+            /// </summary>
+            EqualWorse
         }
 
         internal int Id => GetVariable().Id;
@@ -33,7 +47,7 @@ namespace HORNS
         /// Porównuje wymaganie z innym wymaganiem.
         /// </summary>
         /// <param name="precondition">Wymaganie do porównania.</param>
-        /// <returns>\texttt{true}, jeżeli obecne wymaganie jest w lepszym (łatwiejszym do spełnienia) stanie niż \texttt{precondition}; \texttt{false} w przeciwnym wypadku.</returns>
+        /// <returns>ComparisonResult.Better, jeżeli obecne wymaganie jest w lepszym (łatwiejszym do spełnienia) stanie niż precondition; ComparisonResult.EqualWorse, jeżeli jest w takim samym bądź gorszym stanie niż precondition; ComparisonResult.NotComparable, jeżeli nie jest możliwe porównanie wymagań.</returns>
         protected internal abstract ComparisonResult IsBetterThan(Precondition precondition);
         /// <summary>
         /// Wyznacza akcje mogące spełnić wymaganie.

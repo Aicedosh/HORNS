@@ -16,20 +16,20 @@ namespace HORNS
         /// <summary>
         /// Dodaje rezultat do rezultatów rozważanych przez solver.
         /// </summary>
-        /// <param name="result">Rezultat.</param>
+        /// <param name="result">Rezultat do zarejestrowania.</param>
         protected internal abstract void Register(RT result);
         /// <summary>
         /// Wyznacza akcje modyfikujące daną zmienną w kierunku określonej wartości docelowej.
         /// </summary>
-        /// <param name="variable">Zmienna.</param>
+        /// <param name="variable">Zmienna, dla której należy wyznaczyć akcje.</param>
         /// <param name="desiredValue">Wartość docelowa.</param>
-        /// <returns>Kolekcja akcji.</returns>
+        /// <returns>Kolekcja akcji posiadających odpowiednie rezultaty.</returns>
         protected abstract IEnumerable<Action> GetActionsTowards(Variable<T> variable, T desiredValue);
         /// <summary>
         /// Wyznacza akcje mogące spełnić dane wymaganie.
         /// </summary>
         /// <param name="precondition">Wymaganie do spełnienia.</param>
-        /// <returns>Kolekcja akcji.</returns>
+        /// <returns>Kolekcja akcji posiadających odpowiednie rezultaty.</returns>
         protected abstract IEnumerable<Action> GetActionsSatisfying(PT precondition);
 
         internal override IEnumerable<Action> GetActionsTowards(Variable<T> variable, T desiredValue, Agent agent)

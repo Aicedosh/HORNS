@@ -5,7 +5,7 @@ using System.Text;
 namespace HORNS
 {
     /// <summary>
-    /// Klasa reprezentująca zmienne typu bool.
+    /// Klasa reprezentująca zmienne typu int.
     /// </summary>
     public class IntegerVariable : Variable<int, IntegerAddResult, IntegerSolver, IntegerPrecondition>
     {

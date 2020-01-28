@@ -11,7 +11,6 @@ namespace HORNS_UnitTests
         [InlineData(5, 7, "increase")]
         [InlineData(7, 2, "decrease")]
         [InlineData(10, 9, "decrease")]
-        //[InlineData(-3, -2, "increase")]      // only positive values for consume, aight?
         public void GetActionsTowards_ShouldReturnMatchingAction(int value, int goalValue, string pickedActionTag)
         {
             var v = new IntegerVariable(value);

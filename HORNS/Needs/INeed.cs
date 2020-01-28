@@ -17,7 +17,7 @@ namespace HORNS
         /// <summary>
         /// Sprawdza, czy potrzeba jest w stanie zaspokojonym.
         /// </summary>
-        /// <returns>\texttt{true}, jeżeli potrzeba jest zaspokojona.</returns>
+        /// <returns>true, jeżeli potrzeba jest zaspokojona; false w przeciwnym wypadku.</returns>
         bool IsSatisfied();
     }
 }

@@ -5,7 +5,7 @@ using System.Linq;
 namespace HORNS
 {
     /// <summary>
-    /// Klasa reprezentująca solver dla zmiennych typu \texttt{int}, rezultatów reprezentujących zmianę wartości o określoną stałą i wymagań reprezentujących osiągnięcie wartości nie większej/nie mniejszej od określonej stałej.
+    /// Klasa reprezentująca solver dla zmiennych typu int, rezultatów reprezentujących zmianę wartości o określoną stałą i wymagań reprezentujących osiągnięcie wartości nie większej/nie mniejszej od określonej stałej.
     /// </summary>
     public class IntegerSolver : VariableSolver<int, IntegerAddResult, IntegerPrecondition>
     {
@@ -17,7 +17,7 @@ namespace HORNS
         /// Akcje mogące spełnić dane wymaganie to akcje zwiększające wartość zmiennej.
         /// </summary>
         /// <param name="precondition">Wymaganie do spełnienia.</param>
-        /// <returns>Kolekcja akcji.</returns>
+        /// <returns>Kolekcja akcji posiadających odpowiednie rezultaty.</returns>
         protected override IEnumerable<Action> GetActionsSatisfying(IntegerPrecondition precondition)
         {
             return positiveResults.Select(res => res.Action);
@@ -27,9 +27,9 @@ namespace HORNS
         /// Wyznacza akcje modyfikujące daną zmienną w kierunku określonej wartości docelowej.
         /// Jeżeli obecna wartość jest mniejsza od docelowej, będą to akcje zwiększające wartość; jeżeli jest większa, będą to akcje zmniejszające ją.
         /// </summary>
-        /// <param name="variable">Zmienna.</param>
+        /// <param name="variable">Zmienna, dla której należy wyznaczyć akcje.</param>
         /// <param name="desiredValue">Wartość docelowa.</param>
-        /// <returns>Kolekcja akcji.</returns>
+        /// <returns>Kolekcja akcji posiadających odpowiednie rezultaty.</returns>
         protected override IEnumerable<Action> GetActionsTowards(Variable<int> variable, int desiredValue)
         {
             if (variable.Value == desiredValue)
@@ -42,7 +42,7 @@ namespace HORNS
         /// <summary>
         /// Dodaje rezultat do rezultatów rozważanych przez solver.
         /// </summary>
-        /// <param name="result">Rezultat.</param>
+        /// <param name="result">Rezultat do zarejestrowania.</param>
         protected internal override void Register(IntegerAddResult result)
         {
             if (result.Term > 0)

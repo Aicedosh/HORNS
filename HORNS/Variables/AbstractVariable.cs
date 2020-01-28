@@ -22,7 +22,7 @@ namespace HORNS
         /// <summary>
         /// Dodaje obserwatora do listy obserwatorów zmiennej.
         /// </summary>
-        /// <param name="observer">Obserwator.</param>
+        /// <param name="observer">Obserwator, który będzie otrzymywał informacje o zmianach danej zmiennej.</param>
         public void Observe(IVariableObserver observer)
         {
             observers.Add(observer);
@@ -31,7 +31,7 @@ namespace HORNS
         /// <summary>
         /// Usuwa obserwatora z listy obserwatorów zmiennej.
         /// </summary>
-        /// <param name="observer">Obserwator.</param>
+        /// <param name="observer">Obserwator, który powinien przestać otrzymywać informacje o zmianach danej zmiennej.</param>
         public void Unobserve(IVariableObserver observer)
         {
             observers.Remove(observer);

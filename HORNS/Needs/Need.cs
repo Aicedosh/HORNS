@@ -14,7 +14,7 @@ namespace HORNS
         private readonly Func<T, bool> isSatisfied;
 
         /// <summary>
-        /// Wartość potrzeby.
+        /// Wartość zmiennej związanej z potrzebą.
         /// </summary>
         public T Value { get => Variable.Value; }
         internal Variable<T> Variable { get; private set; }
@@ -39,6 +39,7 @@ namespace HORNS
         /// <param name="variable">Zmienna, której dotyczy potrzeba.</param>
         /// <param name="desired">Docelowa wartość zmiennej.</param>
         /// <param name="evaluation">Funkcja wyznaczająca ocenę potrzeby dla konkretnej wartości zmiennej.</param>
+        /// <param name="isSatisfied">Funkcja zwracająca informację, czy potrzeba jest spełniona dla danej wartości powiązanej zmiennej.</param>
         public Need(Variable<T> variable, T desired, Func<T, float> evaluation, Func<T, bool> isSatisfied = null)
         {
             Variable = variable;
@@ -50,7 +51,7 @@ namespace HORNS
         /// <summary>
         /// Oblicza ocenę potrzeby dla danej wartości.
         /// </summary>
-        /// <param name="value">Wartość do oceny.</param>
+        /// <param name="value">Wartość, dla której należy wyznaczyć ocenę.</param>
         /// <returns>Ocena dla danej wartości.</returns>
         public float Evaluate(T value)
         {
@@ -89,7 +90,7 @@ namespace HORNS
         /// <summary>
         /// Sprawdza, czy potrzeba jest w stanie zaspokojonym.
         /// </summary>
-        /// <returns>\texttt{true}, jeżeli potrzeba jest zaspokojona.</returns>
+        /// <returns>true, jeżeli potrzeba jest zaspokojona; false w przeciwnym wypadku.</returns>
         public bool IsSatisfied()
         {
             return isSatisfied(Value);

@@ -6,7 +6,6 @@ using Priority_Queue;
 using NeedList = System.Collections.Generic.List<(HORNS.INeedInternal Need, float Priority)>;
 using VariableSet = HORNS.IdSet<HORNS.Variable>;
 using OpenSet = Priority_Queue.SimplePriorityQueue<HORNS.ActionPlanner.ActionPlannerNode>;
-// TODO: optimize close
 using CloseSet = System.Collections.Generic.List<HORNS.PreconditionSet>;
 
 namespace HORNS
@@ -156,7 +155,7 @@ namespace HORNS
                     }
                 }
                 // lower "priority" => more important need
-                needs.Sort((x, y) => x.Priority.CompareTo(y.Priority));     // TODO: optimize
+                needs.Sort((x, y) => x.Priority.CompareTo(y.Priority));
                 if (agent.NeedsToCalculate > 0 && needs.Count > agent.NeedsToCalculate)
                 {
                     needs.RemoveRange(agent.NeedsToCalculate, needs.Count - agent.NeedsToCalculate);
