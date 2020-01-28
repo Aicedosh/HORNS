@@ -1,0 +1,58 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1" GroupingSetting="Access" MembersFormat="FullSignature">
+  <Class Name="HORNS.Variable">
+    <Position X="1.25" Y="0.5" Width="3.25" />
+    <Members>
+      <Method Name="GetCopy" Hidden="true" />
+      <Property Name="Id" Hidden="true" />
+      <Method Name="IIdentifiable.GetCopy" Hidden="true" />
+      <Property Name="IIdentifiable.Id" Hidden="true" />
+      <Field Name="MaxId" Hidden="true" />
+      <Method Name="Variable" Hidden="true" />
+      <Field Name="VariableLock" Hidden="true" />
+    </Members>
+    <TypeIdentifier>
+      <HashCode>CABKAAAAAAQCAAgAAAAAAAAAAAAAAQBAAAAAAAAAAAE=</HashCode>
+      <FileName>Variables\AbstractVariable.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Orientation="Left" Position="0.15" Collapsed="true" />
+  </Class>
+  <Class Name="HORNS.Variable&lt;T&gt;">
+    <Position X="1.25" Y="3.5" Width="3.5" />
+    <Members>
+      <Field Name="_value" Hidden="true" />
+      <Property Name="_Value" Hidden="true" />
+      <Method Name="Evaluate" Hidden="true" />
+      <Property Name="GenericSolver" Hidden="true" />
+      <Method Name="Variable" Hidden="true" />
+    </Members>
+    <InheritanceLine Type="HORNS.Variable" ManuallyRouted="true" FixedFromPoint="true">
+      <Path>
+        <Point X="3" Y="2.699" />
+        <Point X="3" Y="2.84" />
+        <Point X="3" Y="2.84" />
+        <Point X="3" Y="3.5" />
+      </Path>
+    </InheritanceLine>
+    <TypeIdentifier>
+      <HashCode>ADAIAAAAAAQAABgAAAAAAgAAAAAAAABAAAAgAAAAAAA=</HashCode>
+      <FileName>Variables\GenericVariable.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Orientation="Left" Position="0.1" Collapsed="true" />
+  </Class>
+  <Interface Name="HORNS.IVariableObserver&lt;T&gt;">
+    <Position X="5.25" Y="4" Width="3.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Variables\Observers\IGenericVariableObserver.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="HORNS.IVariableObserver">
+    <Position X="5.25" Y="1" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Variables\Observers\IVariableObserver.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

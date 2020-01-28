@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1" GroupingSetting="Access" MembersFormat="FullSignature">
+  <Class Name="HORNS.BooleanPrecondition">
+    <Position X="1" Y="3.25" Width="3.75" />
+    <Members>
+      <Method Name="BooleanPrecondition" Hidden="true" />
+      <Method Name="Clone" Hidden="true" />
+      <Method Name="Combine" Hidden="true" />
+      <Method Name="GetDefault" Hidden="true" />
+      <Method Name="IsBetterThan" Hidden="true" />
+      <Method Name="IsFulfilled" Hidden="true" />
+      <Method Name="IsFulfilledInState" Hidden="true" />
+    </Members>
+    <TypeIdentifier>
+      <HashCode>AAAAAACAAAAAAAAgAAAAAAAAAAAAAAAgAAABAAAAABI=</HashCode>
+      <FileName>Implementations\Boolean\BooleanPrecondition.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="HORNS.Precondition&lt;T&gt;" Collapsed="true">
+    <Position X="4.25" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAACAIDAACAAgAAAACCAAAABAAAAgAAQABAAAQAA=</HashCode>
+      <FileName>Preconditions\GenericPrecondition.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="HORNS.Precondition" Collapsed="true">
+    <Position X="4.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AABCAACAIBAACAAAAAAAAAAAAABAAAAAAAABAAAAQBM=</HashCode>
+      <FileName>Preconditions\AbstractPrecondition.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="HORNS.IntegerPrecondition">
+    <Position X="5.5" Y="3.25" Width="3.75" />
+    <Members>
+      <Method Name="Clone" Hidden="true" />
+      <Method Name="Combine" Hidden="true" />
+      <Method Name="GetDefault" Hidden="true" />
+      <Method Name="IntegerPrecondition" Hidden="true" />
+      <Method Name="IsBetterThan" Hidden="true" />
+      <Method Name="IsFulfilled" Hidden="true" />
+      <Method Name="IsFulfilledInState" Hidden="true" />
+    </Members>
+    <Compartments>
+      <Compartment Name="Private" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAAAAACAAAAAAIAgAAAAAAAAAAAAAAAgAAABAAAAABI=</HashCode>
+      <FileName>Implementations\Integer\IntegerPrecondition.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

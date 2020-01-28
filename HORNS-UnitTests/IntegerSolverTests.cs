@@ -11,31 +11,46 @@ namespace HORNS_UnitTests
         [InlineData(5, 7, "increase")]
         [InlineData(7, 2, "decrease")]
         [InlineData(10, 9, "decrease")]
-        [InlineData(-3, -2, "increase")]
+        //[InlineData(-3, -2, "increase")]      // only positive values for consume, aight?
         public void GetActionsTowards_ShouldReturnMatchingAction(int value, int goalValue, string pickedActionTag)
         {
-            BasicAction a1 = new BasicAction("increase");
-            BasicAction a2 = new BasicAction("decrease");
+            var v = new IntegerVariable(value);
 
-            Variable<int> v = new IntVariable(value);
-            IntegerSolver s = new IntegerSolver();
-
-            IntegerAddResult r1 = new IntegerAddResult(1);
-            IntegerAddResult r2 = new IntegerAddResult(-1);
-
-            r1.Action = a1;
-            r2.Action = a2;
-            s.Register(r1);
-            s.Register(r2);
+            var a1 = new BasicAction("increase");
+            a1.AddResult(v, new IntegerAddResult(1));
+            var a2 = new BasicAction("decrease");
+            a2.AddResult(v, new IntegerAddResult(-1));
+            var a3 = new BasicAction("no effect");
+            var ax = new BasicAction("not added to agent");
+            ax.AddResult(v, new IntegerAddResult(1));
 
             Agent agent = new Agent();
-            agent.AddAction(a1);
-            agent.AddAction(a2);
+            agent.AddActions(a1, a2, a3);
 
-            List<Action> actions = new List<Action>(s.GetActionsTowards(v, goalValue, agent));
+            List<Action> actions = new List<Action>(v.Solver.GetActionsTowards(v, goalValue, agent));
             Assert.Single(actions);
             Assert.Equal(pickedActionTag, (actions[0] as BasicAction).Tag);
         }
 
+        [Fact]
+        public void GetActionsSatisfying_ShouldReturnMatchingActions()
+        {
+            var v = new IntegerVariable(5);
+
+            var a1 = new BasicAction("increase");
+            a1.AddResult(v, new IntegerAddResult(1));
+            var a2 = new BasicAction("decrease");
+            a2.AddResult(v, new IntegerAddResult(-1));
+            var a3 = new BasicAction("no effect");
+            var ax = new BasicAction("not added to agent");
+            ax.AddResult(v, new IntegerAddResult(1));
+
+            Agent agent = new Agent();
+            agent.AddActions(a1, a2, a3);
+
+            List<Action> actions = new List<Action>(v.Solver.GetActionsSatisfying(new IntegerPrecondition(10, false), agent));
+            Assert.Single(actions);
+            Assert.Equal("increase", (actions[0] as BasicAction).Tag);
+        }
     }
 }

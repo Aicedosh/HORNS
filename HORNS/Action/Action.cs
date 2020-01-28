@@ -5,45 +5,75 @@ using System.Linq;
 
 namespace HORNS
 {
+    /// <summary>
+    /// Klasa bazowa dla akcji możliwych do wykonania przez agenta.
+    /// </summary>
     public abstract class Action
     {
+        /// <summary>
+        /// Ostatni obliczony koszt danej akcji.
+        /// </summary>
         public float CachedCost { get; private set; }
 
         private ICollection<ActionResult> results = new List<ActionResult>();
         private ICollection<Precondition> preconditions = new List<Precondition>();
         private ICollection<IActionCostEvaluator> costEvaluators = new List<IActionCostEvaluator>();
-
-        //TODO: Implement builder pattern to ensure all results, costs and precondidtions are added before adding to agent's possible actions
-        //      This may also make it possible to ommit passing same solver in every call (first calling setup for solver and then adding results/preconditions)
+       
+        /// <summary>
+        /// Dodaje rezultat do zbioru rezultatów akcji.
+        /// </summary>
+        /// <typeparam name="T">Typ danych przechowywanych w zmiennej \texttt{variable}.</typeparam>
+        /// <typeparam name="RT">Typ dodawanego rezultatu.</typeparam>
+        /// <typeparam name="ST">Typ solvera skojarzony z daną zmienną.</typeparam>
+        /// <typeparam name="PT">Typ wymagania skojarzony z daną zmienną.</typeparam>
+        /// <param name="variable">Zmienna, której dotyczy rezultat.</param>
+        /// <param name="result">Nowy rezultat akcji.</param>
         public void AddResult<T, RT, ST, PT>(Variable<T, RT, ST, PT> variable, RT result)
             where ST : VariableSolver<T, RT, PT>, new()
-            where RT : ActionResult<T, ST>
-            where PT : Precondition<T, ST>
+            where RT : ActionResult<T>
+            where PT : Precondition<T>
         {
-            //TODO: Clone beforehand
-            variable.Solver.Register(result);
-            result.Variable = variable;
-            result.Action = this;
-            results.Add(result);
+            RT res = result.Clone() as RT;
+            variable.Solver.Register(res);
+            res.Variable = variable;
+            res.Action = this;
+            results.Add(res);
         }
 
+        /// <summary>
+        /// Dodaje wymaganie do zbioru wymagań akcji.
+        /// </summary>
+        /// <typeparam name="T">Typ danych przechowywanych w zmiennej \texttt{variable}.</typeparam>
+        /// <typeparam name="RT">Typ rezultatu skojarzony z daną zmienną.</typeparam>
+        /// <typeparam name="ST">Typ solvera skojarzony z daną zmienną.</typeparam>
+        /// <typeparam name="PT">Typ dodawanego wymagania.</typeparam>
+        /// <param name="variable">Zmienna, której dotyczy wymaganie.</param>
+        /// <param name="precondition">Nowe wymaganie akcji.</param>
         public void AddPrecondition<T, RT, ST, PT>(Variable<T, RT, ST, PT> variable, PT precondition)
             where ST : VariableSolver<T, RT, PT>, new()
-            where RT : ActionResult<T, ST>
-            where PT : Precondition<T, ST>
+            where RT : ActionResult<T>
+            where PT : Precondition<T>
         {
-            //TODO: Clone beforehand
-            preconditions.Add(precondition);
-
-            precondition.SetSolver(variable.Solver);
-            precondition.Variable = variable;
+            PT pre = precondition.Clone() as PT;
+            preconditions.Add(pre);
+            pre.Variable = variable;
         }
 
+        /// <summary>
+        /// Dodaje koszt zależny od wartości zmiennej do kosztu akcji.
+        /// </summary>
+        /// <typeparam name="T">Typ danych przechowywanych w zmiennej \texttt{variable}.</typeparam>
+        /// <param name="variable">Zmienna, od której zależy koszt.</param>
+        /// <param name="evaluationFunction">Funkcja wyznaczająca koszt dla danej wartości zmiennej.</param>
         public void AddCost<T>(Variable<T> variable, Func<T, float> evaluationFunction)
         {
             costEvaluators.Add(new VariableCostEvaluator<T>(variable, evaluationFunction));
         }
 
+        /// <summary>
+        /// Dodaje stały koszt do kosztu akcji.
+        /// </summary>
+        /// <param name="cost">Wartość kosztu.</param>
         public void AddCost(float cost)
         {
             costEvaluators.Add(new ConstantCostEvaluator(cost));
@@ -77,14 +107,38 @@ namespace HORNS
             return variables;
         }
 
+        /// <summary>
+        /// Wykonuje dowolne operacje związane z realizacją akcji.
+        /// </summary>
         public abstract void Perform();
 
-        public void Apply()
+        /// <summary>
+        /// \texttt{true}, jeżeli akcja może być wykonana w danym momencie.
+        /// </summary>
+        public bool CanExecute => preconditions.All(p => p.IsFulfilledByWorld());
+
+        internal bool CanExecuteIn(IdSet<Variable> variables)
         {
+            return preconditions.All(p => p.IsFulfilledBy(variables));
+        }
+
+        /// <summary>
+        /// Wykonuje wszystkie rezultaty związane z akcją, jeżeli akcja może być wykonana.
+        /// </summary>
+        /// <returns>\texttt{true}, jeżeli akcja została wykonana poprawnie.</returns>
+        public bool Apply()
+        {
+            if(CanExecute == false)
+            {
+                return false;
+            }
+
             foreach (ActionResult result in results)
             {
                 result.Apply();
             }
+
+            return true;
         }
 
         internal void ApplyResults(IdSet<Variable> variables)
@@ -110,15 +164,17 @@ namespace HORNS
         {
             return preconditions;
         }
-
-        //internal void SubtractResults(RequirementSet requirements)
-        internal void SubtractResults(PreconditionSet requirements)
+        
+        internal bool ApplyResults(PreconditionSet requirements)
         {
             foreach (var result in results)
             {
-                result.SubtractFrom(requirements);
+                if (!result.Apply(requirements))
+                {
+                    return false;
+                }
             }
-
+            return true;
         }
     }
 }

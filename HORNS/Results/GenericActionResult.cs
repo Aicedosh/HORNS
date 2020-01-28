@@ -4,8 +4,15 @@ using System.Text;
 
 namespace HORNS
 {
+    /// <summary>
+    /// Abstrakcyjna klasa bazowa dla rezultatów dla zmiennych typu T.
+    /// </summary>
+    /// <typeparam name="T">Typ danych przechowywanych w zmiennej związanej z rezultatem.</typeparam>
     public abstract class ActionResult<T> : ActionResult
     {
+        /// <summary>
+        /// Zmienna związana z wymaganiem.
+        /// </summary>
         protected internal Variable<T> Variable { get; internal set; }
         internal override Variable AbstractVariable => Variable;
 
@@ -13,7 +20,19 @@ namespace HORNS
         {
         }
 
-        protected internal abstract T GetResultValue(Variable<T> variable);
+        protected ActionResult(ActionResult<T> other) : base(other)
+        {
+            Variable = other.Variable;
+        }
+
+        /// <summary>
+        /// Zwraca wartość końcową rezultatu dla danej wartości początkowej.
+        /// </summary>
+        /// <param name="value">Wartość początkowa.</param>
+        /// <returns>Wartość końcowa rezultatu.</returns>
+        protected internal abstract T GetResultValue(T value);
+
+        protected internal abstract bool CanApply(Precondition<T> precondition);
 
         internal override float GetCost(IdSet<Variable> variables, Agent agent)
         {
@@ -22,7 +41,7 @@ namespace HORNS
             {
                 variables.TryGet(ref currentVariable);
             }
-            Variable<T> curr = currentVariable as Variable<T>; //TODO: Can we remove this cast?
+            Variable<T> curr = currentVariable as Variable<T>;
 
             IEvaluable<T> evaluator = curr;
             if(agent.NeedsInternal.Contains(Variable.Id))
@@ -30,18 +49,18 @@ namespace HORNS
                 evaluator = agent.NeedsInternal[Variable.Id] as Need<T>;
             }
 
-            return evaluator.Evaluate(curr.Value) - evaluator.Evaluate(GetResultValue(curr));
+            return evaluator.Evaluate(curr.Value) - evaluator.Evaluate(GetResultValue(curr.Value));
         }
 
         internal override void Apply()
         {
-            Variable.Value = GetResultValue(Variable);
+            Variable.Value = GetResultValue(Variable.Value);
         }
 
         internal override void Apply(Variable variable)
         {
             Variable<T> typedVar = variable as Variable<T>;
-            typedVar.Value = GetResultValue(typedVar);
+            typedVar.Value = GetResultValue(typedVar.Value);
         }
 
         internal override void Apply(IdSet<Variable> variables)
@@ -51,15 +70,24 @@ namespace HORNS
                 variables.Add(Variable.GetCopy());
             }
             var variable = variables[Variable.Id] as Variable<T>;
-            variable.Value = GetResultValue(variable);
+            variable.Value = GetResultValue(variable.Value);
         }
 
-        internal override void SubtractFrom(PreconditionSet preconditions)
+        internal override bool Apply(PreconditionSet preconditions)
         {
-            if (!preconditions.Contains(Variable.Id)) return;
-            Precondition pre = preconditions[Variable.Id];
-            Precondition newPre = pre.Subtract(this);
-            preconditions.Replace(newPre);
+            if (!preconditions.Contains(Variable.Id))
+            {
+                return true;
+            }
+            var pre = preconditions[Variable.Id] as Precondition<T>;
+            if (!CanApply(pre))
+            {
+                return false;
+            }
+            preconditions.Replace(pre.Apply(this));
+            return true;
         }
+
+        protected internal abstract ActionResult<T> Clone();
     }
 }

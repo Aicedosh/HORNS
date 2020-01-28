@@ -1,0 +1,64 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1" GroupingSetting="Access" MembersFormat="FullSignature">
+  <Class Name="HORNS.BooleanPrecondition">
+    <Position X="1" Y="8.5" Width="4.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAACAAAAAAAAgAAAAAAAAAAAAAAAgAAABAAAAABI=</HashCode>
+      <FileName>Implementations\Boolean\BooleanPrecondition.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="HORNS.Precondition&lt;T&gt;">
+    <Position X="4" Y="4.5" Width="4" />
+    <Members>
+      <Field Name="_initialized" Hidden="true" />
+      <Field Name="_state" Hidden="true" />
+      <Method Name="Apply" Hidden="true" />
+      <Method Name="GetActions" Hidden="true" />
+      <Method Name="GetVariable" Hidden="true" />
+      <Method Name="IsFulfilled" Hidden="true" />
+      <Method Name="IsFulfilledBy" Hidden="true" />
+      <Method Name="IsFulfilledByWorld" Hidden="true" />
+    </Members>
+    <TypeIdentifier>
+      <HashCode>AAAAAACAIDAACAAgAAAACCAAAABAAAAgAAQABAAAQAA=</HashCode>
+      <FileName>Preconditions\GenericPrecondition.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="HORNS.Precondition">
+    <Position X="4" Y="0.5" Width="4" />
+    <Members>
+      <Method Name="Apply" Hidden="true" />
+      <Method Name="GetActions" Hidden="true" />
+      <Method Name="GetVariable" Hidden="true" />
+      <Property Name="Id" Hidden="true" />
+      <Method Name="IIdentifiable.GetCopy" Hidden="true" />
+      <Property Name="IIdentifiable.Id" Hidden="true" />
+      <Method Name="IsFulfilled" Hidden="true" />
+      <Method Name="IsFulfilledBy" Hidden="true" />
+      <Method Name="IsFulfilledByWorld" Hidden="true" />
+    </Members>
+    <Compartments>
+      <Compartment Name="Nested Types" Collapsed="false" />
+    </Compartments>
+    <NestedTypes>
+      <Enum Name="HORNS.Precondition.ComparisonResult">
+        <TypeIdentifier>
+          <NewMemberFileName>Preconditions\AbstractPrecondition.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AABCAACAIBAACAAAAAAAAAAAAABAAAAAAAABAAAAQBM=</HashCode>
+      <FileName>Preconditions\AbstractPrecondition.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="HORNS.IntegerPrecondition">
+    <Position X="6.5" Y="8.5" Width="4.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAACAAAAAAIAgAAAAAAAAAAAAAAAgAAABAAAAABI=</HashCode>
+      <FileName>Implementations\Integer\IntegerPrecondition.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

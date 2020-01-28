@@ -13,7 +13,7 @@ namespace HORNS_UnitTests
         public void GetActionsTowards_ShouldReturnRegisteredActionResult(bool value)
         {
             BasicAction a = new BasicAction("1");
-            Variable<bool> v = new BoolVariable();
+            Variable<bool> v = new BooleanVariable();
             BooleanSolver s = new BooleanSolver();
             BooleanResult result = new BooleanResult(value);
 
@@ -36,7 +36,7 @@ namespace HORNS_UnitTests
             BasicAction a = new BasicAction("1");
             BasicAction b = new BasicAction("2");
 
-            Variable<bool> v = new BoolVariable();
+            Variable<bool> v = new BooleanVariable();
             BooleanSolver s = new BooleanSolver();
             BooleanResult result = new BooleanResult(value);
             BooleanResult other_result = new BooleanResult(!value);
@@ -61,7 +61,7 @@ namespace HORNS_UnitTests
         [InlineData(false, 7)]
         public void GetActionsTowards_MultipleResults_ShouldReturnAll(bool value, int num)
         {
-            Variable<bool> v = new BoolVariable();
+            Variable<bool> v = new BooleanVariable();
             BooleanSolver s = new BooleanSolver();
 
             List<BasicAction> actions = new List<BasicAction>();
@@ -90,7 +90,7 @@ namespace HORNS_UnitTests
         [InlineData(false)]
         public void GetActionsSatisfying_SingleMatchingResult_ShouldReturnAction(bool value)
         {
-            Variable<bool> v = new BoolVariable();
+            Variable<bool> v = new BooleanVariable();
             BooleanSolver s = new BooleanSolver();
 
             BasicAction a = new BasicAction("1");
@@ -112,7 +112,7 @@ namespace HORNS_UnitTests
         [InlineData(false)]
         public void GetActionsSatisfying_SingleNonMatchingResult_ShouldReturnNoActions(bool value)
         {
-            Variable<bool> v = new BoolVariable();
+            Variable<bool> v = new BooleanVariable();
             BooleanSolver s = new BooleanSolver();
 
             BasicAction a = new BasicAction("1");

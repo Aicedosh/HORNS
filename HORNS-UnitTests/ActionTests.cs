@@ -18,7 +18,7 @@ namespace HORNS_UnitTests
         [Fact]
         public void Perform_ApplyResults()
         {
-            var variable = new BoolVariable(false);
+            var variable = new BooleanVariable(false);
             var action = new BasicAction();
             action.AddResult(variable, new BooleanResult(true));
 

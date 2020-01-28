@@ -4,65 +4,98 @@ using System.Text;
 
 namespace HORNS
 {
-    public class IntegerPrecondition : Precondition<int, IntegerSolver>
+    /// <summary>
+    /// Klasa reprezentująca wymaganie związane ze zmienną typu \texttt{int}, które jest spełnione dla wartości zmiennej nie mniejszych od określonej stałej.
+    /// Ten typ wymagania zakłada, że wymagana wartość zostanie zużyta w ramach rezultatu akcji.
+    /// Wartość docelowa powinna być dodatnia.
+    /// </summary>
+    public class IntegerPrecondition : Precondition<int>
     {
-        public enum Condition
-        {
-            AtLeast, AtMost
-        }
-        public Condition Direction { get; }
+        public bool Consumed { get; }
 
-        public IntegerPrecondition(int value, Condition direction)
-            : base(value)
+        /// <summary>
+        /// Tworzy nowe wymaganie dla zmiennej typu \texttt{int} o określonej wartości wymaganej.
+        /// </summary>
+        /// <param name="target">Wartość wymagana.</param>
+        /// <param name="consumed">Informacja, czy wymaganiu będzie towarzyszyć rezultat IntegerAddResult o wartości -target. </param>
+        public IntegerPrecondition(int target, bool consumed)
+            : base(target)
         {
-            Direction = direction;
-        }
-
-        private IntegerPrecondition(int value, IntegerPrecondition other) : base(value, other)
-        {
+            Consumed = consumed;
         }
 
+        private IntegerPrecondition(int target, int state, IntegerPrecondition other) : base(target, state, other)
+        {
+            Consumed = other.Consumed;
+        }
+
+        /// <summary>
+        /// Tworzy nowe wymaganie typu \texttt{IntegerConsumePrecondition} bedące kopią innego wymagania.
+        /// </summary>
+        /// <param name="precondition">Wymaganie do skopiowania.</param>
         public IntegerPrecondition(IntegerPrecondition precondition) : base(precondition)
         {
-            Direction = precondition.Direction;
+            Consumed = precondition.Consumed;
         }
-
+        
+        /// <summary>
+        /// Łączy wymaganie z innym wymaganiem. Oba wymagania muszą być typu \texttt{IntegerConsumePrecondition} i dotyczyć tej samej zmiennej.
+        /// </summary>
+        /// <param name="precondition">Wymaganie do połączenia.</param>
+        /// <returns>Nowe wymaganie wartości wymaganej będącej sumą wartości wymaganych przez oba wymagania lub \texttt{null} w przypadku, gdy wymagań nie można połączyć.</returns>
         protected internal override Precondition Combine(Precondition precondition)
         {
-            if (!(precondition is IntegerPrecondition intPre) || Direction != intPre.Direction)
+            if (!(precondition is IntegerPrecondition intPre)
+                || Variable.Id != intPre.Variable.Id)
             {
                 return null;
             }
-            return new IntegerPrecondition(Value + intPre.Value, this);
+            int target = intPre.Consumed ? Target : Math.Max(Target, intPre.Target);
+            return new IntegerPrecondition(target, State + intPre.State, this);
         }
 
-        protected internal override bool IsEqualOrWorse(Precondition precondition)
+        /// <summary>
+        /// Porównuje wymaganie z innym wymaganiem. Oba wymagania muszą być typu \texttt{IntegerConsumePrecondition}, dotyczyć tej samej zmiennej i mieć tę samą wartość docelową.
+        /// </summary>
+        /// <param name="precondition">Wymaganie do porównania.</param>
+        /// <returns>\texttt{true}, jeżeli obecne wymaganie jest w lepszym (bliższym wartości wymaganej) stanie; \texttt{false} w przeciwnym wypadku lub jeśli wymagań nie można porównać.</returns>
+        protected internal override ComparisonResult IsBetterThan(Precondition precondition)
         {
-            if (!(precondition is IntegerPrecondition intPre) || Direction != intPre.Direction || Value != intPre.Value)
+            if (!(precondition is IntegerPrecondition intPre)
+                || Variable.Id != intPre.Variable.Id
+                || Target != intPre.Target)
             {
-                return false;
+                return ComparisonResult.NotComparable;
             }
-            return Variable.Value >= intPre.Variable.Value;
+            return State > intPre.State ? ComparisonResult.Better : ComparisonResult.EqualWorse;
         }
 
-        protected internal override Precondition Subtract(ActionResult actionResult)
+        /// <summary>
+        /// Sprawdza, czy dana wartość spełnia wymaganie.
+        /// Wartość spełnia wymaganie, jeżeli jest nie mniejsza od wartości wymaganej.
+        /// </summary>
+        /// <param name="value">Wartość do sprawdzenia.</param>
+        /// <param name="target">Wartość docelowa wymagania.</param>
+        /// <returns>\texttt{true}, jeżeli wartość spełnia wymaganie.</returns>
+        protected internal override bool IsFulfilled(int value, int target)
         {
-            var addRes = actionResult as IntegerAddResult;
-            int newVal = Value + addRes.Term * (Direction == Condition.AtMost ? 1 : -1);
-
-            return new IntegerPrecondition(newVal, this);
+            return value >= target;
         }
 
-        protected internal override bool IsFulfilled(int value)
+        protected internal override bool IsFulfilledInState(int value, int target, int state)
         {
-            return Direction == Condition.AtLeast ? value >= Value : value <= Value;
+            return value + state >= target;
         }
 
-        protected internal override bool IsZeroed(int value)
+        protected internal override int GetDefault()
         {
-            return value <= 0;
+            return 0;
         }
 
+        /// <summary>
+        /// Wykonuje kopię obiektu wymagania.
+        /// </summary>
+        /// <returns>Kopia wymagania.</returns>
         protected internal override Precondition Clone()
         {
             return new IntegerPrecondition(this);

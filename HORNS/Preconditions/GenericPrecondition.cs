@@ -4,24 +4,66 @@ using System.Text;
 
 namespace HORNS
 {
+    /// <summary>
+    /// Abstrakcyjna klasa bazowa dla wymagań dla zmiennych typu T.
+    /// </summary>
+    /// <typeparam name="T">Typ danych przechowywanych w zmiennej związanej z wymaganiem.</typeparam>
     public abstract class Precondition<T> : Precondition
     {
+        /// <summary>
+        /// Zmienna związana z wymaganiem.
+        /// </summary>
         protected internal Variable<T> Variable { get; internal set; }
-        public T Value { get; }
+        /// <summary>
+        /// Wartość docelowa wymagania.
+        /// </summary>
+        public T Target { get; }
+        // TODO: [?] something better than this that still allows derived classes to access their stuff
+        private bool _initialized = false;
+        private T _state;
         // current state
-        internal T State { get; set; }
-
-        public Precondition(T value)
+        protected internal T State
         {
-            Value = value;
-            State = value;
+            get
+            {
+                if (!_initialized)
+                {
+                    _initialized = true;
+                    _state = GetDefault();
+                }
+                return _state;
+            }
+            set
+            {
+                _initialized = true;
+                _state = value;
+            }
         }
 
+        /// <summary>
+        /// Tworzy nowe wymaganie o określonej wartości docelowej.
+        /// </summary>
+        /// <param name="target">Wartość docelowa wymagania.</param>
+        public Precondition(T target)
+        {
+            Target = target;
+        }
+
+        /// <summary>
+        /// Tworzy nowe wymaganie bedące kopią innego wymagania.
+        /// </summary>
+        /// <param name="precondition">Wymaganie do skopiowania.</param>
         public Precondition(Precondition<T> precondition)
         {
-            Value = precondition.Value;
+            Target = precondition.Target;
             State = precondition.State;
             Variable = precondition.Variable;
+        }
+        
+        protected Precondition(T target, T state, Precondition<T> precondition) : this(target)
+        {
+            Variable = precondition.Variable;
+            State = state;
         }
 
         internal override Variable GetVariable()
@@ -29,17 +71,24 @@ namespace HORNS
             return Variable;
         }
 
-        protected internal abstract bool IsFulfilled(T value);
-        protected internal abstract bool IsZeroed(T value);
+        /// <summary>
+        /// Sprawdza, czy dana wartość spełnia wymaganie.
+        /// </summary>
+        /// <param name="state">Wartość do sprawdzenia.</param>
+        /// <param name="target">Wartość docelowa wymagania.</param>
+        /// <returns>\texttt{true}, jeżeli wartość spełnia wymaganie.</returns>
+        protected internal abstract bool IsFulfilled(T state, T target);
+        protected internal abstract bool IsFulfilledInState(T value, T target, T state);
+        protected internal abstract T GetDefault();
 
         internal override bool IsFulfilled()
         {
-            return IsZeroed(State);
+            return IsFulfilled(State, Target);
         }
 
         internal override bool IsFulfilledByWorld()
         {
-            return IsFulfilled(Variable.Value);
+            return IsFulfilledInState(Variable.Value, Target, State);
         }
 
         internal override bool IsFulfilledBy(IdSet<Variable> variables)
@@ -49,7 +98,24 @@ namespace HORNS
             {
                 variables.TryGet(ref variable);
             }
-            return IsFulfilled((variable as Variable<T>).Value);
+            return IsFulfilledInState((variable as Variable<T>).Value, Target, State);
+        }
+
+        internal override Precondition Apply(ActionResult actionResult)
+        {
+            var newPre = Clone() as Precondition<T>;
+            newPre.State = (actionResult as ActionResult<T>).GetResultValue(newPre.State);
+            return newPre;
+        }
+
+        /// <summary>
+        /// Wyznacza akcje mogące spełnić wymaganie.
+        /// </summary>
+        /// <param name="agent">Agent, którego akcje będą rozważane.</param>
+        /// <returns>Kolekcja akcji.</returns>
+        internal override IEnumerable<Action> GetActions(Agent agent)
+        {
+            return Variable.GenericSolver.GetActionsSatisfying(this, agent);
         }
     }
 }

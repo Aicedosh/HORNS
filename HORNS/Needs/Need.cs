@@ -4,12 +4,23 @@ using System.Text;
 
 namespace HORNS
 {
+    /// <summary>
+    /// Klasa reprezentująca potrzeby dotyczące zmiennych typu T.
+    /// </summary>
+    /// <typeparam name="T">Typ danych przechowywanych w zmiennej związanej z potrzebą.</typeparam>
     public class Need<T> : INeedInternal, IIdentifiable, IEvaluable<T>
     {
         private readonly Func<T, float> evaluation;
+        private readonly Func<T, bool> isSatisfied;
 
+        /// <summary>
+        /// Wartość potrzeby.
+        /// </summary>
         public T Value { get => Variable.Value; }
         internal Variable<T> Variable { get; private set; }
+        /// <summary>
+        /// Docelowa wartość potrzeby.
+        /// </summary>
         public T Desired { get; private set; }
 
         internal VariableSolver<T> GenericSolver => Variable.GenericSolver;
@@ -18,20 +29,38 @@ namespace HORNS
         {
             Variable = other.Variable;
             Desired = other.Desired;
+            evaluation = other.evaluation;
+            isSatisfied = other.isSatisfied;
         }
 
-        public Need(Variable<T> variable, T desired, Func<T, float> evaluation)
+        /// <summary>
+        /// Tworzy nową potrzebę powiązaną z określoną zmienną.
+        /// </summary>
+        /// <param name="variable">Zmienna, której dotyczy potrzeba.</param>
+        /// <param name="desired">Docelowa wartość zmiennej.</param>
+        /// <param name="evaluation">Funkcja wyznaczająca ocenę potrzeby dla konkretnej wartości zmiennej.</param>
+        public Need(Variable<T> variable, T desired, Func<T, float> evaluation, Func<T, bool> isSatisfied = null)
         {
             Variable = variable;
             Desired = desired;
             this.evaluation = evaluation;
+            this.isSatisfied = isSatisfied ?? (v => v.Equals(Desired));
         }
 
+        /// <summary>
+        /// Oblicza ocenę potrzeby dla danej wartości.
+        /// </summary>
+        /// <param name="value">Wartość do oceny.</param>
+        /// <returns>Ocena dla danej wartości.</returns>
         public float Evaluate(T value)
         {
             return evaluation(value);
         }
 
+        /// <summary>
+        /// Oblicza ocenę obecnego stanu potrzeby.
+        /// </summary>
+        /// <returns>Ocena stanu potrzeby.</returns>
         public float Evaluate()
         {
             return Evaluate(Value);
@@ -57,9 +86,13 @@ namespace HORNS
             return GenericSolver.GetActionsTowards(Variable, Desired, agent);
         }
 
+        /// <summary>
+        /// Sprawdza, czy potrzeba jest w stanie zaspokojonym.
+        /// </summary>
+        /// <returns>\texttt{true}, jeżeli potrzeba jest zaspokojona.</returns>
         public bool IsSatisfied()
         {
-            return IsSatisfied(Value);
+            return isSatisfied(Value);
         }
 
         internal bool IsSatisfied(IdSet<Variable> variables)
@@ -69,12 +102,7 @@ namespace HORNS
             {
                 variables.TryGet(ref variable);
             }
-            return IsSatisfied((variable as Variable<T>).Value);
-        }
-
-        protected virtual bool IsSatisfied(T value)
-        {
-            return value.Equals(Desired);
+            return isSatisfied((variable as Variable<T>).Value);
         }
 
         Variable GetVariable()

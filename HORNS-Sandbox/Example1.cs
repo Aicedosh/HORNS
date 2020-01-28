@@ -40,6 +40,7 @@ namespace HORNS_Sandbox
                     rzodkiews.Value -= 1;
                     Console.WriteLine(" Ate a rzodkiew");
                 }
+                Apply();
             }
         }
 
@@ -79,9 +80,9 @@ namespace HORNS_Sandbox
             }
         }
 
-        private class Woodesire : Need<bool>
+        private class Woodesire : Need<int>
         {
-            public Woodesire(Variable<bool> variable, bool desired) : base(variable, desired, v=>v ? 100 : 0)
+            public Woodesire(Variable<int> variable, int desired) : base(variable, desired, v => v, v => v >= desired)
             {
             }
         }
@@ -104,7 +105,7 @@ namespace HORNS_Sandbox
 
         private class RzodkiewNeed : Need<int>
         {
-            public RzodkiewNeed(Variable<int> variable, int desired) : base(variable, desired, v=> v-1)
+            public RzodkiewNeed(Variable<int> variable, int desired) : base(variable, desired, v => v, v => v >= desired)
             {
             }
         }
@@ -114,24 +115,24 @@ namespace HORNS_Sandbox
         {
             Agent agent = new Agent();
 
-            BoolVariable hasTree = new BoolVariable(false);
-            BoolVariable hasAxe = new BoolVariable(false);
-            BoolVariable hasEnergy = new BoolVariable(true);
-            IntVariable rzodkiews = new IntVariable(5);
+            IntegerVariable wood = new IntegerVariable(0);
+            BooleanVariable hasAxe = new BooleanVariable(false);
+            BooleanVariable hasEnergy = new BooleanVariable(true);
+            IntegerVariable rzodkiews = new IntegerVariable(5);
 
             HORNS.Action chop = new ChopAction(hasEnergy, rzodkiews, 3);
             chop.AddCost(5);
             chop.AddPrecondition(hasAxe, new BooleanPrecondition(true));
             chop.AddPrecondition(hasEnergy, new BooleanPrecondition(true));
-            chop.AddPrecondition(rzodkiews, new IntegerPrecondition(1, IntegerPrecondition.Condition.AtLeast));
-            chop.AddResult(hasTree, new BooleanResult(true));
+            chop.AddPrecondition(rzodkiews, new IntegerPrecondition(1, false));
+            chop.AddResult(wood, new IntegerAddResult(1));
 
             HORNS.Action chop2 = new ChopAction(hasEnergy, rzodkiews, 3, "without axe");
             chop2.AddCost(2);
             chop2.AddCost(rzodkiews, rz => rz);
             chop2.AddPrecondition(hasEnergy, new BooleanPrecondition(true));
-            chop2.AddPrecondition(rzodkiews, new IntegerPrecondition(1, IntegerPrecondition.Condition.AtLeast));
-            chop2.AddResult(hasTree, new BooleanResult(true));
+            chop2.AddPrecondition(rzodkiews, new IntegerPrecondition(1, false));
+            chop2.AddResult(wood, new IntegerAddResult(1));
 
             HORNS.Action pick = new PickAction();
             pick.AddCost(1);
@@ -148,7 +149,7 @@ namespace HORNS_Sandbox
             sleep.AddPrecondition(hasAxe, new BooleanPrecondition(false));
             sleep.AddResult(hasEnergy, new BooleanResult(true));
 
-            Woodesire n = new Woodesire(hasTree, true);
+            Woodesire n = new Woodesire(wood, 100);
             SleepNeed sleepNeed = new SleepNeed(hasEnergy, true);
             
             agent.AddActions(chop, chop2, pick, put, sleep);
@@ -157,9 +158,10 @@ namespace HORNS_Sandbox
             agent.AddNeed(sleepNeed);
 
             HORNS.Action getRzodkiew = new GetRzodkiewAction();
-            getRzodkiew.AddCost(3);
+            getRzodkiew.AddCost(5);
+            getRzodkiew.AddCost(wood, w => w);
             getRzodkiew.AddResult(rzodkiews, new IntegerAddResult(1));
-            RzodkiewNeed rzodkiewNeed = new RzodkiewNeed(rzodkiews, 1);
+            RzodkiewNeed rzodkiewNeed = new RzodkiewNeed(rzodkiews, 10);
 
             agent.AddAction(getRzodkiew);
             agent.AddNeed(rzodkiewNeed);

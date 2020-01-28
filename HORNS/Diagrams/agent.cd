@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1" GroupingSetting="Access" MembersFormat="FullSignature">
+  <Class Name="HORNS.Agent">
+    <Position X="0.5" Y="0.5" Width="4.75" />
+    <Members>
+      <Property Name="CurrentAction" Hidden="true" />
+      <Field Name="IdleActions" Hidden="true" />
+      <Field Name="possibleActions" Hidden="true" />
+      <Field Name="recalculateCallback" Hidden="true" />
+      <Method Name="SetRecalculateCallback" Hidden="true" />
+      <Property Name="Variables" Hidden="true" />
+    </Members>
+    <TypeIdentifier>
+      <HashCode>gAAAAAQACABAhAAIANAAIAFIAIABCBABBERIAAAhAMA=</HashCode>
+      <FileName>Agent\Agent.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="planner" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="HORNS.ActionPlanner" Collapsed="true">
+    <Position X="6.25" Y="2.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AACAAAAAAAAAAAQAAAQAAAAAAAAAAAADAAIAEAAAAgA=</HashCode>
+      <FileName>Agent\ActionPlanner.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

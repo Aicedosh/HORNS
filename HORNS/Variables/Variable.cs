@@ -1,70 +1,43 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using System.Threading;
 
 namespace HORNS
 {
-    public class Variable : IIdentifiable
+    /// <summary>
+    /// Abstrakcyjna klasa bazowa dla zmiennych typu T powiązanych z typami rezultatu, solvera i wymagania.
+    /// </summary>
+    /// <typeparam name="T">Typ danych przechowywanych przez zmienną.</typeparam>
+    /// <typeparam name="RT">Typ rezultatu związany ze zmienną.</typeparam>
+    /// <typeparam name="ST">Typ solvera związany ze zmienną.</typeparam>
+    /// <typeparam name="PT">Typ wymagania związany ze zmienną.</typeparam>
+    public class Variable<T, RT, ST, PT> : Variable<T>
+            where ST : VariableSolver<T, RT, PT>, new()
+            where RT : ActionResult<T>
+            where PT : Precondition<T>
     {
-        internal static ReaderWriterLockSlim VariableLock = new ReaderWriterLockSlim();
-
-        private static int MaxId = 0;
-        internal int Id { get; private set; }
-
-        int IIdentifiable.Id => Id;
-
-        private ICollection<IVariableObserver> observers = new HashSet<IVariableObserver>();
-
-        public void Observe(IVariableObserver observer)
+        /// <summary>
+        /// Tworzy nową zmienną o określonej wartości początkowej.
+        /// </summary>
+        /// <param name="value">Wartość początkowa zmiennej.</param>
+        protected Variable(T value = default) : base(value)
         {
-            observers.Add(observer);
+            Solver = new ST();
+            Solver.Variable = this;
         }
 
-        public void Unobserve(IVariableObserver observer)
+        internal Variable(Variable<T, RT, ST, PT> variable) : base(variable)
         {
-            observers.Remove(observer);
+            Solver = variable.Solver;
         }
 
-        private protected void Notify()
+        internal override Variable GetCopy()
         {
-            foreach(IVariableObserver observer in observers)
-            {
-                observer.ValueChanged();
-            }
+            return new Variable<T, RT, ST, PT>(this);
         }
 
-        private protected Variable()
-        {
-            Id = MaxId++;
-        }
+        internal ST Solver { get; }
 
-        private protected Variable(Variable other)
-        {
-            Id = other.Id;
-        }
-
-        internal virtual Variable GetCopy()
-        {
-            return new Variable(this);
-        }
-
-        IIdentifiable IIdentifiable.GetCopy()
-        {
-            return GetCopy();
-        }
-
-        #region Predefined variable types
-        public static Variable<bool> CreateBoolean(bool value)
-        {
-            return new Variable<bool, BooleanResult, BooleanSolver, BooleanPrecondition>(value);
-        }
-
-        //TODO: replace to template
-        public static Variable<int> CreateInteger(int value)
-        {
-            return new Variable<int, IntegerAddResult, IntegerSolver, IntegerPrecondition>(value);
-        }
-        #endregion
+        internal override VariableSolver<T> GenericSolver => Solver;
     }
 }

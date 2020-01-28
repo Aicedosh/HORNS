@@ -95,12 +95,12 @@ namespace HORNS_Sandbox
         {
             private readonly string agentname;
             private readonly ConsoleColor color;
-            private readonly IntVariable v;
+            private readonly IntegerVariable v;
             private readonly string m;
             private readonly EventWaitHandle e;
             private bool sleeping;
 
-            public WaitForAction(string agentname, ConsoleColor color, IntVariable v, string m)
+            public WaitForAction(string agentname, ConsoleColor color, IntegerVariable v, string m)
             {
                 e = new EventWaitHandle(false, EventResetMode.AutoReset);
                 v.Observe(this);
@@ -141,34 +141,27 @@ namespace HORNS_Sandbox
 
         private class Hunger : Need<int>
         {
-            public Hunger(Variable<int> variable, int desired) : base(variable, desired, v =>
-            v > 100 ? -100 :
-            (float)(50*Math.Log10(-v+1+100))) { }
+            public Hunger(Variable<int> variable, int desired) : base(variable, desired,
+                v => v > 100 ? -100 : (float)(50*Math.Log10(-v+1+100))) { }
         }
 
         private class Energy : Need<int>
         {
-            public Energy(Variable<int> variable, int desired) : base(variable, desired, v => 
-            v < 0 ? 100 : (float)(50*Math.Log10(v + 1))) { }
-
-            protected override bool IsSatisfied(int value)
-            {
-                return value >= 100;
-            }
+            public Energy(Variable<int> variable, int desired) : base(variable, desired,
+                v => v < 0 ? 100 : (float)(50*Math.Log10(v + 1)),
+                v => v >= 100) { }
         }
 
-        public static Agent CreateWoodcutter(string agentName, ConsoleColor color, IntVariable radishesOnCounter, IntVariable chairDemand, IntVariable chairsInStock)
+        public static Agent CreateWoodcutter(string agentName, ConsoleColor color, IntegerVariable radishesOnCounter, IntegerVariable chairDemand, IntegerVariable chairsInStock)
         {
-            var hasAxe = new BoolVariable();
-            var hunger = new IntVariable(100);
-            var energy = new IntVariable(100);
-            var money = new IntVariable();
-            var wood = new IntVariable();
-            var chairs = new IntVariable();
-            var rzodkiews = new IntVariable();
-            var soups = new IntVariable();
-
-            var feelingSoupy = new BoolVariable();
+            var hasAxe = new BooleanVariable();
+            var hunger = new IntegerVariable(100);
+            var energy = new IntegerVariable(100);
+            var money = new IntegerVariable();
+            var wood = new IntegerVariable();
+            var chairs = new IntegerVariable();
+            var rzodkiews = new IntegerVariable();
+            var soups = new IntegerVariable();
 
             var pickAxe = new MessageAction(agentName, color, "Picked up an axe");
             pickAxe.AddPrecondition(hasAxe, new BooleanPrecondition(false));
@@ -180,43 +173,43 @@ namespace HORNS_Sandbox
             chopTree.AddResult(energy, new IntegerAddResult(-2));
 
             var sellWood = new MessageAction(agentName, color, "Sold a piece of wood");
-            sellWood.AddPrecondition(wood, new IntegerPrecondition(1, IntegerPrecondition.Condition.AtLeast));
+            sellWood.AddPrecondition(wood, new IntegerPrecondition(1, true));
             sellWood.AddResult(wood, new IntegerAddResult(-1));
             sellWood.AddResult(money, new IntegerAddResult(1));
 
             var makeChair = new MessageAction(agentName, color, "Made a chair");
-            makeChair.AddPrecondition(wood, new IntegerPrecondition(1, IntegerPrecondition.Condition.AtLeast));
+            makeChair.AddPrecondition(wood, new IntegerPrecondition(1, true));
             makeChair.AddResult(wood, new IntegerAddResult(-1));
             makeChair.AddResult(chairs, new IntegerAddResult(1));
             makeChair.AddResult(energy, new IntegerAddResult(-3));
 
             var sellChair = new MessageAction(agentName, color, "Sold a chair");
-            sellChair.AddPrecondition(chairDemand, new IntegerPrecondition(1, IntegerPrecondition.Condition.AtLeast));
-            sellChair.AddPrecondition(chairs, new IntegerPrecondition(1, IntegerPrecondition.Condition.AtLeast));
+            sellChair.AddPrecondition(chairDemand, new IntegerPrecondition(1, false));
+            sellChair.AddPrecondition(chairs, new IntegerPrecondition(1, true));
             sellChair.AddResult(chairs, new IntegerAddResult(-1));
             sellChair.AddResult(money, new IntegerAddResult(3));
             sellChair.AddResult(chairsInStock, new IntegerAddResult(1));
 
             var buyRzodkiew = new MessageAction(agentName, color, "Bought a rzodkiew");
-            buyRzodkiew.AddPrecondition(radishesOnCounter, new IntegerPrecondition(1, IntegerPrecondition.Condition.AtLeast));
-            buyRzodkiew.AddPrecondition(money, new IntegerPrecondition(3, IntegerPrecondition.Condition.AtLeast));
+            buyRzodkiew.AddPrecondition(radishesOnCounter, new IntegerPrecondition(1, true));
+            buyRzodkiew.AddPrecondition(money, new IntegerPrecondition(3, true));
             buyRzodkiew.AddResult(money, new IntegerAddResult(-3));
             buyRzodkiew.AddResult(rzodkiews, new IntegerAddResult(1));
             buyRzodkiew.AddResult(radishesOnCounter, new IntegerAddResult(-1));
 
             var eatRzodkiew = new MessageAction(agentName, color, "Ate a rzodkiew");
-            eatRzodkiew.AddPrecondition(rzodkiews, new IntegerPrecondition(1, IntegerPrecondition.Condition.AtLeast));
+            eatRzodkiew.AddPrecondition(rzodkiews, new IntegerPrecondition(1, true));
             eatRzodkiew.AddResult(rzodkiews, new IntegerAddResult(-1));
             eatRzodkiew.AddResult(hunger, new IntegerAddResult(-5));
 
             var makeSoup = new MessageAction(agentName, color, "Made some soup");
-            makeSoup.AddPrecondition(rzodkiews, new IntegerPrecondition(2, IntegerPrecondition.Condition.AtLeast));
+            makeSoup.AddPrecondition(rzodkiews, new IntegerPrecondition(2, true));
             makeSoup.AddResult(rzodkiews, new IntegerAddResult(-2));
             makeSoup.AddResult(soups, new IntegerAddResult(1));
             makeSoup.AddResult(energy, new IntegerAddResult(-11));
 
             var eatSoup = new MessageAction(agentName, color, "Ate some soup");
-            eatSoup.AddPrecondition(soups, new IntegerPrecondition(1, IntegerPrecondition.Condition.AtLeast));
+            eatSoup.AddPrecondition(soups, new IntegerPrecondition(1, true));
             eatSoup.AddResult(soups, new IntegerAddResult(-1));
             eatSoup.AddResult(hunger, new IntegerAddResult(-20));
             eatSoup.AddResult(energy, new IntegerAddResult(1));
@@ -240,7 +233,7 @@ namespace HORNS_Sandbox
             return agent;
         }
 
-        private static Agent CreateSeller(string agentName, ConsoleColor color, IntVariable radishesOnCounter)
+        private static Agent CreateSeller(string agentName, ConsoleColor color, IntegerVariable radishesOnCounter)
         {
             Need<int> sellRadishes = new Need<int>(radishesOnCounter, 10, v => v);
             MessageAction putRadish = new MessageAction(agentName, color, "Searching for radish", "Carrying radish", "Put radish on counter");
@@ -256,15 +249,15 @@ namespace HORNS_Sandbox
             return agent;
         }
 
-        private static Agent CreateArtist(string agentName, ConsoleColor color, IntVariable chairDemand, IntVariable chairsInStock)
+        private static Agent CreateArtist(string agentName, ConsoleColor color, IntegerVariable chairDemand, IntegerVariable chairsInStock)
         {
-            IntVariable chairs = new IntVariable();
+            IntegerVariable chairs = new IntegerVariable();
 
             MessageAction demandChair = new MessageAction(agentName, color, "Demanding chair");
             demandChair.AddResult(chairDemand, new IntegerAddResult(1));
 
             var buyChair = new WaitForAction(agentName, color, chairsInStock, "Bought a chair");
-            buyChair.AddPrecondition(chairDemand, new IntegerPrecondition(1, IntegerPrecondition.Condition.AtLeast));
+            buyChair.AddPrecondition(chairDemand, new IntegerPrecondition(1, true));
             buyChair.AddResult(chairs, new IntegerAddResult(1));
             buyChair.AddResult(chairDemand, new IntegerAddResult(-1));
             buyChair.AddResult(chairsInStock, new IntegerAddResult(-1));
@@ -307,9 +300,9 @@ namespace HORNS_Sandbox
 
         public static void Run()
         {
-            IntVariable radishesOnCounter = new IntVariable(9);
-            IntVariable chairDemand = new IntVariable(0);
-            IntVariable chairsInStock = new IntVariable(0);
+            IntegerVariable radishesOnCounter = new IntegerVariable(9);
+            IntegerVariable chairDemand = new IntegerVariable(0);
+            IntegerVariable chairsInStock = new IntegerVariable(0);
 
             CancellationTokenSource source = new CancellationTokenSource();
             CancellationToken token = source.Token;

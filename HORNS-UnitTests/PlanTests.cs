@@ -10,10 +10,69 @@ namespace HORNS_UnitTests
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
+        public void Plan_CarpenterTest(bool snapshot)
+        {
+            var agent = new Agent();
+            var hasWood = new BooleanVariable(false);
+            var isShopOpen = new BooleanVariable(true);
+            var hasCrate = new BooleanVariable(false);
+            var workshopHasWood = new BooleanVariable(false);
+            var workshopHasCrate = new BooleanVariable(false);
+            var woodCount = new IntegerVariable(1);
+            var money = new IntegerVariable(0);
+
+            var buyWood = new BasicAction("BuyWood");
+            buyWood.AddPrecondition(isShopOpen, new BooleanPrecondition(true));
+            buyWood.AddPrecondition(hasWood, new BooleanPrecondition(false));
+            buyWood.AddPrecondition(woodCount, new IntegerPrecondition(1, true));
+            buyWood.AddResult(woodCount, new IntegerAddResult(-1));
+            buyWood.AddResult(hasWood, new BooleanResult(true));
+
+            var carryWood = new BasicAction("CarryWood");
+            carryWood.AddPrecondition(hasWood, new BooleanPrecondition(true));
+            carryWood.AddPrecondition(workshopHasWood, new BooleanPrecondition(false));
+            carryWood.AddResult(hasWood, new BooleanResult(false));
+            carryWood.AddResult(workshopHasWood, new BooleanResult(true));
+
+            var create = new BasicAction("Create");
+            create.AddPrecondition(workshopHasWood, new BooleanPrecondition(true));
+            create.AddPrecondition(workshopHasCrate, new BooleanPrecondition(false));
+            create.AddResult(workshopHasWood, new BooleanResult(false));
+            create.AddResult(workshopHasCrate, new BooleanResult(true));
+
+            var pickupCrate = new BasicAction("PickupCrate");
+            pickupCrate.AddPrecondition(workshopHasCrate, new BooleanPrecondition(true));
+            pickupCrate.AddPrecondition(hasCrate, new BooleanPrecondition(false));
+            pickupCrate.AddResult(workshopHasCrate, new BooleanResult(false));
+            pickupCrate.AddResult(hasCrate, new BooleanResult(true));
+
+            var sellCrate = new BasicAction("SellCrate");
+            sellCrate.AddPrecondition(hasCrate, new BooleanPrecondition(true));
+            sellCrate.AddPrecondition(isShopOpen, new BooleanPrecondition(true));
+            sellCrate.AddResult(hasCrate, new BooleanResult(false));
+            sellCrate.AddResult(money, new IntegerAddResult(5));
+
+            var need = new Need<int>(money, 100, v => v);
+            agent.AddActions(buyWood, carryWood, create, pickupCrate, sellCrate);
+            agent.AddNeed(need);
+
+            var (actions, curNeed) = Plan(agent, snapshot);
+            Assert.NotNull(actions);
+            Assert.Equal(5, actions.Count);
+            Assert.Equal("BuyWood", (actions[0] as BasicAction).Tag);
+            Assert.Equal("CarryWood", (actions[1] as BasicAction).Tag);
+            Assert.Equal("Create", (actions[2] as BasicAction).Tag);
+            Assert.Equal("PickupCrate", (actions[3] as BasicAction).Tag);
+            Assert.Equal("SellCrate", (actions[4] as BasicAction).Tag);
+        }
+
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
         public void Plan_OneAction_NoPreconditions(bool snapshot)
         {
             var agent = new Agent();
-            var variable = new BoolVariable();
+            var variable = new BooleanVariable();
 
             var action = new BasicAction();
             action.AddResult(variable, new BooleanResult(true));
@@ -24,8 +83,9 @@ namespace HORNS_UnitTests
             agent.AddAction(action);
             agent.AddNeed(need);
 
-            var actions = Plan(agent, snapshot);
+            var (actions, curNeed) = Plan(agent, snapshot);
 
+            Assert.Equal(need, curNeed);
             Assert.Single(actions);
 
             actions[0].Perform();
@@ -40,9 +100,9 @@ namespace HORNS_UnitTests
         {
             var agent = new Agent();
             
-            var v1 = new BoolVariable();
-            var v2 = new BoolVariable();
-            var v3 = new BoolVariable();
+            var v1 = new BooleanVariable();
+            var v2 = new BooleanVariable();
+            var v3 = new BooleanVariable();
 
             var need = new BooleanNeed(v3, true);
 
@@ -60,7 +120,7 @@ namespace HORNS_UnitTests
             agent.AddNeed(need);
             agent.AddActions(a1, a2, a3);
 
-            var actions = Plan(agent, snapshot);
+            var (actions, curNeed) = Plan(agent, snapshot);
 
             Assert.Equal(3, actions.Count);
             Assert.Equal("1", (actions[0] as BasicAction).Tag);
@@ -76,13 +136,13 @@ namespace HORNS_UnitTests
             const int REQUIRED_NUMBER = 5;
             var agent = new Agent();
 
-            var v1 = new IntVariable();
-            var v2 = new BoolVariable();
+            var v1 = new IntegerVariable();
+            var v2 = new BooleanVariable();
 
             var need = new BooleanNeed(v2, true);
 
             var a1 = new BasicAction("Last");
-            a1.AddPrecondition(v1, new IntegerPrecondition(REQUIRED_NUMBER, IntegerPrecondition.Condition.AtLeast));
+            a1.AddPrecondition(v1, new IntegerPrecondition(REQUIRED_NUMBER, false));
             a1.AddResult(v2, new BooleanResult(true));
 
             var a2 = new BasicAction("Add one");
@@ -91,7 +151,7 @@ namespace HORNS_UnitTests
             agent.AddActions(a1, a2);
             agent.AddNeed(need);
 
-            var actions = Plan(agent, snapshot);
+            var (actions, curNeed) = Plan(agent, snapshot);
 
             Assert.Equal(REQUIRED_NUMBER + 1, actions.Count);
             Assert.Equal("Last", (actions[REQUIRED_NUMBER] as BasicAction).Tag);
@@ -107,7 +167,7 @@ namespace HORNS_UnitTests
         public void Plan_TwoActionsBooleanResult_PicksBetterAction(bool snapshot)
         {
             var agent = new Agent();
-            var variable = new BoolVariable();
+            var variable = new BooleanVariable();
 
             var a1 = new BasicAction("Worse");
             a1.AddResult(variable, new BooleanResult(true));
@@ -122,7 +182,7 @@ namespace HORNS_UnitTests
             agent.AddNeed(need);
             agent.AddActions(a1, a2);
 
-            var actions = Plan(agent, snapshot);
+            var (actions, curNeed) = Plan(agent, snapshot);
 
             Assert.Single(actions);
             Assert.Equal("Better", (actions[0] as BasicAction).Tag);
@@ -138,8 +198,8 @@ namespace HORNS_UnitTests
             const int REQUIRED = 4;
 
             var agent = new Agent();
-            var v1 = new IntVariable();
-            var v2 = new IntVariable(1);
+            var v1 = new IntegerVariable();
+            var v2 = new IntegerVariable(1);
 
             var a1 = new BasicAction("Cheap");
             a1.AddResult(v1, new IntegerAddResult(1));
@@ -151,14 +211,14 @@ namespace HORNS_UnitTests
 
             var a3 = new BasicAction("Last");
             a3.AddResult(v2, new IntegerAddResult(-1));
-            a3.AddPrecondition(v1, new IntegerPrecondition(REQUIRED, IntegerPrecondition.Condition.AtLeast));
+            a3.AddPrecondition(v1, new IntegerPrecondition(REQUIRED, false));
 
             var need = new LinearIntegerNeed(v2, 0);
 
             agent.AddNeed(need);
             agent.AddActions(a1, a2, a3);
 
-            var actions = Plan(agent, snapshot);
+            var (actions, curNeed) = Plan(agent, snapshot);
 
             Assert.Equal(actionCount + 1, actions.Count);
             Assert.Equal("Last", (actions[actionCount] as BasicAction).Tag);
@@ -174,12 +234,12 @@ namespace HORNS_UnitTests
         public void Plan_PathMakesNeedWorse_DiscardPath(bool snapshot)
         {
             var agent = new Agent();
-            var v1 = new IntVariable(3);
-            var v2 = new IntVariable();
+            var v1 = new IntegerVariable(3);
+            var v2 = new IntegerVariable();
             var need = new LinearIntegerNeed(v1, 10);
 
             var a1 = new BasicAction("Fulfills need");
-            a1.AddPrecondition(v2, new IntegerPrecondition(1, IntegerPrecondition.Condition.AtLeast));
+            a1.AddPrecondition(v2, new IntegerPrecondition(1, false));
             a1.AddResult(v1, new IntegerAddResult(1));
 
             var a2 = new BasicAction("Makes need worse");
@@ -189,7 +249,7 @@ namespace HORNS_UnitTests
             agent.AddNeed(need);
             agent.AddActions(a1, a2);
 
-            var actions = Plan(agent, snapshot);
+            var (actions, curNeed) = Plan(agent, snapshot);
             Assert.Empty(actions);
         }
 
@@ -219,10 +279,10 @@ namespace HORNS_UnitTests
             var a4 = new BasicAction("4");
             var a5 = new BasicAction("5");
 
-            var v1 = new IntVariable(0);
-            var v2 = new BoolVariable(false);
-            var v3 = new BoolVariable(false);
-            var v4 = new BoolVariable(false);
+            var v1 = new IntegerVariable(0);
+            var v2 = new BooleanVariable(false);
+            var v3 = new BooleanVariable(false);
+            var v4 = new BooleanVariable(false);
 
             var n1 = new LogNeed(v1, 10);
             var n2 = new BoolNeed(v2, true);
@@ -248,8 +308,9 @@ namespace HORNS_UnitTests
             agent.AddNeed(n1);
             agent.AddNeed(n2);
 
-            List<Action> actions = Plan(agent, snapshot);
+            var (actions, curNeed) = Plan(agent, snapshot);
 
+            Assert.Equal(n1, curNeed);
             Assert.Equal(2, actions.Count);
             Assert.Equal("3", (actions[0] as BasicAction).Tag);
             Assert.Equal("5", (actions[1] as BasicAction).Tag);
@@ -259,7 +320,8 @@ namespace HORNS_UnitTests
                 a.Perform();
             }
 
-            actions = Plan(agent, snapshot);
+            (actions, curNeed) = Plan(agent, snapshot);
+            Assert.Equal(n2, curNeed);
             Assert.Single(actions);
             Assert.Equal("1", (actions[0] as BasicAction).Tag);
 
@@ -268,7 +330,8 @@ namespace HORNS_UnitTests
                 a.Perform();
             }
 
-            actions = Plan(agent, snapshot);
+            (actions, curNeed) = Plan(agent, snapshot);
+            Assert.Equal(n1, curNeed);
             Assert.Equal(2, actions.Count);
             Assert.Equal("2", (actions[0] as BasicAction).Tag);
             Assert.Equal("4", (actions[1] as BasicAction).Tag);
@@ -282,7 +345,7 @@ namespace HORNS_UnitTests
             var agent1 = new Agent();
             var agent2 = new Agent();
 
-            var v1 = new BoolVariable(false);
+            var v1 = new BooleanVariable(false);
 
             Action a1 = new BasicAction();
             a1.AddResult(v1, new BooleanResult(true));
@@ -292,7 +355,7 @@ namespace HORNS_UnitTests
             BoolNeed b1 = new BoolNeed(v1, true);
             agent1.AddNeed(b1);
 
-            var actions = Plan(agent1, snapshot);
+            var (actions, curNeed) = Plan(agent1, snapshot);
             Assert.Empty(actions);
         }
 
@@ -305,7 +368,7 @@ namespace HORNS_UnitTests
         {
             Agent agent = new Agent();
 
-            var v = new IntVariable(0);
+            var v = new IntegerVariable(0);
             var n = new LogNeed(v, 10);
             agent.AddNeed(n);
 
@@ -317,20 +380,202 @@ namespace HORNS_UnitTests
 
             agent.AddActions(a1, a2);
 
-            var actions = Plan(agent, snapshot);
+            var (actions, curNeed) = Plan(agent, snapshot);
             Assert.Single(actions);
             Assert.Equal(expectedTag, (actions[0] as BasicAction).Tag);
         }
 
-        // helper functions
-        List<Action> Plan(Agent agent, bool snapshot, IEnumerable<Action> idleActions = null)
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public void Plan_IdleWithUnfulfilledPreconditions_DiscardIdle(bool snapshot)
         {
-            if (idleActions == null)
-            {
-                idleActions = Enumerable.Empty<Action>();
-            }
+            Agent agent = new Agent();
+            var v = new IntegerVariable(0);
+
+            var a = new BasicAction("Unfulfilled");
+            a.AddPrecondition(v, new IntegerPrecondition(1, false));
+            agent.AddIdleAction(a);
+
+            var (actions, curNeed) = Plan(agent, snapshot);
+            Assert.Empty(actions);
+        }
+
+        [Theory]
+        [InlineData(1, 5, true)]
+        [InlineData(1, 5, false)]
+        [InlineData(5, 1, true)]
+        [InlineData(5, 1, false)]
+        public void Plan_IdlesWithUnfulfilledAndFulfilledPreconditions_ChooseFulfilled(int cost1, int cost2, bool snapshot)
+        {
+            Agent agent = new Agent();
+            var v1 = new IntegerVariable(0);
+            var v2 = new IntegerVariable(5);
+
+            var a1 = new BasicAction("Unfulfilled");
+            a1.AddPrecondition(v1, new IntegerPrecondition(1, false));
+            a1.AddCost(cost1);
+
+            var a2 = new BasicAction("Fulfilled");
+            a2.AddPrecondition(v2, new IntegerPrecondition(5, false));
+            a2.AddCost(cost2);
+
+            agent.AddIdleActions(a1, a2);
+
+            var (actions, curNeed) = Plan(agent, snapshot);
+            Assert.Single(actions);
+            Assert.Equal("Fulfilled", (actions[0] as BasicAction).Tag);
+        }
+
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public void Plan_IdleWithPreconditions_PlanEntirePath(bool snapshot)
+        {
+            Agent agent = new Agent();
+            var v = new BooleanVariable();
+
+            var a1 = new BasicAction("Idle");
+            a1.AddPrecondition(v, new BooleanPrecondition(true));
+            agent.AddIdleAction(a1);
+
+            var a2 = new BasicAction("Required");
+            a2.AddResult(v, new BooleanResult(true));
+            agent.AddAction(a2);
+
+            var (actions, curNeed) = Plan(agent, snapshot);
+            Assert.Equal(2, actions.Count);
+            Assert.Equal("Required", (actions[0] as BasicAction).Tag);
+            Assert.Equal("Idle", (actions[1] as BasicAction).Tag);
+        }
+
+        private (Agent agent, INeed need) NeedVersusIdle_Setup(float costIdle, float costReq, float costNeed)
+        {
+            Agent agent = new Agent();
+            var v1 = new BooleanVariable();
+            var v2 = new IntegerVariable();
+            var n = new LogNeed(v2, 5);
+
+            var a1 = new BasicAction("Idle");
+            a1.AddCost(costIdle);
+            a1.AddPrecondition(v1, new BooleanPrecondition(true));
+
+            var a2 = new BasicAction("Required");
+            a2.AddCost(costReq);
+            a2.AddResult(v1, new BooleanResult(true));
+
+            var a3 = new BasicAction("Fulfill need");
+            a3.AddCost(costNeed);
+            a3.AddResult(v2, new IntegerAddResult(5));
+
+            agent.AddNeed(n);
+            agent.AddIdleAction(a1);
+            agent.AddActions(a2, a3);
+
+            return (agent, n);
+        }
+
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public void Plan_NeedVersusIdle_NeedMoreExpensive_ChooseIdlePath(bool snapshot)
+        {
+            var (agent, _) = NeedVersusIdle_Setup(1, 1, 100);
+
+            var (actions, curNeed) = Plan(agent, snapshot);
+            Assert.Null(curNeed);
+            Assert.Equal(2, actions.Count);
+            Assert.Equal("Required", (actions[0] as BasicAction).Tag);
+            Assert.Equal("Idle", (actions[1] as BasicAction).Tag);
+        }
+
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public void Plan_NeedVersusIdle_IdleMoreExpensive_ChooseNeedPath(bool snapshot)
+        {
+            var (agent, need) = NeedVersusIdle_Setup(100, 100, 1);
+
+            var (actions, curNeed) = Plan(agent, snapshot);
+            Assert.Equal(need, curNeed);
+            Assert.Single(actions);
+            Assert.Equal("Fulfill need", (actions[0] as BasicAction).Tag);
+        }
+
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public void Plan_CombiningIntegerPreconditions_FindCorrectPath(bool snapshot)
+        {
+            var vint = new IntegerVariable();
+            var vbool = new BooleanVariable();
+            var vneed = new BooleanVariable();
+            var n = new BooleanNeed(vneed, true);
+
+            var a1 = new BasicAction("Fulfills need");
+            a1.AddPrecondition(vbool, new BooleanPrecondition(true));
+            a1.AddPrecondition(vint, new IntegerPrecondition(2, false));
+            a1.AddResult(vneed, new BooleanResult(true));
+
+            var a2 = new BasicAction("Fulfills bool precondition");
+            a2.AddPrecondition(vint, new IntegerPrecondition(3, true));
+            a2.AddResult(vint, new IntegerAddResult(-3));
+            a2.AddResult(vbool, new BooleanResult(true));
+            
+            var a3 = new BasicAction("Partially fulfills integer precondition");
+            a3.AddPrecondition(vbool, new BooleanPrecondition(false));
+            a3.AddResult(vint, new IntegerAddResult(1));
+
+            var agent = new Agent();
+            agent.AddActions(a1, a2, a3);
+            agent.AddNeed(n);
+
+            var (actions, curNeed) = Plan(agent, snapshot);
+            Assert.Equal(7, actions.Count);
+            Assert.Equal("Fulfills need", (actions[6] as BasicAction).Tag);
+            Assert.Equal("Fulfills bool precondition", (actions[5] as BasicAction).Tag);
+        }
+
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public void Plan_CombiningBooleanPreconditions_FindCorrectPath(bool snapshot)
+        {
+            var vint = new IntegerVariable();
+            var vbool = new BooleanVariable();
+            var vneed = new BooleanVariable();
+            var n = new BooleanNeed(vneed, true);
+
+            var a1 = new BasicAction("Fulfills need");
+            a1.AddPrecondition(vint, new IntegerPrecondition(2, false));
+            a1.AddResult(vneed, new BooleanResult(true));
+
+            var a2 = new BasicAction("Consumes bool");
+            a2.AddPrecondition(vbool, new BooleanPrecondition(true));
+            a2.AddResult(vbool, new BooleanResult(false));
+            a2.AddResult(vint, new IntegerAddResult(1));
+
+            var a3 = new BasicAction("Toggles bool");
+            a3.AddResult(vbool, new BooleanResult(true));
+
+            var agent = new Agent();
+            agent.AddActions(a1, a2, a3);
+            agent.AddNeed(n);
+
+            var (actions, curNeed) = Plan(agent, snapshot);
+            Assert.Equal(5, actions.Count);
+            Assert.Equal("Toggles bool", (actions[0] as BasicAction).Tag);
+            Assert.Equal("Consumes bool", (actions[1] as BasicAction).Tag);
+            Assert.Equal("Toggles bool", (actions[2] as BasicAction).Tag);
+            Assert.Equal("Consumes bool", (actions[3] as BasicAction).Tag);
+            Assert.Equal("Fulfills need", (actions[4] as BasicAction).Tag);
+        }
+
+        // helper functions
+        private (List<Action> actions, INeed need) Plan(Agent agent, bool snapshot)
+        {
             var planner = new ActionPlanner();
-            return planner.Plan(agent, idleActions, snapshot);
+            return planner.Plan(agent, snapshot);
         }
     }
 }
