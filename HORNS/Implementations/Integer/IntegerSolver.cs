@@ -5,7 +5,7 @@ using System.Linq;
 namespace HORNS
 {
     /// <summary>
-    /// Klasa reprezentująca solver dla zmiennych typu int, rezultatów reprezentujących zmianę wartości o określoną stałą i wymagań reprezentujących osiągnięcie wartości nie większej/nie mniejszej od określonej stałej.
+    /// Klasa reprezentująca solver dla zmiennych typu int, rezultatów reprezentujących zmianę wartości o określoną stałą i wymagań reprezentujących osiągnięcie wartości nie mniejszej od określonej stałej.
     /// </summary>
     public class IntegerSolver : VariableSolver<int, IntegerAddResult, IntegerPrecondition>
     {
